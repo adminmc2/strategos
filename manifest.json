@@ -1,7 +1,7 @@
 {
-  "name": "Stratega",
-  "short_name": "Stratega",
-  "description": "Plataforma educativa con IA - Agentes y Estrategias",
+  "name": "Strategos",
+  "short_name": "Strategos",
+  "description": "Tu equipo de agentes IA con estrategias reales",
   "start_url": "/ejercicios.html",
   "display": "standalone",
   "background_color": "#1a1a2e",

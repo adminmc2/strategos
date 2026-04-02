@@ -1,0 +1,1866 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stratega - Agentes y Estrategias con IA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header similar al landing */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            padding: 20px 50px;
+            display: flex;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: transparent;
+            border: 2px solid #333;
+            border-radius: 25px;
+            color: #333;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            background: #333;
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        .header-title {
+            flex: 1;
+            text-align: center;
+            font-size: 2em;
+            font-weight: 700;
+            color: #333;
+        }
+
+        /* Contenedor principal */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 120px 20px 40px;
+        }
+
+        .page-intro {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .page-intro p {
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        /* Grid de unidades */
+        .units-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        /* Tarjetas de unidad */
+        .unit-card {
+            background: #ffffff;
+            border-radius: 20px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid #f0f0f0;
+        }
+
+        .unit-card.expanded {
+            grid-column: span 2;
+            cursor: default;
+        }
+
+        @media (max-width: 768px) {
+            .unit-card.expanded {
+                grid-column: span 1;
+            }
+        }
+
+        .unit-header {
+            padding: 30px;
+            position: relative;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .unit-card.expanded .unit-header {
+            background: #f8f8f8;
+            min-height: auto;
+            padding: 20px 30px;
+        }
+
+        /* Colores específicos para cada unidad */
+        /* Unidad 1 - Saludos - Amarillo dorado */
+        .unit-card:nth-child(1) .unit-header {
+            background: linear-gradient(135deg, rgba(253, 184, 19, 0.05) 0%, rgba(253, 184, 19, 0.02) 100%);
+        }
+        .unit-card:nth-child(1) {
+            border-color: rgba(253, 184, 19, 0.3);
+        }
+        .unit-card:nth-child(1):hover {
+            border-color: #FDB813;
+        }
+        .unit-card:nth-child(1).expanded {
+            border-color: #FDB813;
+        }
+        .unit-card:nth-child(1) .unit-number {
+            color: #FDB813;
+        }
+        .unit-card:nth-child(1) .section-item:hover {
+            background: rgba(253, 184, 19, 0.1);
+            border-left-color: #FDB813;
+        }
+
+        /* Unidad 2 - Familias - Turquesa */
+        .unit-card:nth-child(2) .unit-header {
+            background: linear-gradient(135deg, rgba(0, 180, 197, 0.05) 0%, rgba(0, 180, 197, 0.02) 100%);
+        }
+        .unit-card:nth-child(2) {
+            border-color: rgba(0, 180, 197, 0.3);
+        }
+        .unit-card:nth-child(2):hover {
+            border-color: #00B4C5;
+        }
+        .unit-card:nth-child(2).expanded {
+            border-color: #00B4C5;
+        }
+        .unit-card:nth-child(2) .unit-number {
+            color: #00B4C5;
+        }
+        .unit-card:nth-child(2) .section-item:hover {
+            background: rgba(0, 180, 197, 0.1);
+            border-left-color: #00B4C5;
+        }
+
+        /* Unidad 3 - El trabajo - Naranja */
+        .unit-card:nth-child(3) .unit-header {
+            background: linear-gradient(135deg, rgba(245, 130, 32, 0.05) 0%, rgba(245, 130, 32, 0.02) 100%);
+        }
+        .unit-card:nth-child(3) {
+            border-color: rgba(245, 130, 32, 0.3);
+        }
+        .unit-card:nth-child(3):hover {
+            border-color: #F58220;
+        }
+        .unit-card:nth-child(3).expanded {
+            border-color: #F58220;
+        }
+        .unit-card:nth-child(3) .unit-number {
+            color: #F58220;
+        }
+        .unit-card:nth-child(3) .section-item:hover {
+            background: rgba(245, 130, 32, 0.1);
+            border-left-color: #F58220;
+        }
+
+        /* Unidad 4 - La casa - Verde */
+        .unit-card:nth-child(4) .unit-header {
+            background: linear-gradient(135deg, rgba(139, 195, 74, 0.05) 0%, rgba(139, 195, 74, 0.02) 100%);
+        }
+        .unit-card:nth-child(4) {
+            border-color: rgba(139, 195, 74, 0.3);
+        }
+        .unit-card:nth-child(4):hover {
+            border-color: #8BC34A;
+        }
+        .unit-card:nth-child(4).expanded {
+            border-color: #8BC34A;
+        }
+        .unit-card:nth-child(4) .unit-number {
+            color: #8BC34A;
+        }
+        .unit-card:nth-child(4) .section-item:hover {
+            background: rgba(139, 195, 74, 0.1);
+            border-left-color: #8BC34A;
+        }
+
+        /* Unidad 5 - Comer - Rosa/Magenta */
+        .unit-card:nth-child(5) .unit-header {
+            background: linear-gradient(135deg, rgba(233, 30, 99, 0.05) 0%, rgba(233, 30, 99, 0.02) 100%);
+        }
+        .unit-card:nth-child(5) {
+            border-color: rgba(233, 30, 99, 0.3);
+        }
+        .unit-card:nth-child(5):hover {
+            border-color: #E91E63;
+        }
+        .unit-card:nth-child(5).expanded {
+            border-color: #E91E63;
+        }
+        .unit-card:nth-child(5) .unit-number {
+            color: #E91E63;
+        }
+        .unit-card:nth-child(5) .section-item:hover {
+            background: rgba(233, 30, 99, 0.1);
+            border-left-color: #E91E63;
+        }
+
+        /* Unidad 6 - El barrio - Turquesa */
+        .unit-card:nth-child(6) .unit-header {
+            background: linear-gradient(135deg, rgba(0, 180, 197, 0.05) 0%, rgba(0, 180, 197, 0.02) 100%);
+        }
+        .unit-card:nth-child(6) {
+            border-color: rgba(0, 180, 197, 0.3);
+        }
+        .unit-card:nth-child(6):hover {
+            border-color: #00B4C5;
+        }
+        .unit-card:nth-child(6).expanded {
+            border-color: #00B4C5;
+        }
+        .unit-card:nth-child(6) .unit-number {
+            color: #00B4C5;
+        }
+        .unit-card:nth-child(6) .section-item:hover {
+            background: rgba(0, 180, 197, 0.1);
+            border-left-color: #00B4C5;
+        }
+
+        /* Unidad 7 - Salir con los amigos - Púrpura */
+        .unit-card:nth-child(7) .unit-header {
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.05) 0%, rgba(156, 39, 176, 0.02) 100%);
+        }
+        .unit-card:nth-child(7) {
+            border-color: rgba(156, 39, 176, 0.3);
+        }
+        .unit-card:nth-child(7):hover {
+            border-color: #9C27B0;
+        }
+        .unit-card:nth-child(7).expanded {
+            border-color: #9C27B0;
+        }
+        .unit-card:nth-child(7) .unit-number {
+            color: #9C27B0;
+        }
+        .unit-card:nth-child(7) .section-item:hover {
+            background: rgba(156, 39, 176, 0.1);
+            border-left-color: #9C27B0;
+        }
+
+        /* Unidad 8 - De vacaciones - Verde */
+        .unit-card:nth-child(8) .unit-header {
+            background: linear-gradient(135deg, rgba(139, 195, 74, 0.05) 0%, rgba(139, 195, 74, 0.02) 100%);
+        }
+        .unit-card:nth-child(8) {
+            border-color: rgba(139, 195, 74, 0.3);
+        }
+        .unit-card:nth-child(8):hover {
+            border-color: #8BC34A;
+        }
+        .unit-card:nth-child(8).expanded {
+            border-color: #8BC34A;
+        }
+        .unit-card:nth-child(8) .unit-number {
+            color: #8BC34A;
+        }
+        .unit-card:nth-child(8) .section-item:hover {
+            background: rgba(139, 195, 74, 0.1);
+            border-left-color: #8BC34A;
+        }
+
+        /* Unidad 9 - Compras - Rosa/Magenta */
+        .unit-card:nth-child(9) .unit-header {
+            background: linear-gradient(135deg, rgba(233, 30, 99, 0.05) 0%, rgba(233, 30, 99, 0.02) 100%);
+        }
+        .unit-card:nth-child(9) {
+            border-color: rgba(233, 30, 99, 0.3);
+        }
+        .unit-card:nth-child(9):hover {
+            border-color: #E91E63;
+        }
+        .unit-card:nth-child(9).expanded {
+            border-color: #E91E63;
+        }
+        .unit-card:nth-child(9) .unit-number {
+            color: #E91E63;
+        }
+        .unit-card:nth-child(9) .section-item:hover {
+            background: rgba(233, 30, 99, 0.1);
+            border-left-color: #E91E63;
+        }
+
+        /* Unidad 10 - Salud y enfermedad - Turquesa */
+        .unit-card:nth-child(10) .unit-header {
+            background: linear-gradient(135deg, rgba(0, 180, 197, 0.05) 0%, rgba(0, 180, 197, 0.02) 100%);
+        }
+        .unit-card:nth-child(10) {
+            border-color: rgba(0, 180, 197, 0.3);
+        }
+        .unit-card:nth-child(10):hover {
+            border-color: #00B4C5;
+        }
+        .unit-card:nth-child(10).expanded {
+            border-color: #00B4C5;
+        }
+        .unit-card:nth-child(10) .unit-number {
+            color: #00B4C5;
+        }
+        .unit-card:nth-child(10) .section-item:hover {
+            background: rgba(0, 180, 197, 0.1);
+            border-left-color: #00B4C5;
+        }
+
+        .unit-card:not(.expanded):hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+
+        /* Número grande en la esquina inferior derecha */
+        .unit-number {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 80px;
+            font-weight: 900;
+            opacity: 0.15;
+            line-height: 1;
+            pointer-events: none;
+            z-index: 0;
+            transition: all 0.3s ease;
+        }
+
+        .unit-card.expanded .unit-number {
+            font-size: 40px;
+            opacity: 0.3;
+            top: 20px;
+            bottom: auto;
+        }
+
+        /* Contenido de la tarjeta */
+        .unit-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .unit-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            padding-right: 60px;
+        }
+
+        .unit-card.expanded .unit-title {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .unit-subtitle {
+            color: #666;
+            font-size: 1em;
+            line-height: 1.4;
+            padding-right: 60px;
+        }
+
+        .unit-card.expanded .unit-subtitle {
+            font-size: 0.9em;
+        }
+
+        /* Indicador de expansión */
+        .expand-icon {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 24px;
+            height: 24px;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .unit-card:hover .expand-icon {
+            opacity: 0.7;
+            transform: translateX(0);
+        }
+
+        .unit-card.expanded .expand-icon {
+            opacity: 1;
+            transform: rotate(180deg);
+        }
+
+        /* Secciones del acordeón */
+        .sections-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+            background: white;
+        }
+
+        .unit-card.expanded .sections-container {
+            max-height: 500px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .sections-list {
+            padding: 20px;
+        }
+
+        .section-item {
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            background: #f8f8f8;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-left: 3px solid transparent;
+            position: relative;
+        }
+
+        .section-item.active {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .section-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .section-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-code {
+            font-weight: 700;
+            margin-right: 15px;
+            font-size: 1.1em;
+        }
+
+        /* Color del código de sección para cada unidad */
+        .unit-card:nth-child(1) .section-code {
+            color: #FDB813;
+        }
+        .unit-card:nth-child(2) .section-code {
+            color: #00B4C5;
+        }
+        .unit-card:nth-child(3) .section-code {
+            color: #F58220;
+        }
+        .unit-card:nth-child(4) .section-code {
+            color: #8BC34A;
+        }
+        .unit-card:nth-child(5) .section-code {
+            color: #E91E63;
+        }
+        .unit-card:nth-child(6) .section-code {
+            color: #00B4C5;
+        }
+        .unit-card:nth-child(7) .section-code {
+            color: #9C27B0;
+        }
+        .unit-card:nth-child(8) .section-code {
+            color: #8BC34A;
+        }
+        .unit-card:nth-child(9) .section-code {
+            color: #E91E63;
+        }
+        .unit-card:nth-child(10) .section-code {
+            color: #00B4C5;
+        }
+
+        .section-title {
+            flex: 1;
+            color: #555;
+        }
+
+        .section-arrow {
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+            color: #999;
+        }
+
+        .section-item:hover .section-arrow {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Contenedor de actividades */
+        .activities-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0;
+            margin: 0;
+        }
+
+        .section-item.active + .activities-container {
+            max-height: 500px;
+            padding: 20px 20px 10px 20px;
+        }
+
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 12px;
+            max-width: 100%;
+        }
+
+        .activity-box {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2em;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            min-height: 80px;
+        }
+
+        .activity-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .activity-box::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .activity-box:hover::before {
+            opacity: 1;
+        }
+
+        /* Colores de actividades para Unidad 7 - Púrpura */
+        .unit-card:nth-child(7) .activity-box {
+            background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+            border: 2px solid rgba(156, 39, 176, 0.3);
+        }
+
+        .unit-card:nth-child(7) .activity-box:hover {
+            border-color: #9C27B0;
+            background: linear-gradient(135deg, #AB47BC 0%, #8E24AA 100%);
+        }
+
+        /* Indicador de flecha que rota cuando la sección está activa */
+        .section-item.active .section-arrow {
+            transform: rotate(90deg);
+            opacity: 1;
+        }
+
+        /* Modal del bot de IA */
+        .ai-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .ai-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* PROPUESTA 1: Diseño tipo chat */
+        .ai-container-1 {
+            background: white;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: none;
+        }
+
+        .ai-container-1.active {
+            display: block;
+            animation: slideUp 0.4s ease;
+        }
+
+        .ai-header-1 {
+            background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+            padding: 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .ai-avatar-1 {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .ai-title-1 {
+            flex: 1;
+        }
+
+        .ai-title-1 h3 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+
+        .ai-title-1 p {
+            margin: 5px 0 0;
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+
+        .close-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .ai-content-1 {
+            padding: 25px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .ai-options-1 {
+            display: grid;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .ai-option-1 {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .ai-option-1:hover {
+            border-color: #9C27B0;
+            background: #faf5fb;
+            transform: translateX(5px);
+        }
+
+        .ai-option-icon {
+            font-size: 24px;
+            width: 40px;
+            text-align: center;
+        }
+
+        .ai-option-text h4 {
+            margin: 0 0 5px;
+            color: #333;
+            font-size: 1em;
+        }
+
+        .ai-option-text p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        /* PROPUESTA 2: Diseño tarjetas flotantes */
+        .ai-container-2 {
+            background: white;
+            border-radius: 30px;
+            max-width: 700px;
+            width: 100%;
+            padding: 30px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.2);
+            display: none;
+        }
+
+        .ai-container-2.active {
+            display: block;
+            animation: bounceIn 0.5s ease;
+        }
+
+        .ai-header-2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .ai-avatar-2 {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+            margin-bottom: 15px;
+            animation: pulse 2s infinite;
+        }
+
+        .ai-cards-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .ai-card-2 {
+            background: linear-gradient(135deg, #f8f9fa, #fff);
+            border: 1px solid #e9ecef;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-card-2::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #9C27B0, #AB47BC);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .ai-card-2:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(156, 39, 176, 0.15);
+        }
+
+        .ai-card-2:hover::before {
+            transform: scaleX(1);
+        }
+
+        /* PROPUESTA 3: Diseño minimalista */
+        .ai-container-3 {
+            background: white;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .ai-container-3.active {
+            display: block;
+            animation: fadeInScale 0.3s ease;
+        }
+
+        .ai-header-3 {
+            padding: 25px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ai-badge-3 {
+            background: #9C27B0;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .ai-list-3 {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+        .ai-item-3 {
+            padding: 20px 25px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .ai-item-3:hover {
+            background: #faf5fb;
+            padding-left: 30px;
+        }
+
+        .ai-item-3:last-child {
+            border-bottom: none;
+        }
+
+        /* PROPUESTA 4: Diseño burbuja */
+        .ai-container-4 {
+            max-width: 450px;
+            width: 100%;
+            display: none;
+        }
+
+        .ai-container-4.active {
+            display: block;
+            animation: popIn 0.4s ease;
+        }
+
+        .ai-bubble-4 {
+            background: white;
+            border-radius: 20px 20px 5px 20px;
+            padding: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            margin-bottom: 15px;
+        }
+
+        .ai-bubble-header-4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .ai-bubble-avatar-4 {
+            width: 35px;
+            height: 35px;
+            background: #9C27B0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .ai-bubble-name-4 {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .ai-options-4 {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .ai-pill-4 {
+            background: #f0f0f0;
+            border: 2px solid transparent;
+            border-radius: 25px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95em;
+        }
+
+        .ai-pill-4:hover {
+            background: white;
+            border-color: #9C27B0;
+            color: #9C27B0;
+            transform: scale(1.05);
+        }
+
+        /* Animaciones */
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes fadeInScale {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8) translateY(20px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Selector de propuesta */
+        .proposal-selector {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            display: none;
+            gap: 10px;
+            z-index: 1001;
+        }
+
+        .proposal-selector.active {
+            display: flex;
+        }
+
+        .proposal-btn {
+            padding: 8px 15px;
+            border: 2px solid #9C27B0;
+            background: white;
+            color: #9C27B0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .proposal-btn.active {
+            background: #9C27B0;
+            color: white;
+        }
+
+        /* Animación de entrada para actividades */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .activities-container .activity-box {
+            animation: slideDown 0.3s ease backwards;
+        }
+
+        .activities-container .activity-box:nth-child(1) { animation-delay: 0.05s; }
+        .activities-container .activity-box:nth-child(2) { animation-delay: 0.1s; }
+        .activities-container .activity-box:nth-child(3) { animation-delay: 0.15s; }
+        .activities-container .activity-box:nth-child(4) { animation-delay: 0.2s; }
+        .activities-container .activity-box:nth-child(5) { animation-delay: 0.25s; }
+        .activities-container .activity-box:nth-child(6) { animation-delay: 0.3s; }
+        .activities-container .activity-box:nth-child(7) { animation-delay: 0.35s; }
+        .activities-container .activity-box:nth-child(8) { animation-delay: 0.4s; }
+        .activities-container .activity-box:nth-child(9) { animation-delay: 0.45s; }
+
+        /* Animación de entrada */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .unit-card {
+            animation: fadeInUp 0.6s ease backwards;
+        }
+
+        .unit-card:nth-child(1) { animation-delay: 0.1s; }
+        .unit-card:nth-child(2) { animation-delay: 0.15s; }
+        .unit-card:nth-child(3) { animation-delay: 0.2s; }
+        .unit-card:nth-child(4) { animation-delay: 0.25s; }
+        .unit-card:nth-child(5) { animation-delay: 0.3s; }
+        .unit-card:nth-child(6) { animation-delay: 0.35s; }
+        .unit-card:nth-child(7) { animation-delay: 0.4s; }
+        .unit-card:nth-child(8) { animation-delay: 0.45s; }
+        .unit-card:nth-child(9) { animation-delay: 0.5s; }
+        .unit-card:nth-child(10) { animation-delay: 0.55s; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+            }
+
+            .header-title {
+                font-size: 1.5em;
+            }
+
+            .container {
+                padding: 100px 15px 30px;
+            }
+
+            .units-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .unit-header {
+                min-height: 150px;
+                padding: 20px;
+            }
+
+            .unit-number {
+                font-size: 60px;
+                bottom: 10px;
+                right: 15px;
+            }
+
+            .unit-title {
+                font-size: 1.5em;
+                padding-right: 50px;
+            }
+
+            .unit-subtitle {
+                padding-right: 50px;
+            }
+
+            .unit-card.expanded .sections-container {
+                max-height: 800px;
+            }
+
+            .activities-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header con botón de regreso -->
+    <div class="header">
+        <a href="landing.html" class="back-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M5 12L12 19M5 12L12 5"/>
+            </svg>
+            Volver
+        </a>
+        <div class="header-title">Stratega</div>
+        <div style="width: 120px;"></div>
+    </div>
+
+    <div class="container">
+        <div class="page-intro">
+            <p>Elige la unidad que deseas estudiar</p>
+        </div>
+
+        <div class="units-grid">
+            <!-- Unidad 1 -->
+            <div class="unit-card" onclick="toggleUnit(event, this)">
+                <div class="unit-header">
+                    <div class="unit-content">
+                        <h3 class="unit-title">Saludos</h3>
+                        <p class="unit-subtitle">Aprende a presentarte y saludar en diferentes contextos</p>
+                    </div>
+                    <div class="unit-number">1</div>
+                    <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="sections-container">
+                    <div class="sections-list">
+                        <div class="section-item" onclick="goToSection(event, 1, 'A')">
+                            <span class="section-code">1A</span>
+                            <span class="section-title">Hola, ¿qué tal?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 1, 'B')">
+                            <span class="section-code">1B</span>
+                            <span class="section-title">¿De dónde eres?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 1, 'C')">
+                            <span class="section-code">1C</span>
+                            <span class="section-title">¿A qué te dedicas?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 1, 'D')">
+                            <span class="section-code">1D</span>
+                            <span class="section-title">Comunicación y cultura</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 1, 'E')">
+                            <span class="section-code">1E</span>
+                            <span class="section-title">Autoevaluación</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unidad 2 -->
+            <div class="unit-card" onclick="toggleUnit(event, this)">
+                <div class="unit-header">
+                    <div class="unit-content">
+                        <h3 class="unit-title">Familias</h3>
+                        <p class="unit-subtitle">Vocabulario familiar y relaciones personales</p>
+                    </div>
+                    <div class="unit-number">2</div>
+                    <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="sections-container">
+                    <div class="sections-list">
+                        <div class="section-item" onclick="goToSection(event, 2, 'A')">
+                            <span class="section-code">2A</span>
+                            <span class="section-title">Esta es mi familia</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 2, 'B')">
+                            <span class="section-code">2B</span>
+                            <span class="section-title">¿Cómo es tu familia?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 2, 'C')">
+                            <span class="section-code">2C</span>
+                            <span class="section-title">¿Cuántos años tienes?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 2, 'D')">
+                            <span class="section-code">2D</span>
+                            <span class="section-title">Comunicación y cultura</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 2, 'E')">
+                            <span class="section-code">2E</span>
+                            <span class="section-title">Autoevaluación</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unidad 3 -->
+            <div class="unit-card" onclick="toggleUnit(event, this)">
+                <div class="unit-header">
+                    <div class="unit-content">
+                        <h3 class="unit-title">El trabajo</h3>
+                        <p class="unit-subtitle">Profesiones y lugares de trabajo</p>
+                    </div>
+                    <div class="unit-number">3</div>
+                    <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="sections-container">
+                    <div class="sections-list">
+                        <div class="section-item" onclick="goToSection(event, 3, 'A')">
+                            <span class="section-code">3A</span>
+                            <span class="section-title">¿En qué trabajas?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 3, 'B')">
+                            <span class="section-code">3B</span>
+                            <span class="section-title">Mi día de trabajo</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 3, 'C')">
+                            <span class="section-code">3C</span>
+                            <span class="section-title">¿Dónde trabajas?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 3, 'D')">
+                            <span class="section-code">3D</span>
+                            <span class="section-title">Comunicación y cultura</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 3, 'E')">
+                            <span class="section-code">3E</span>
+                            <span class="section-title">Autoevaluación</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unidad 4 -->
+            <div class="unit-card" onclick="toggleUnit(event, this)">
+                <div class="unit-header">
+                    <div class="unit-content">
+                        <h3 class="unit-title">La casa</h3>
+                        <p class="unit-subtitle">Habitaciones y muebles del hogar</p>
+                    </div>
+                    <div class="unit-number">4</div>
+                    <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="sections-container">
+                    <div class="sections-list">
+                        <div class="section-item" onclick="goToSection(event, 4, 'A')">
+                            <span class="section-code">4A</span>
+                            <span class="section-title">Mi casa</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 4, 'B')">
+                            <span class="section-code">4B</span>
+                            <span class="section-title">¿Dónde vives?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 4, 'C')">
+                            <span class="section-code">4C</span>
+                            <span class="section-title">Los muebles</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 4, 'D')">
+                            <span class="section-code">4D</span>
+                            <span class="section-title">Comunicación y cultura</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 4, 'E')">
+                            <span class="section-code">4E</span>
+                            <span class="section-title">Autoevaluación</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unidad 5 -->
+            <div class="unit-card" onclick="toggleUnit(event, this)">
+                <div class="unit-header">
+                    <div class="unit-content">
+                        <h3 class="unit-title">Comer</h3>
+                        <p class="unit-subtitle">Comidas, bebidas y restaurantes</p>
+                    </div>
+                    <div class="unit-number">5</div>
+                    <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="sections-container">
+                    <div class="sections-list">
+                        <div class="section-item" onclick="goToSection(event, 5, 'A')">
+                            <span class="section-code">5A</span>
+                            <span class="section-title">¿Qué desayunas?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 5, 'B')">
+                            <span class="section-code">5B</span>
+                            <span class="section-title">En el restaurante</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 5, 'C')">
+                            <span class="section-code">5C</span>
+                            <span class="section-title">Me gusta la comida española</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 5, 'D')">
+                            <span class="section-code">5D</span>
+                            <span class="section-title">Comunicación y cultura</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 5, 'E')">
+                            <span class="section-code">5E</span>
+                            <span class="section-title">Autoevaluación</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unidad 6 -->
+            <div class="unit-card" onclick="toggleUnit(event, this)">
+                <div class="unit-header">
+                    <div class="unit-content">
+                        <h3 class="unit-title">El barrio</h3>
+                        <p class="unit-subtitle">Lugares y direcciones en la ciudad</p>
+                    </div>
+                    <div class="unit-number">6</div>
+                    <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="sections-container">
+                    <div class="sections-list">
+                        <div class="section-item" onclick="goToSection(event, 6, 'A')">
+                            <span class="section-code">6A</span>
+                            <span class="section-title">Mi barrio</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 6, 'B')">
+                            <span class="section-code">6B</span>
+                            <span class="section-title">¿Dónde está?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 6, 'C')">
+                            <span class="section-code">6C</span>
+                            <span class="section-title">¿Cómo llego?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 6, 'D')">
+                            <span class="section-code">6D</span>
+                            <span class="section-title">Comunicación y cultura</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 6, 'E')">
+                            <span class="section-code">6E</span>
+                            <span class="section-title">Autoevaluación</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unidad 7 -->
+            <div class="unit-card" onclick="toggleUnit(event, this)">
+                <div class="unit-header">
+                    <div class="unit-content">
+                        <h3 class="unit-title">Salir con los amigos</h3>
+                        <p class="unit-subtitle">Tiempo libre y actividades sociales</p>
+                    </div>
+                    <div class="unit-number">7</div>
+                    <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="sections-container">
+                    <div class="sections-list">
+                        <div class="section-item" onclick="toggleSection(event, this)" data-unit="7" data-section="A">
+                            <span class="section-code">7A</span>
+                            <span class="section-title">¿Dónde quedamos?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="activities-container">
+                            <div class="activities-grid">
+                                <div class="activity-box" onclick="showAIProposal(event, 7, 'A', 1)">1</div>
+                                <div class="activity-box" onclick="goToActivity(event, 7, 'A', 2)">2</div>
+                                <div class="activity-box" onclick="goToActivity(event, 7, 'A', 3)">3</div>
+                                <div class="activity-box" onclick="goToActivity(event, 7, 'A', 4)">4</div>
+                                <div class="activity-box" onclick="goToActivity(event, 7, 'A', 5)">5</div>
+                                <div class="activity-box" onclick="goToActivity(event, 7, 'A', 6)">6</div>
+                                <div class="activity-box" onclick="goToActivity(event, 7, 'A', 7)">7</div>
+                                <div class="activity-box" onclick="goToActivity(event, 7, 'A', 8)">8</div>
+                                <div class="activity-box" onclick="goToActivity(event, 7, 'A', 9)">9</div>
+                            </div>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 7, 'B')">
+                            <span class="section-code">7B</span>
+                            <span class="section-title">¿Qué estás haciendo?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 7, 'C')">
+                            <span class="section-code">7C</span>
+                            <span class="section-title">¿Cómo es?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 7, 'D')">
+                            <span class="section-code">7D</span>
+                            <span class="section-title">Comunicación y cultura</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 7, 'E')">
+                            <span class="section-code">7E</span>
+                            <span class="section-title">Autoevaluación</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unidad 8 -->
+            <div class="unit-card" onclick="toggleUnit(event, this)">
+                <div class="unit-header">
+                    <div class="unit-content">
+                        <h3 class="unit-title">De vacaciones</h3>
+                        <p class="unit-subtitle">Viajes, destinos y planificación</p>
+                    </div>
+                    <div class="unit-number">8</div>
+                    <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="sections-container">
+                    <div class="sections-list">
+                        <div class="section-item" onclick="goToSection(event, 8, 'A')">
+                            <span class="section-code">8A</span>
+                            <span class="section-title">¿Adónde vas de vacaciones?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 8, 'B')">
+                            <span class="section-code">8B</span>
+                            <span class="section-title">¿Qué tiempo hace?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 8, 'C')">
+                            <span class="section-code">8C</span>
+                            <span class="section-title">¿Qué hiciste ayer?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 8, 'D')">
+                            <span class="section-code">8D</span>
+                            <span class="section-title">Comunicación y cultura</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 8, 'E')">
+                            <span class="section-code">8E</span>
+                            <span class="section-title">Autoevaluación</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unidad 9 -->
+            <div class="unit-card" onclick="toggleUnit(event, this)">
+                <div class="unit-header">
+                    <div class="unit-content">
+                        <h3 class="unit-title">Compras</h3>
+                        <p class="unit-subtitle">Tiendas, precios y productos</p>
+                    </div>
+                    <div class="unit-number">9</div>
+                    <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="sections-container">
+                    <div class="sections-list">
+                        <div class="section-item" onclick="goToSection(event, 9, 'A')">
+                            <span class="section-code">9A</span>
+                            <span class="section-title">¿Cuánto cuesta?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 9, 'B')">
+                            <span class="section-code">9B</span>
+                            <span class="section-title">De compras</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 9, 'C')">
+                            <span class="section-code">9C</span>
+                            <span class="section-title">¿Qué talla usas?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 9, 'D')">
+                            <span class="section-code">9D</span>
+                            <span class="section-title">Comunicación y cultura</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 9, 'E')">
+                            <span class="section-code">9E</span>
+                            <span class="section-title">Autoevaluación</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unidad 10 -->
+            <div class="unit-card" onclick="toggleUnit(event, this)">
+                <div class="unit-header">
+                    <div class="unit-content">
+                        <h3 class="unit-title">Salud y enfermedad</h3>
+                        <p class="unit-subtitle">El cuerpo, síntomas y cuidados médicos</p>
+                    </div>
+                    <div class="unit-number">10</div>
+                    <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="sections-container">
+                    <div class="sections-list">
+                        <div class="section-item" onclick="goToSection(event, 10, 'A')">
+                            <span class="section-code">10A</span>
+                            <span class="section-title">Me duele la cabeza</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 10, 'B')">
+                            <span class="section-code">10B</span>
+                            <span class="section-title">En la farmacia</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 10, 'C')">
+                            <span class="section-code">10C</span>
+                            <span class="section-title">Consejos de salud</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 10, 'D')">
+                            <span class="section-code">10D</span>
+                            <span class="section-title">Comunicación y cultura</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 10, 'E')">
+                            <span class="section-code">10E</span>
+                            <span class="section-title">Autoevaluación</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal del bot de IA -->
+    <div class="ai-modal" id="aiModal" onclick="closeAIModal(event)">
+        <!-- PROPUESTA 1: Diseño tipo chat -->
+        <div class="ai-container-1" id="proposal1" onclick="event.stopPropagation()">
+            <div class="ai-header-1">
+                <div class="ai-avatar-1">🤖</div>
+                <div class="ai-title-1">
+                    <h3>Asistente IA</h3>
+                    <p>Esta es mi propuesta para esta actividad</p>
+                </div>
+                <button class="close-btn" onclick="closeAIModal(event)">✕</button>
+            </div>
+            <div class="ai-content-1">
+                <p><strong>Actividad 1: ¿Dónde quedamos?</strong></p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.</p>
+                <div class="ai-options-1">
+                    <div class="ai-option-1" onclick="selectOption(event, 'traduccion')">
+                        <div class="ai-option-icon">🔤</div>
+                        <div class="ai-option-text">
+                            <h4>Traducción</h4>
+                            <p>Ver en tu idioma</p>
+                        </div>
+                    </div>
+                    <div class="ai-option-1" onclick="selectOption(event, 'ejemplos')">
+                        <div class="ai-option-icon">💡</div>
+                        <div class="ai-option-text">
+                            <h4>Ejemplos A1</h4>
+                            <p>Frases modelo</p>
+                        </div>
+                    </div>
+                    <div class="ai-option-1" onclick="selectOption(event, 'sinonimos')">
+                        <div class="ai-option-icon">🔄</div>
+                        <div class="ai-option-text">
+                            <h4>Sinónimos</h4>
+                            <p>Vocabulario alternativo</p>
+                        </div>
+                    </div>
+                    <div class="ai-option-1" onclick="selectOption(event, 'pronunciacion')">
+                        <div class="ai-option-icon">🎤</div>
+                        <div class="ai-option-text">
+                            <h4>Pronunciación</h4>
+                            <p>Cómo se dice</p>
+                        </div>
+                    </div>
+                    <div class="ai-option-1" onclick="selectOption(event, 'plantillas')">
+                        <div class="ai-option-icon">📝</div>
+                        <div class="ai-option-text">
+                            <h4>Plantillas</h4>
+                            <p>Estructuras para responder</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROPUESTA 2: Diseño tarjetas flotantes -->
+        <div class="ai-container-2" id="proposal2" onclick="event.stopPropagation()">
+            <button class="close-btn" style="position: absolute; top: 20px; right: 20px; background: #f0f0f0; color: #333;" onclick="closeAIModal(event)">✕</button>
+            <div class="ai-header-2">
+                <div class="ai-avatar-2">🤖</div>
+                <h2 style="margin: 10px 0; color: #333;">Asistente IA</h2>
+                <p style="color: #666; margin: 0;">Esta es mi propuesta para esta actividad</p>
+                <p style="color: #999; margin-top: 10px; font-size: 0.9em;">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            </div>
+            <div class="ai-cards-2">
+                <div class="ai-card-2" onclick="selectOption(event, 'traduccion')">
+                    <div style="font-size: 32px; margin-bottom: 10px;">🔤</div>
+                    <h4 style="margin: 0 0 5px; color: #333;">Traducción</h4>
+                    <p style="margin: 0; color: #666; font-size: 0.9em;">Ver en tu idioma</p>
+                </div>
+                <div class="ai-card-2" onclick="selectOption(event, 'ejemplos')">
+                    <div style="font-size: 32px; margin-bottom: 10px;">💡</div>
+                    <h4 style="margin: 0 0 5px; color: #333;">Ejemplos A1</h4>
+                    <p style="margin: 0; color: #666; font-size: 0.9em;">Frases modelo</p>
+                </div>
+                <div class="ai-card-2" onclick="selectOption(event, 'sinonimos')">
+                    <div style="font-size: 32px; margin-bottom: 10px;">🔄</div>
+                    <h4 style="margin: 0 0 5px; color: #333;">Sinónimos</h4>
+                    <p style="margin: 0; color: #666; font-size: 0.9em;">Vocabulario alternativo</p>
+                </div>
+                <div class="ai-card-2" onclick="selectOption(event, 'pronunciacion')">
+                    <div style="font-size: 32px; margin-bottom: 10px;">🎤</div>
+                    <h4 style="margin: 0 0 5px; color: #333;">Pronunciación</h4>
+                    <p style="margin: 0; color: #666; font-size: 0.9em;">Cómo se dice</p>
+                </div>
+                <div class="ai-card-2" onclick="selectOption(event, 'plantillas')">
+                    <div style="font-size: 32px; margin-bottom: 10px;">📝</div>
+                    <h4 style="margin: 0 0 5px; color: #333;">Plantillas</h4>
+                    <p style="margin: 0; color: #666; font-size: 0.9em;">Estructuras para responder</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROPUESTA 3: Diseño minimalista -->
+        <div class="ai-container-3" id="proposal3" onclick="event.stopPropagation()">
+            <div class="ai-header-3">
+                <span style="font-size: 24px;">🤖</span>
+                <div style="flex: 1;">
+                    <h3 style="margin: 0; color: #333; font-size: 1.1em;">Asistente IA</h3>
+                    <p style="margin: 5px 0 0; color: #666; font-size: 0.9em;">Esta es mi propuesta para esta actividad</p>
+                </div>
+                <span class="ai-badge-3">Actividad 1</span>
+                <button class="close-btn" style="background: #f0f0f0; color: #333;" onclick="closeAIModal(event)">✕</button>
+            </div>
+            <ul class="ai-list-3">
+                <li class="ai-item-3" onclick="selectOption(event, 'traduccion')">
+                    <span style="font-size: 20px;">🔤</span>
+                    <div>
+                        <div style="font-weight: 600; color: #333;">Traducción</div>
+                        <div style="color: #666; font-size: 0.9em; margin-top: 2px;">Ver en tu idioma</div>
+                    </div>
+                </li>
+                <li class="ai-item-3" onclick="selectOption(event, 'ejemplos')">
+                    <span style="font-size: 20px;">💡</span>
+                    <div>
+                        <div style="font-weight: 600; color: #333;">Ejemplos A1</div>
+                        <div style="color: #666; font-size: 0.9em; margin-top: 2px;">Frases modelo</div>
+                    </div>
+                </li>
+                <li class="ai-item-3" onclick="selectOption(event, 'sinonimos')">
+                    <span style="font-size: 20px;">🔄</span>
+                    <div>
+                        <div style="font-weight: 600; color: #333;">Sinónimos</div>
+                        <div style="color: #666; font-size: 0.9em; margin-top: 2px;">Vocabulario alternativo</div>
+                    </div>
+                </li>
+                <li class="ai-item-3" onclick="selectOption(event, 'pronunciacion')">
+                    <span style="font-size: 20px;">🎤</span>
+                    <div>
+                        <div style="font-weight: 600; color: #333;">Pronunciación</div>
+                        <div style="color: #666; font-size: 0.9em; margin-top: 2px;">Cómo se dice</div>
+                    </div>
+                </li>
+                <li class="ai-item-3" onclick="selectOption(event, 'plantillas')">
+                    <span style="font-size: 20px;">📝</span>
+                    <div>
+                        <div style="font-weight: 600; color: #333;">Plantillas</div>
+                        <div style="color: #666; font-size: 0.9em; margin-top: 2px;">Estructuras para responder</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- PROPUESTA 4: Diseño burbuja -->
+        <div class="ai-container-4" id="proposal4" onclick="event.stopPropagation()">
+            <div class="ai-bubble-4">
+                <button class="close-btn" style="float: right; background: #f0f0f0; color: #333;" onclick="closeAIModal(event)">✕</button>
+                <div class="ai-bubble-header-4">
+                    <div class="ai-bubble-avatar-4">🤖</div>
+                    <div>
+                        <div class="ai-bubble-name-4">Asistente IA</div>
+                        <div style="color: #666; font-size: 0.85em;">ahora mismo</div>
+                    </div>
+                </div>
+                <p style="margin: 0; color: #333;"><strong>Esta es mi propuesta para esta actividad</strong></p>
+                <p style="margin: 10px 0; color: #666; font-size: 0.95em;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam, quis nostrud exercitation.</p>
+                <div class="ai-options-4">
+                    <div class="ai-pill-4" onclick="selectOption(event, 'traduccion')">
+                        <span>🔤</span>
+                        <span>Traducción</span>
+                    </div>
+                    <div class="ai-pill-4" onclick="selectOption(event, 'ejemplos')">
+                        <span>💡</span>
+                        <span>Ejemplos A1</span>
+                    </div>
+                    <div class="ai-pill-4" onclick="selectOption(event, 'sinonimos')">
+                        <span>🔄</span>
+                        <span>Sinónimos</span>
+                    </div>
+                    <div class="ai-pill-4" onclick="selectOption(event, 'pronunciacion')">
+                        <span>🎤</span>
+                        <span>Pronunciación</span>
+                    </div>
+                    <div class="ai-pill-4" onclick="selectOption(event, 'plantillas')">
+                        <span>📝</span>
+                        <span>Plantillas</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Selector de propuesta -->
+    <div class="proposal-selector" id="proposalSelector">
+        <button class="proposal-btn active" onclick="switchProposal(1)">1</button>
+        <button class="proposal-btn" onclick="switchProposal(2)">2</button>
+        <button class="proposal-btn" onclick="switchProposal(3)">3</button>
+        <button class="proposal-btn" onclick="switchProposal(4)">4</button>
+    </div>
+
+    <script>
+        let currentExpanded = null;
+
+        function toggleUnit(event, card) {
+            // Si el clic fue en una sección, no hacer nada
+            if (event.target.closest('.section-item')) {
+                return;
+            }
+
+            // Si hay otra tarjeta expandida, la contraemos
+            if (currentExpanded && currentExpanded !== card) {
+                currentExpanded.classList.remove('expanded');
+            }
+
+            // Toggle de la tarjeta actual
+            card.classList.toggle('expanded');
+
+            // Actualizar la referencia
+            if (card.classList.contains('expanded')) {
+                currentExpanded = card;
+            } else {
+                currentExpanded = null;
+            }
+        }
+
+        let currentSection = null;
+
+        function toggleSection(event, sectionElement) {
+            event.stopPropagation();
+
+            // Si hay otra sección activa, la desactivamos
+            if (currentSection && currentSection !== sectionElement) {
+                currentSection.classList.remove('active');
+            }
+
+            // Toggle de la sección actual
+            sectionElement.classList.toggle('active');
+
+            // Actualizar referencia
+            if (sectionElement.classList.contains('active')) {
+                currentSection = sectionElement;
+            } else {
+                currentSection = null;
+            }
+        }
+
+        function goToSection(event, unitNumber, section) {
+            event.stopPropagation();
+            // Para secciones sin actividades, navegar directamente
+            console.log(`Navegando a Unidad ${unitNumber}, Sección ${section}`);
+            window.location.href = 'index.html';
+        }
+
+        function goToActivity(event, unitNumber, section, activityNumber) {
+            event.stopPropagation();
+            console.log(`Navegando a Unidad ${unitNumber}, Sección ${section}, Actividad ${activityNumber}`);
+            window.location.href = 'index.html';
+        }
+
+        let currentProposal = 1;
+
+        function showAIProposal(event, unitNumber, section, activityNumber) {
+            event.stopPropagation();
+
+            // Mostrar el modal
+            document.getElementById('aiModal').classList.add('active');
+            document.getElementById('proposalSelector').classList.add('active');
+
+            // Mostrar la propuesta activa
+            switchProposal(currentProposal);
+        }
+
+        function closeAIModal(event) {
+            if (event) event.stopPropagation();
+            document.getElementById('aiModal').classList.remove('active');
+            document.getElementById('proposalSelector').classList.remove('active');
+        }
+
+        function switchProposal(num) {
+            currentProposal = num;
+
+            // Ocultar todas las propuestas
+            document.querySelectorAll('[id^="proposal"]').forEach(p => {
+                p.classList.remove('active');
+            });
+
+            // Mostrar la propuesta seleccionada
+            document.getElementById(`proposal${num}`).classList.add('active');
+
+            // Actualizar botones
+            document.querySelectorAll('.proposal-btn').forEach((btn, index) => {
+                btn.classList.toggle('active', index === num - 1);
+            });
+        }
+
+        function selectOption(event, option) {
+            event.stopPropagation();
+            console.log(`Opción seleccionada: ${option}`);
+            // Aquí se procesaría la opción seleccionada
+            // Por ahora solo cierra el modal después de un breve delay
+            setTimeout(() => {
+                closeAIModal();
+                window.location.href = 'index.html';
+            }, 300);
+        }
+
+        // Animación de entrada suave
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '0';
+            setTimeout(() => {
+                document.body.style.transition = 'opacity 0.5s ease';
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+
+        // Cerrar acordeones al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.unit-card') && currentExpanded) {
+                currentExpanded.classList.remove('expanded');
+                currentExpanded = null;
+            }
+        });
+    </script>
+</body>
+</html>

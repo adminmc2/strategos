@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stratega - Agentes y Estrategias con IA</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            padding: 20px 50px;
+            display: flex;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: transparent;
+            border: 2px solid #333;
+            border-radius: 25px;
+            color: #333;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .back-button:hover {
+            background: #333;
+            color: white;
+            transform: translateX(-5px);
+        }
+        .header-title {
+            flex: 1;
+            text-align: center;
+            font-size: 2em;
+            font-weight: 700;
+            color: #333;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 120px 20px 40px;
+        }
+        .page-intro {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .page-intro p {
+            font-size: 1.2em;
+            color: #666;
+        }
+        .units-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        .unit-card {
+            background: #ffffff;
+            border-radius: 20px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid #f0f0f0;
+            animation: fadeInUp 0.6s ease backwards;
+        }
+        .unit-card:hover:not(.expanded) {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+        .unit-card.expanded {
+            grid-column: span 2;
+            cursor: default;
+        }
+        .unit-header {
+            padding: 30px;
+            position: relative;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+        .unit-card.expanded .unit-header {
+            background: #f8f8f8;
+            min-height: auto;
+            padding: 20px 30px;
+        }
+        .unit-number {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 80px;
+            font-weight: 900;
+            opacity: 0.15;
+            line-height: 1;
+            pointer-events: none;
+            z-index: 0;
+            transition: all 0.3s ease;
+        }
+        .unit-card.expanded .unit-number {
+            font-size: 40px;
+            opacity: 0.3;
+            top: 20px;
+            bottom: auto;
+        }
+        .unit-content { position: relative; z-index: 1; }
+        .unit-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            padding-right: 60px;
+        }
+        .unit-card.expanded .unit-title { font-size: 1.5em; margin-bottom: 5px; }
+        .unit-subtitle {
+            color: #666;
+            font-size: 1em;
+            line-height: 1.4;
+            padding-right: 60px;
+        }
+        .unit-card.expanded .unit-subtitle { font-size: 0.9em; }
+        .expand-icon {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 24px;
+            height: 24px;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+        }
+        .unit-card:hover .expand-icon { opacity: 0.7; transform: translateX(0); }
+        .unit-card.expanded .expand-icon { opacity: 1; transform: rotate(180deg); }
+        .sections-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+            background: white;
+        }
+        .unit-card.expanded .sections-container {
+            max-height: 600px;
+            border-top: 1px solid #f0f0f0;
+        }
+        .sections-list { padding: 20px; }
+        .section-item {
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            background: #f8f8f8;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-left: 3px solid transparent;
+        }
+        .section-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .section-item:last-child { margin-bottom: 0; }
+        .section-code { font-weight: 700; margin-right: 15px; font-size: 1.1em; }
+        .section-title { flex: 1; color: #555; }
+        .section-arrow {
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+            color: #999;
+        }
+        .section-item:hover .section-arrow { opacity: 1; transform: translateX(0); }
+
+        /* Activities Grid */
+        .activities-grid {
+            display: none;
+            grid-template-columns: repeat(3, 80px);
+            gap: 10px;
+            padding: 15px 20px;
+            margin-top: 10px;
+            margin-left: 40px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            animation: slideDown 0.3s ease;
+            width: fit-content;
+        }
+        .activities-grid.active { display: grid; }
+        .activity-square {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border: 2px solid rgba(156, 39, 176, 0.25);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #9C27B0;
+            position: relative;
+            overflow: hidden;
+        }
+        .activity-square:hover {
+            transform: translateY(-3px);
+            border-color: #9C27B0;
+            box-shadow: 0 5px 15px rgba(156, 39, 176, 0.2);
+            background: rgba(156, 39, 176, 0.05);
+        }
+
+        /* Loading */
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f0f0f0;
+            border-top-color: #9C27B0;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideDown {
+            from { opacity: 0; max-height: 0; }
+            to { opacity: 1; max-height: 500px; }
+        }
+
+        /* Modal de IA */
+        .ai-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+        }
+        .ai-modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ai-bubble {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            height: 70vh;
+            max-height: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+            animation: bubbleIn 0.4s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        @keyframes bubbleIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            animation: fadeIn 0.3s ease;
+        }
+        .message.eliana {
+            align-self: flex-start;
+            background: #f0f0f0;
+            color: #333;
+            line-height: 1.8;
+        }
+        .message.user {
+            align-self: flex-end;
+            background: #9C27B0;
+            color: white;
+        }
+        .message-header {
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 5px;
+            opacity: 0.8;
+        }
+        .chat-input-container {
+            padding: 15px 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            outline: none;
+            font-size: 0.95em;
+            transition: border-color 0.3s ease;
+        }
+        .chat-input:focus { border-color: #9C27B0; }
+        .send-btn {
+            background: #9C27B0;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .send-btn:hover { background: #7B1FA2; }
+        .send-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .ai-bubble-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .ai-header-info { display: flex; align-items: center; gap: 15px; }
+        .ai-bubble-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2em;
+        }
+        .ai-bubble-name { font-weight: 600; color: #333; }
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            color: #999;
+            cursor: pointer;
+            padding: 5px;
+            transition: all 0.3s ease;
+        }
+        .close-btn:hover { color: #333; transform: rotate(90deg); }
+        .ai-options { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .ai-pill {
+            padding: 12px 20px;
+            border-radius: 8px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95em;
+            color: #333;
+        }
+        .ai-pill:hover {
+            background: rgba(156, 39, 176, 0.05);
+            border-color: #9C27B0;
+            color: #9C27B0;
+            transform: translateX(3px);
+        }
+        .ai-pill-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #9C27B0;
+        }
+        .thinking-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-style: italic;
+            padding: 8px 12px;
+            background: rgba(156, 39, 176, 0.05);
+            border-radius: 20px;
+            border: 1px solid rgba(156, 39, 176, 0.1);
+        }
+        .typing-dots { display: flex; gap: 5px; align-items: center; }
+        .typing-dots span {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #9C27B0;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+            box-shadow: 0 2px 4px rgba(156, 39, 176, 0.3);
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing {
+            0%, 60%, 100% { opacity: 0.3; transform: scale(0.8); }
+            30% { opacity: 1; transform: scale(1.1); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header { padding: 15px 20px; }
+            .header-title { font-size: 1.5em; }
+            .container { padding: 100px 15px 30px; }
+            .units-grid { grid-template-columns: 1fr; gap: 20px; }
+            .unit-header { min-height: 150px; padding: 20px; }
+            .unit-number { font-size: 60px; bottom: 10px; right: 15px; }
+            .unit-title { font-size: 1.5em; padding-right: 50px; }
+            .unit-subtitle { padding-right: 50px; }
+            .unit-card.expanded { grid-column: span 1; }
+            .unit-card.expanded .sections-container { max-height: 600px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="landing.html" class="back-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M5 12L12 19M5 12L12 5"/>
+            </svg>
+            Volver
+        </a>
+        <div class="header-title">Stratega</div>
+        <div style="width: 120px;"></div>
+    </div>
+
+    <div class="container">
+        <div class="page-intro">
+            <p>Elige la unidad que deseas estudiar</p>
+        </div>
+
+        <div class="units-grid" id="unitsGrid">
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de IA -->
+    <div class="ai-modal-overlay" id="aiModalOverlay" onclick="closeAIModal(event)">
+        <div class="ai-bubble" onclick="event.stopPropagation()">
+            <div class="chat-container">
+                <div class="ai-bubble-header">
+                    <div class="ai-header-info">
+                        <div class="ai-bubble-avatar">E</div>
+                        <div>
+                            <div class="ai-bubble-name">Eliana</div>
+                            <div style="color: #666; font-size: 0.85em;">Asistente virtual</div>
+                        </div>
+                    </div>
+                    <button class="close-btn" onclick="closeAIModal(event)">×</button>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message eliana">
+                        <div class="message-header">Eliana</div>
+                        <div>Hola! Estas son mis propuestas para esta actividad:</div>
+                    </div>
+                    <div class="ai-options" style="padding: 0 20px;">
+                        <div class="ai-pill" onclick="selectOption(event, 'traduccion')">
+                            <span class="ai-pill-icon">T</span>
+                            <span>Traducción</span>
+                        </div>
+                        <div class="ai-pill" onclick="selectOption(event, 'ejemplos')">
+                            <span class="ai-pill-icon">E</span>
+                            <span>Más ejemplos</span>
+                        </div>
+                        <div class="ai-pill" onclick="selectOption(event, 'otras_expresiones')">
+                            <span class="ai-pill-icon">O</span>
+                            <span>Mi oportunidad</span>
+                        </div>
+                        <div class="ai-pill" onclick="selectOption(event, 'suerte')">
+                            <span class="ai-pill-icon">V</span>
+                            <span>Voy a tener suerte</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Escribe tu mensaje..." onkeypress="handleEnterKey(event)">
+                    <button class="send-btn" onclick="sendMessage()" id="sendBtn">
+                        <span>→</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let currentExpanded = null;
+        let unitsData = [];
+        let chatHistory = [];
+        let currentActivityContext = "";
+
+        // Colores por unidad
+        const unitColors = {
+            1: '#FDB813', 2: '#00B4C5', 3: '#F58220', 4: '#8BC34A', 5: '#E91E63',
+            6: '#00B4C5', 7: '#9C27B0', 8: '#8BC34A', 9: '#E91E63', 10: '#00B4C5'
+        };
+
+        // Cargar datos al inicio
+        document.addEventListener('DOMContentLoaded', loadUnits);
+
+        async function loadUnits() {
+            try {
+                const response = await fetch('/api/units');
+                if (!response.ok) throw new Error('Error loading units');
+                unitsData = await response.json();
+                renderUnits();
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('unitsGrid').innerHTML = '<p style="text-align:center;color:#999;">Error al cargar las unidades. Recarga la página.</p>';
+            }
+        }
+
+        function renderUnits() {
+            const grid = document.getElementById('unitsGrid');
+            grid.innerHTML = unitsData.map((unit, index) => `
+                <div class="unit-card" onclick="toggleUnit(event, this)" data-unit="${unit.unit_number}" style="animation-delay: ${index * 0.05}s; border-color: ${unit.color}30;">
+                    <div class="unit-header" style="background: linear-gradient(135deg, ${unit.color}08 0%, ${unit.color}02 100%);">
+                        <div class="unit-content">
+                            <h3 class="unit-title">${unit.title}</h3>
+                            <p class="unit-subtitle">${unit.subtitle}</p>
+                        </div>
+                        <div class="unit-number" style="color: ${unit.color};">${unit.unit_number}</div>
+                        <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="sections-container">
+                        <div class="sections-list">
+                            ${unit.sections.map(section => `
+                                <div class="section-item" onclick="${section.has_activities ? `toggleActivities(event, '${section.section_code}')` : `goToSection(event, ${unit.unit_number}, '${section.section_code.slice(-1)}')`}" style="--unit-color: ${unit.color};">
+                                    <span class="section-code" style="color: ${unit.color};">${section.section_code}</span>
+                                    <span class="section-title">${section.title}</span>
+                                    <span class="section-arrow">→</span>
+                                </div>
+                                ${section.has_activities ? `
+                                <div class="activities-grid" id="activities-${section.section_code}" style="background: ${unit.color}08;">
+                                    ${[1,2,3,4,5,6,7,8,9].map(n => `
+                                        <div class="activity-square" onclick="showAIModal(event, ${section.id}, ${n})" style="border-color: ${unit.color}40; color: ${unit.color};">${n}</div>
+                                    `).join('')}
+                                </div>
+                                ` : ''}
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleUnit(event, card) {
+            if (event.target.closest('.section-item') || event.target.closest('.activity-square')) return;
+            if (currentExpanded && currentExpanded !== card) {
+                currentExpanded.classList.remove('expanded');
+            }
+            card.classList.toggle('expanded');
+            currentExpanded = card.classList.contains('expanded') ? card : null;
+        }
+
+        function goToSection(event, unitNumber, section) {
+            event.stopPropagation();
+            console.log(`Navegando a Unidad ${unitNumber}, Sección ${section}`);
+        }
+
+        function toggleActivities(event, sectionId) {
+            event.stopPropagation();
+            const activitiesGrid = document.getElementById(`activities-${sectionId}`);
+            if (activitiesGrid) {
+                activitiesGrid.classList.toggle('active');
+            }
+        }
+
+        async function showAIModal(event, sectionId, activityNumber) {
+            event.stopPropagation();
+
+            // Cargar contexto de la actividad
+            try {
+                const response = await fetch(`/api/activities?sectionId=${sectionId}`);
+                if (response.ok) {
+                    const activities = await response.json();
+                    const activity = activities.find(a => a.activity_number === activityNumber);
+                    if (activity) {
+                        currentActivityContext = `${activity.context}\nPregunta: ${activity.question || ''}\nOpciones: ${activity.options || ''}`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading activity:', error);
+                currentActivityContext = "Actividad 1 - Sección 7A: ¿Dónde quedamos?\nPregunta: ¿Te gusta salir con tus amigos? ¿Dónde vais?\nOpciones: al cine, a casa de otros amigos, a tomar algo, a comer, a bailar, a jugar al baloncesto";
+            }
+
+            const overlay = document.getElementById('aiModalOverlay');
+            if (overlay) overlay.classList.add('active');
+        }
+
+        function closeAIModal(event) {
+            if (event) event.stopPropagation();
+            const overlay = document.getElementById('aiModalOverlay');
+            if (overlay) overlay.classList.remove('active');
+            chatHistory = [];
+            const optionsDiv = document.querySelector('.ai-options');
+            if (optionsDiv) optionsDiv.style.display = 'flex';
+            const messagesDiv = document.getElementById('chatMessages');
+            if (messagesDiv) {
+                const messages = messagesDiv.querySelectorAll('.message');
+                for (let i = 1; i < messages.length; i++) messages[i].remove();
+            }
+        }
+
+        // DeepSeek API
+        const DEEPSEEK_API_KEY = 'sk-a4bcd50e96a04dc99e95ae592df4c9d4';
+        const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
+
+        async function selectOption(event, option) {
+            event.stopPropagation();
+            const optionsDiv = document.querySelector('.ai-options');
+            if (optionsDiv) optionsDiv.style.display = 'none';
+
+            let userMessage = '';
+            let prompt = '';
+            switch(option) {
+                case 'traduccion':
+                    userMessage = "Quiero ver la traducción";
+                    prompt = `El usuario quiere traducción. Responde EXACTAMENTE: "¿En qué idioma quieres la traducción?"`;
+                    break;
+                case 'ejemplos':
+                    userMessage = "Muéstrame más ejemplos";
+                    prompt = `El usuario quiere más ejemplos. Responde: "Para darte los mejores ejemplos, ¿qué edad tienes?"`;
+                    break;
+                case 'otras_expresiones':
+                    userMessage = "Esta es mi oportunidad";
+                    prompt = `Responde: "¡Genial! ¿Qué expresiones quieres decir? Escríbelas en tu idioma y yo te las traduzco al español."`;
+                    break;
+                case 'suerte':
+                    userMessage = "Voy a tener suerte";
+                    prompt = `Haz una pregunta creativa para personalizar el ejercicio relacionado con lugares.`;
+                    break;
+            }
+
+            addMessageToChat(userMessage, 'user');
+            await callDeepSeek(prompt);
+        }
+
+        async function callDeepSeek(prompt) {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message eliana thinking-message';
+            loadingDiv.innerHTML = `<div class="message-header">Eliana</div><div class="thinking-indicator"><div class="typing-dots"><span></span><span></span><span></span></div><span style="margin-left: 5px;">Pensando...</span></div>`;
+            document.getElementById('chatMessages').appendChild(loadingDiv);
+            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+
+            try {
+                const response = await fetch(DEEPSEEK_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: 'deepseek-chat',
+                        messages: [
+                            { role: 'system', content: `Eres Eliana, asistente de español A1. Contexto: ${currentActivityContext}. Sé breve y didáctica.` },
+                            ...chatHistory,
+                            { role: 'user', content: prompt }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 300
+                    })
+                });
+
+                if (loadingDiv.parentNode) loadingDiv.remove();
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const aiResponse = data.choices[0].message.content;
+                    addMessageToChat(aiResponse, 'eliana');
+                    chatHistory.push({role: 'user', content: prompt});
+                    chatHistory.push({role: 'assistant', content: aiResponse});
+                } else {
+                    addMessageToChat('Lo siento, hubo un error. Intenta de nuevo.', 'eliana');
+                }
+            } catch (error) {
+                if (loadingDiv.parentNode) loadingDiv.remove();
+                addMessageToChat('Error de conexión.', 'eliana');
+            }
+        }
+
+        function addMessageToChat(text, sender) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            if (sender === 'eliana') {
+                const formattedText = text.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+                messageDiv.innerHTML = `<div class="message-header">Eliana</div><div>${formattedText}</div>`;
+            } else {
+                messageDiv.innerHTML = `<div>${text}</div>`;
+            }
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            input.disabled = true;
+            document.getElementById('sendBtn').disabled = true;
+            addMessageToChat(message, 'user');
+            input.value = '';
+
+            await callDeepSeek(message);
+
+            input.disabled = false;
+            document.getElementById('sendBtn').disabled = false;
+            input.focus();
+        }
+
+        function handleEnterKey(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.unit-card') && currentExpanded) {
+                currentExpanded.classList.remove('expanded');
+                currentExpanded = null;
+            }
+        });
+    </script>
+</body>
+</html>

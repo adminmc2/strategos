@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stratega - Agentes y Estrategias con IA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header similar al landing */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            padding: 20px 50px;
+            display: flex;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: transparent;
+            border: 2px solid #333;
+            border-radius: 25px;
+            color: #333;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            background: #333;
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        .header-title {
+            flex: 1;
+            text-align: center;
+            font-size: 2em;
+            font-weight: 700;
+            color: #333;
+        }
+
+        /* Contenedor principal */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 120px 20px 40px;
+        }
+
+        .page-intro {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .page-intro p {
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        /* Grid de unidades */
+        .units-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        /* Tarjetas de unidad */
+        .unit-card {
+            background: #ffffff;
+            border-radius: 20px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid #f0f0f0;
+        }
+
+        .unit-card.expanded {
+            grid-column: span 2;
+            cursor: default;
+        }
+
+        @media (max-width: 768px) {
+            .unit-card.expanded {
+                grid-column: span 1;
+            }
+        }
+
+        .unit-header {
+            padding: 30px;
+            position: relative;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .unit-card.expanded .unit-header {
+            background: #f8f8f8;
+            min-height: auto;
+            padding: 20px 30px;
+        }
+
+        /* Colores específicos para Unidad 7 - Púrpura */
+        .unit-card:nth-child(7) .unit-header {
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.05) 0%, rgba(156, 39, 176, 0.02) 100%);
+        }
+        .unit-card:nth-child(7) {
+            border-color: rgba(156, 39, 176, 0.3);
+        }
+        .unit-card:nth-child(7):hover {
+            border-color: #9C27B0;
+        }
+        .unit-card:nth-child(7).expanded {
+            border-color: #9C27B0;
+        }
+        .unit-card:nth-child(7) .unit-number {
+            color: #9C27B0;
+        }
+        .unit-card:nth-child(7) .section-item:hover {
+            background: rgba(156, 39, 176, 0.1);
+            border-left-color: #9C27B0;
+        }
+
+        .unit-card:not(.expanded):hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+
+        /* Número grande en la esquina inferior derecha */
+        .unit-number {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 80px;
+            font-weight: 900;
+            opacity: 0.15;
+            line-height: 1;
+            pointer-events: none;
+            z-index: 0;
+            transition: all 0.3s ease;
+        }
+
+        .unit-card.expanded .unit-number {
+            font-size: 40px;
+            opacity: 0.3;
+            top: 20px;
+            bottom: auto;
+        }
+
+        /* Contenido de la tarjeta */
+        .unit-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .unit-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            padding-right: 60px;
+        }
+
+        .unit-card.expanded .unit-title {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .unit-subtitle {
+            color: #666;
+            font-size: 1em;
+            line-height: 1.4;
+            padding-right: 60px;
+        }
+
+        .unit-card.expanded .unit-subtitle {
+            font-size: 0.9em;
+        }
+
+        /* Indicador de expansión */
+        .expand-icon {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 24px;
+            height: 24px;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .unit-card:hover .expand-icon {
+            opacity: 0.7;
+            transform: translateX(0);
+        }
+
+        .unit-card.expanded .expand-icon {
+            opacity: 1;
+            transform: rotate(180deg);
+        }
+
+        /* Secciones del acordeón */
+        .sections-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+            background: white;
+        }
+
+        .unit-card.expanded .sections-container {
+            max-height: 500px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .sections-list {
+            padding: 20px;
+        }
+
+        .section-item {
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            background: #f8f8f8;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-left: 3px solid transparent;
+            position: relative;
+        }
+
+        .section-item.active {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .section-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .section-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-code {
+            font-weight: 700;
+            margin-right: 15px;
+            font-size: 1.1em;
+        }
+
+        /* Color del código de sección para Unidad 7 */
+        .unit-card:nth-child(7) .section-code {
+            color: #9C27B0;
+        }
+
+        .section-title {
+            flex: 1;
+            color: #555;
+        }
+
+        .section-arrow {
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+            color: #999;
+        }
+
+        .section-item:hover .section-arrow {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Contenedor de actividades */
+        .activities-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0;
+            margin: 0;
+        }
+
+        .section-item.active + .activities-container {
+            max-height: 500px;
+            padding: 20px 20px 10px 20px;
+        }
+
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 12px;
+            max-width: 100%;
+        }
+
+        .activity-box {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2em;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            min-height: 80px;
+        }
+
+        .activity-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .activity-box::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .activity-box:hover::before {
+            opacity: 1;
+        }
+
+        /* Colores de actividades para Unidad 7 - Púrpura */
+        .unit-card:nth-child(7) .activity-box {
+            background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+            border: 2px solid rgba(156, 39, 176, 0.3);
+        }
+
+        .unit-card:nth-child(7) .activity-box:hover {
+            border-color: #9C27B0;
+            background: linear-gradient(135deg, #AB47BC 0%, #8E24AA 100%);
+        }
+
+        /* Modal del bot de IA - Diseño Burbuja */
+        .ai-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1003;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .ai-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .ai-container {
+            max-width: 500px;
+            width: 100%;
+            animation: popIn 0.4s ease;
+        }
+
+        .ai-bubble {
+            background: white;
+            border-radius: 20px 20px 5px 20px;
+            padding: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            margin-bottom: 15px;
+        }
+
+        .ai-bubble-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .ai-bubble-avatar {
+            width: 35px;
+            height: 35px;
+            background: #9C27B0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .ai-bubble-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .close-btn {
+            margin-left: auto;
+            background: #f0f0f0;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #e0e0e0;
+            transform: scale(1.1);
+        }
+
+        .ai-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .ai-pill {
+            background: #f0f0f0;
+            border: 2px solid transparent;
+            border-radius: 25px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95em;
+        }
+
+        .ai-pill:hover {
+            background: white;
+            border-color: #9C27B0;
+            color: #9C27B0;
+            transform: scale(1.05);
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8) translateY(20px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .activities-container .activity-box {
+            animation: slideDown 0.3s ease backwards;
+        }
+
+        .activities-container .activity-box:nth-child(1) { animation-delay: 0.05s; }
+        .activities-container .activity-box:nth-child(2) { animation-delay: 0.1s; }
+        .activities-container .activity-box:nth-child(3) { animation-delay: 0.15s; }
+        .activities-container .activity-box:nth-child(4) { animation-delay: 0.2s; }
+        .activities-container .activity-box:nth-child(5) { animation-delay: 0.25s; }
+        .activities-container .activity-box:nth-child(6) { animation-delay: 0.3s; }
+        .activities-container .activity-box:nth-child(7) { animation-delay: 0.35s; }
+        .activities-container .activity-box:nth-child(8) { animation-delay: 0.4s; }
+        .activities-container .activity-box:nth-child(9) { animation-delay: 0.45s; }
+
+        /* Animación de entrada */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .unit-card {
+            animation: fadeInUp 0.6s ease backwards;
+        }
+
+        .unit-card:nth-child(1) { animation-delay: 0.1s; }
+        .unit-card:nth-child(2) { animation-delay: 0.15s; }
+        .unit-card:nth-child(3) { animation-delay: 0.2s; }
+        .unit-card:nth-child(4) { animation-delay: 0.25s; }
+        .unit-card:nth-child(5) { animation-delay: 0.3s; }
+        .unit-card:nth-child(6) { animation-delay: 0.35s; }
+        .unit-card:nth-child(7) { animation-delay: 0.4s; }
+        .unit-card:nth-child(8) { animation-delay: 0.45s; }
+        .unit-card:nth-child(9) { animation-delay: 0.5s; }
+        .unit-card:nth-child(10) { animation-delay: 0.55s; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+            }
+
+            .header-title {
+                font-size: 1.5em;
+            }
+
+            .container {
+                padding: 100px 15px 30px;
+            }
+
+            .units-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .unit-header {
+                min-height: 150px;
+                padding: 20px;
+            }
+
+            .unit-number {
+                font-size: 60px;
+                bottom: 10px;
+                right: 15px;
+            }
+
+            .unit-title {
+                font-size: 1.5em;
+                padding-right: 50px;
+            }
+
+            .unit-subtitle {
+                padding-right: 50px;
+            }
+
+            .unit-card.expanded .sections-container {
+                max-height: 800px;
+            }
+
+            .activities-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header con botón de regreso -->
+    <div class="header">
+        <a href="landing.html" class="back-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M5 12L12 19M5 12L12 5"/>
+            </svg>
+            Volver
+        </a>
+        <div class="header-title">Stratega</div>
+        <div style="width: 120px;"></div>
+    </div>
+
+    <div class="container">
+        <div class="page-intro">
+            <p>Elige la unidad que deseas estudiar</p>
+        </div>
+
+        <div class="units-grid">
+            <!-- Solo mostraré Unidad 7 como ejemplo funcional -->
+            <div class="unit-card" onclick="toggleUnit(event, this)">
+                <div class="unit-header">
+                    <div class="unit-content">
+                        <h3 class="unit-title">Salir con los amigos</h3>
+                        <p class="unit-subtitle">Tiempo libre y actividades sociales</p>
+                    </div>
+                    <div class="unit-number">7</div>
+                    <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="sections-container">
+                    <div class="sections-list">
+                        <div class="section-item" onclick="toggleSection(event, this)" data-unit="7" data-section="A">
+                            <span class="section-code">7A</span>
+                            <span class="section-title">¿Dónde quedamos?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="activities-container">
+                            <div class="activities-grid">
+                                <div class="activity-box" onclick="showAIProposal(event, 7, 'A', 1)">1</div>
+                                <div class="activity-box" onclick="showAIProposal(event, 7, 'A', 2)">2</div>
+                                <div class="activity-box" onclick="showAIProposal(event, 7, 'A', 3)">3</div>
+                                <div class="activity-box" onclick="showAIProposal(event, 7, 'A', 4)">4</div>
+                                <div class="activity-box" onclick="showAIProposal(event, 7, 'A', 5)">5</div>
+                                <div class="activity-box" onclick="showAIProposal(event, 7, 'A', 6)">6</div>
+                                <div class="activity-box" onclick="showAIProposal(event, 7, 'A', 7)">7</div>
+                                <div class="activity-box" onclick="showAIProposal(event, 7, 'A', 8)">8</div>
+                                <div class="activity-box" onclick="showAIProposal(event, 7, 'A', 9)">9</div>
+                            </div>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 7, 'B')">
+                            <span class="section-code">7B</span>
+                            <span class="section-title">¿Qué estás haciendo?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 7, 'C')">
+                            <span class="section-code">7C</span>
+                            <span class="section-title">¿Cómo es?</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 7, 'D')">
+                            <span class="section-code">7D</span>
+                            <span class="section-title">Comunicación y cultura</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                        <div class="section-item" onclick="goToSection(event, 7, 'E')">
+                            <span class="section-code">7E</span>
+                            <span class="section-title">Autoevaluación</span>
+                            <span class="section-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal del bot de IA - Diseño Burbuja -->
+    <div class="ai-modal" id="aiModal" onclick="closeAIModal(event)">
+        <div class="ai-container" onclick="event.stopPropagation()">
+            <div class="ai-bubble">
+                <div class="ai-bubble-header">
+                    <div class="ai-bubble-avatar">🤖</div>
+                    <div>
+                        <div class="ai-bubble-name">Asistente IA</div>
+                        <div style="color: #666; font-size: 0.85em;">ahora mismo</div>
+                    </div>
+                    <button class="close-btn" onclick="closeAIModal(event)">✕</button>
+                </div>
+                <p style="margin: 0; color: #333;"><strong>Esta es mi propuesta para esta actividad</strong></p>
+                <p style="margin: 10px 0; color: #666; font-size: 0.95em;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam, quis nostrud exercitation.</p>
+                <div class="ai-options">
+                    <div class="ai-pill" onclick="selectOption(event, 'traduccion')">
+                        <span>🔤</span>
+                        <span>Traducción</span>
+                    </div>
+                    <div class="ai-pill" onclick="selectOption(event, 'ejemplos')">
+                        <span>💡</span>
+                        <span>Ejemplos A1</span>
+                    </div>
+                    <div class="ai-pill" onclick="selectOption(event, 'sinonimos')">
+                        <span>🔄</span>
+                        <span>Sinónimos</span>
+                    </div>
+                    <div class="ai-pill" onclick="selectOption(event, 'pronunciacion')">
+                        <span>🎤</span>
+                        <span>Pronunciación</span>
+                    </div>
+                    <div class="ai-pill" onclick="selectOption(event, 'plantillas')">
+                        <span>📝</span>
+                        <span>Plantillas</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentExpanded = null;
+        let currentSection = null;
+
+        function toggleUnit(event, card) {
+            if (event.target.closest('.section-item')) {
+                return;
+            }
+
+            if (currentExpanded && currentExpanded !== card) {
+                currentExpanded.classList.remove('expanded');
+            }
+
+            card.classList.toggle('expanded');
+
+            if (card.classList.contains('expanded')) {
+                currentExpanded = card;
+            } else {
+                currentExpanded = null;
+            }
+        }
+
+        function toggleSection(event, sectionElement) {
+            event.stopPropagation();
+
+            if (currentSection && currentSection !== sectionElement) {
+                currentSection.classList.remove('active');
+            }
+
+            sectionElement.classList.toggle('active');
+
+            if (sectionElement.classList.contains('active')) {
+                currentSection = sectionElement;
+            } else {
+                currentSection = null;
+            }
+        }
+
+        function goToSection(event, unitNumber, section) {
+            event.stopPropagation();
+            console.log(`Navegando a Unidad ${unitNumber}, Sección ${section}`);
+            window.location.href = 'index.html';
+        }
+
+        function showAIProposal(event, unitNumber, section, activityNumber) {
+            event.stopPropagation();
+            document.getElementById('aiModal').classList.add('active');
+        }
+
+        function closeAIModal(event) {
+            if (event) event.stopPropagation();
+            document.getElementById('aiModal').classList.remove('active');
+        }
+
+        function selectOption(event, option) {
+            event.stopPropagation();
+            console.log(`Opción seleccionada: ${option}`);
+            setTimeout(() => {
+                closeAIModal();
+                window.location.href = 'index.html';
+            }, 300);
+        }
+
+        // Animación de entrada suave
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '0';
+            setTimeout(() => {
+                document.body.style.transition = 'opacity 0.5s ease';
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+
+        // Cerrar acordeones al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.unit-card') && currentExpanded) {
+                currentExpanded.classList.remove('expanded');
+                currentExpanded = null;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+[build]
+  command = "npm install"
+  publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/units"
+  to = "/.netlify/functions/get-units"
+  status = 200
+
+[[redirects]]
+  from = "/api/activities"
+  to = "/.netlify/functions/get-activities"
+  status = 200
+
+[[redirects]]
+  from = "/api/activity-actions"
+  to = "/.netlify/functions/get-activity-actions"
+  status = 200
+
+[[redirects]]
+  from = "/api/chat"
+  to = "/.netlify/functions/chat"
+  status = 200
+
+[[redirects]]
+  from = "/api/translation"
+  to = "/.netlify/functions/get-translation"
+  status = 200
+
+[[redirects]]
+  from = "/api/setup-db"
+  to = "/.netlify/functions/setup-db"
+  status = 200
+
+[[redirects]]
+  from = "/api/seed-translations"
+  to = "/.netlify/functions/seed-translations"
+  status = 200
+
+[[redirects]]
+  from = "/api/update-agent-name"
+  to = "/.netlify/functions/update-agent-name"
+  status = 200
+
+[[redirects]]
+  from = "/"
+  to = "/landing.html"
+  status = 200
+
+[[redirects]]
+  from = "/index"
+  to = "/ejercicios.html"
+  status = 200
+
+[[redirects]]
+  from = "/ejercicios"
+  to = "/ejercicios.html"
+  status = 200
+
+[[redirects]]
+  from = "/landing"
+  to = "/landing.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/public/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"

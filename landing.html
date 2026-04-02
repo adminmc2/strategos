@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stratega - Agentes y Estrategias con IA</title>
+
+    <!-- PWA & App Icon -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#e94560">
+    <link rel="apple-touch-icon" href="/public/app-icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Stratega">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Lexend:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="landing-style.css">
+</head>
+<body>
+    <div class="landing-container">
+        <!-- Header con navegación -->
+        <header class="landing-header">
+            <div class="logo">
+                <img src="public/logo.jpg" alt="Stratega Logo" class="logo-image">
+            </div>
+        </header>
+
+        <!-- Contenido principal -->
+        <main class="landing-main">
+            <div class="content-wrapper">
+                <!-- Lado izquierdo - Texto -->
+                <div class="text-section">
+                    <h1 class="main-title">
+                        <span class="mater-text">STRAT</span>
+                        <span class="ia-ele-wrapper">
+                            <span class="ia-text-yellow">E</span>
+                            <span class="ele-text-red">GA</span>
+                        </span>
+                    </h1>
+
+                    <p class="description">
+                        <span class="desc-line">Plataforma educativa con <span class="highlight-yellow">Inteligencia&nbsp;Artificial</span> para aprender</span>
+                        <span class="desc-line">con <span class="highlight-red">Agentes&nbsp;y&nbsp;Estrategias</span>. <span class="highlight-blue">Ejercicios interactivos, asistente personalizado y contenido adaptativo.</span></span>
+                    </p>
+
+
+                    <div class="cta-section">
+                        <button class="cta-button" onclick="goToDemo()">
+                            Comenzar ahora
+                            <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+
+                    </div>
+
+                    <!-- Indicadores sociales -->
+                    <div class="social-proof">
+                        <div class="students-avatars">
+                            <div class="avatar">
+                                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Estudiante 1">
+                            </div>
+                            <div class="avatar">
+                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Estudiante 2">
+                            </div>
+                            <div class="avatar">
+                                <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Estudiante 3">
+                            </div>
+                        </div>
+                        <div class="students-text">
+                            <strong>4371</strong> estudiantes
+                            <br>
+                            <span class="students-subtitle">usando el sistema y subiendo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lado derecho - Imagen del libro -->
+                <div class="image-section">
+                    <div class="book-wrapper">
+                        <!-- Imagen placeholder del libro -->
+                        <div class="book-image">
+                            <img src="public/portada.jpg" alt="Stratega"
+                                 onerror="this.style.display='none'; document.getElementById('book-placeholder').style.display='flex';">
+                            <div id="book-placeholder" class="book-placeholder" style="display: none;">
+                                <div class="placeholder-content">
+                                    <h3>STRATEGA</h3>
+                                    <div class="level-badge">IA</div>
+                                    <p>Agentes & Estrategias</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Elementos decorativos -->
+                        <div class="floating-badge badge-1">
+                            <span>IA</span>
+                        </div>
+                        <div class="floating-badge badge-2">
+                            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                            </svg>
+                        </div>
+                        <div class="floating-badge badge-3">
+                            <span>GO</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer minimalista -->
+        <footer class="landing-footer">
+            <p>&copy; 2026 Stratega</p>
+            <p class="made-by">Hecho con <span class="heart">&#9829;</span> por Mandoc2/Inmersion</p>
+        </footer>
+    </div>
+
+    <script>
+        function goToDemo() {
+            window.location.href = 'ejercicios.html?v=2';
+        }
+
+        function showInfo() {
+            alert('Presentación completa próximamente disponible');
+        }
+
+        // Animación de entrada
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = document.querySelectorAll('.text-section > *, .book-wrapper');
+            elements.forEach((el, index) => {
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+
+            // Menu toggle functionality
+            const menuToggle = document.getElementById('menuToggle');
+            const navMenu = document.getElementById('navMenu');
+
+            menuToggle.addEventListener('click', () => {
+                menuToggle.classList.toggle('active');
+                navMenu.classList.toggle('active');
+            });
+
+            // Close menu when clicking links
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    menuToggle.classList.remove('active');
+                    navMenu.classList.remove('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

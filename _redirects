@@ -1,0 +1,14 @@
+# Redirecciones para Netlify
+/ /landing.html 200
+/index /ejercicios.html 200
+/ejercicios /ejercicios.html 200
+/landing /landing.html 200
+
+# API redirects
+/api/units /.netlify/functions/get-units 200
+/api/activities /.netlify/functions/get-activities 200
+/api/activity-actions /.netlify/functions/get-activity-actions 200
+/api/chat /.netlify/functions/chat 200
+/api/translation /.netlify/functions/get-translation 200
+/api/setup-db /.netlify/functions/setup-db 200
+/api/seed-translations /.netlify/functions/seed-translations 200

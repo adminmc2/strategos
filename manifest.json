@@ -1,0 +1,17 @@
+{
+  "name": "Stratega",
+  "short_name": "Stratega",
+  "description": "Plataforma educativa con IA - Agentes y Estrategias",
+  "start_url": "/ejercicios.html",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#e94560",
+  "icons": [
+    {
+      "src": "/public/app-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

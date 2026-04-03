@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Strategos - Agentes y Estrategias con IA</title>
+    <title>Strategos - Agentes IA</title>
 
     <!-- PWA & App Icon -->
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#97825c">
+    <meta name="theme-color" content="#F5F5F2">
     <link rel="apple-touch-icon" href="/public/app-icon.png">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -816,7 +816,7 @@
         .message.eliana {
             align-self: flex-start;
             background: #FFFFFF;
-            color: #1D1B20;
+            color: #1E3A5F;
             border-radius: 20px 20px 20px 4px;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
         }
@@ -828,7 +828,7 @@
 
         .message.user {
             align-self: flex-end;
-            background: #6750A4;
+            background: #1E3A5F;
             color: #FFFFFF;
             border-radius: 20px 20px 4px 20px;
         }
@@ -855,15 +855,15 @@
         }
 
         .message.action-options .ai-pill:hover {
-            background: #F3EDF7;
-            box-shadow: 0 2px 6px rgba(103, 80, 164, 0.15);
+            background: rgba(33, 117, 165, 0.08);
+            box-shadow: 0 2px 6px rgba(30, 58, 95, 0.15);
         }
 
         .message-header {
             font-size: 0.75em;
             font-weight: 500;
             margin-bottom: 6px;
-            color: #6750A4;
+            color: #1E3A5F;
             letter-spacing: 0.02em;
             text-transform: uppercase;
             display: flex;
@@ -894,8 +894,8 @@
             border-radius: 24px;
             outline: none;
             font-size: 16px; /* Previene zoom en iOS */
-            background: #F3EDF7;
-            color: #1D1B20;
+            background: rgba(33, 117, 165, 0.08);
+            color: #1E3A5F;
             transition: all 0.2s ease;
             -webkit-appearance: none;
             -moz-appearance: none;
@@ -903,16 +903,16 @@
         }
 
         .chat-input::placeholder {
-            color: #79747E;
+            color: #8A9AAC;
         }
 
         .chat-input:focus {
-            background: #E8DEF8;
-            box-shadow: 0 0 0 2px rgba(103, 80, 164, 0.2);
+            background: rgba(33, 117, 165, 0.15);
+            box-shadow: 0 0 0 2px rgba(30, 58, 95, 0.2);
         }
 
         .send-btn {
-            background: #6750A4;
+            background: #1E3A5F;
             color: white;
             border: none;
             border-radius: 50%;
@@ -927,7 +927,7 @@
         }
 
         .send-btn:hover {
-            background: #7E67B0;
+            background: #264d78;
             transform: scale(1.05);
         }
 
@@ -936,8 +936,8 @@
         }
 
         .send-btn:disabled {
-            background: #E7E0EC;
-            color: #79747E;
+            background: #D0D8E0;
+            color: #8A9AAC;
             cursor: not-allowed;
             transform: none;
         }
@@ -957,13 +957,13 @@
 
         .ai-response-header {
             font-weight: 500;
-            color: #6750A4;
+            color: #1E3A5F;
             margin-bottom: 8px;
             font-size: 0.875em;
         }
 
         .ai-response-content {
-            color: #1D1B20;
+            color: #1E3A5F;
             line-height: 1.6;
         }
 
@@ -971,9 +971,9 @@
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 2px solid rgba(103, 80, 164, 0.2);
+            border: 2px solid rgba(30, 58, 95, 0.2);
             border-radius: 50%;
-            border-top-color: #6750A4;
+            border-top-color: #1E3A5F;
             animation: spin 0.8s linear infinite;
         }
 
@@ -981,7 +981,7 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            color: #79747E;
+            color: #8A9AAC;
             font-size: 0.875em;
             padding: 10px 16px;
             background: #FFFFFF;
@@ -998,7 +998,7 @@
             display: inline-block;
             width: 8px;
             height: 8px;
-            background: #6750A4;
+            background: #1E3A5F;
             border-radius: 50%;
             animation: typingPulse 1.2s infinite ease-in-out;
         }
@@ -1027,7 +1027,7 @@
         }
 
         .translation-block {
-            background: #F3EDF7;
+            background: rgba(33, 117, 165, 0.08);
             border-radius: 12px;
             padding: 14px;
             margin: 8px 0;
@@ -1041,13 +1041,13 @@
         }
 
         .translation-original {
-            color: #1D1B20;
+            color: #1E3A5F;
             font-weight: 500;
             font-size: 0.95em;
         }
 
         .translation-result {
-            color: #6750A4;
+            color: #1E3A5F;
             padding-left: 12px;
             font-size: 0.9em;
         }
@@ -1096,7 +1096,7 @@
         .ai-bubble-avatar {
             width: 40px;
             height: 40px;
-            background: #6750A4;
+            background: #1E3A5F;
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -1115,13 +1115,13 @@
 
         .ai-bubble-name {
             font-weight: 500;
-            color: #1D1B20;
+            color: #1E3A5F;
             font-size: 1em;
         }
 
         .ai-bubble-status {
             font-size: 0.75em;
-            color: #49454F;
+            color: #6B7B8D;
             margin-top: 2px;
         }
 
@@ -1134,14 +1134,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #49454F;
+            color: #6B7B8D;
             cursor: pointer;
             transition: all 0.2s ease;
         }
 
         .close-btn:hover {
-            background: #F3EDF7;
-            color: #1D1B20;
+            background: rgba(33, 117, 165, 0.08);
+            color: #1E3A5F;
         }
 
         .close-btn svg {
@@ -1159,19 +1159,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #49454F;
+            color: #6B7B8D;
             cursor: pointer;
             transition: all 0.2s ease;
             margin-right: 8px;
         }
 
         .accessibility-btn:hover {
-            background: #E8DEF8;
-            color: #6750A4;
+            background: rgba(33, 117, 165, 0.15);
+            color: #1E3A5F;
         }
 
         .accessibility-btn.active {
-            background: #6750A4;
+            background: #1E3A5F;
             color: white;
         }
 
@@ -1187,7 +1187,7 @@
                 height: 44px;
                 min-width: 44px;
                 min-height: 44px;
-                -webkit-tap-highlight-color: rgba(103, 80, 164, 0.3);
+                -webkit-tap-highlight-color: rgba(30, 58, 95, 0.3);
                 touch-action: manipulation;
             }
         }
@@ -1217,7 +1217,7 @@
         }
 
         .chat-container.accessible-mode .ai-pill:focus {
-            outline: 4px solid #6750A4;
+            outline: 4px solid #1E3A5F;
             outline-offset: 2px;
         }
 
@@ -1229,7 +1229,7 @@
         }
 
         .chat-container.accessible-mode .lucky-option-card:focus {
-            outline: 4px solid #6750A4;
+            outline: 4px solid #1E3A5F;
             outline-offset: 2px;
         }
 
@@ -1273,7 +1273,7 @@
         }
 
         .ai-bubble p {
-            color: #49454F;
+            color: #6B7B8D;
             line-height: 1.6;
             margin: 16px 0;
             font-size: 0.95em;
@@ -1297,14 +1297,14 @@
             align-items: center;
             gap: 14px;
             font-size: 0.9em;
-            color: #1D1B20;
+            color: #1E3A5F;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
         }
 
         .ai-pill:hover {
-            background: #F3EDF7;
+            background: rgba(33, 117, 165, 0.08);
             transform: translateX(4px);
-            box-shadow: 0 2px 8px rgba(103, 80, 164, 0.12);
+            box-shadow: 0 2px 8px rgba(30, 58, 95, 0.12);
         }
 
         .ai-pill:active {
@@ -1317,7 +1317,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #6750A4;
+            color: #1E3A5F;
             flex-shrink: 0;
         }
 
@@ -1354,9 +1354,9 @@
         .language-btn {
             padding: 10px 18px;
             border-radius: 20px;
-            border: 2px solid var(--unit-color, #6750A4);
+            border: 2px solid var(--unit-color, #1E3A5F);
             background: transparent;
-            color: var(--unit-color, #6750A4);
+            color: var(--unit-color, #1E3A5F);
             font-family: 'Lexend', sans-serif;
             font-weight: 600;
             font-size: 0.85em;
@@ -1365,7 +1365,7 @@
         }
 
         .language-btn:hover {
-            background: var(--unit-color, #6750A4);
+            background: var(--unit-color, #1E3A5F);
             color: white;
             transform: scale(1.05);
         }
@@ -1412,7 +1412,7 @@
         .vocab-card .vocab-icon {
             width: 32px;
             height: 32px;
-            color: var(--unit-color, #6750A4);
+            color: var(--unit-color, #1E3A5F);
             opacity: 0.9;
         }
 
@@ -1432,7 +1432,7 @@
 
         /* Traducción destacada para "Mis palabras" */
         .traduccion-destacada {
-            background: linear-gradient(135deg, #6750A4 0%, #7E67B0 100%);
+            background: linear-gradient(135deg, #1E3A5F 0%, #264d78 100%);
             color: white;
             padding: 12px 18px;
             border-radius: 12px;
@@ -1440,7 +1440,7 @@
             font-weight: 600;
             margin: 10px 0 15px 0;
             display: inline-block;
-            box-shadow: 0 2px 8px rgba(103, 80, 164, 0.3);
+            box-shadow: 0 2px 8px rgba(30, 58, 95, 0.3);
         }
 
         /* Estilos para "No lo sé, sorpréndeme" */
@@ -1462,7 +1462,7 @@
         .lucky-question-icon {
             width: 28px;
             height: 28px;
-            color: #6750A4;
+            color: #1E3A5F;
         }
 
         .lucky-options-grid {
@@ -1477,7 +1477,7 @@
             padding: 20px 16px;
             text-align: center;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border: 2px solid rgba(103, 80, 164, 0.15);
+            border: 2px solid rgba(30, 58, 95, 0.15);
             transition: all 0.2s ease;
             display: flex;
             flex-direction: column;
@@ -1488,8 +1488,8 @@
 
         .lucky-option-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 16px rgba(103, 80, 164, 0.2);
-            border-color: #6750A4;
+            box-shadow: 0 6px 16px rgba(30, 58, 95, 0.2);
+            border-color: #1E3A5F;
         }
 
         .lucky-option-card:active {
@@ -1499,7 +1499,7 @@
         .lucky-option-icon {
             width: 36px;
             height: 36px;
-            color: #6750A4;
+            color: #1E3A5F;
         }
 
         .lucky-option-label {
@@ -1542,20 +1542,20 @@
             align-items: center;
             gap: 14px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border: 1px solid rgba(103, 80, 164, 0.15);
+            border: 1px solid rgba(30, 58, 95, 0.15);
             transition: all 0.2s ease;
         }
 
         .lucky-phrase-card:hover {
             transform: translateX(5px);
-            box-shadow: 0 4px 12px rgba(103, 80, 164, 0.15);
-            border-color: #6750A4;
+            box-shadow: 0 4px 12px rgba(30, 58, 95, 0.15);
+            border-color: #1E3A5F;
         }
 
         .lucky-phrase-icon {
             width: 28px;
             height: 28px;
-            color: #6750A4;
+            color: #1E3A5F;
             flex-shrink: 0;
         }
 
@@ -1590,13 +1590,13 @@
         }
 
         .dialogue-chunk:hover {
-            border-color: #6750A4;
+            border-color: #1E3A5F;
             background: #f8f6fc;
         }
 
         .dialogue-chunk.selected {
-            border-color: #6750A4;
-            background: #E8DEF8;
+            border-color: #1E3A5F;
+            background: rgba(33, 117, 165, 0.15);
         }
 
         .dialogue-chunk-checkbox {
@@ -1612,8 +1612,8 @@
         }
 
         .dialogue-chunk.selected .dialogue-chunk-checkbox {
-            background: #6750A4;
-            border-color: #6750A4;
+            background: #1E3A5F;
+            border-color: #1E3A5F;
         }
 
         .dialogue-chunk-checkbox svg {
@@ -1641,7 +1641,7 @@
         .dialogue-translate-btn {
             margin-top: 15px;
             padding: 14px 28px;
-            background: #6750A4;
+            background: #1E3A5F;
             color: white;
             border: none;
             border-radius: 25px;
@@ -1684,7 +1684,7 @@
             background: white;
             border-radius: 12px;
             padding: 14px 18px;
-            border-left: 4px solid #6750A4;
+            border-left: 4px solid #1E3A5F;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
@@ -1708,7 +1708,7 @@
         }
 
         .chat-container.accessible-mode .dialogue-chunk:focus {
-            outline: 4px solid #6750A4;
+            outline: 4px solid #1E3A5F;
             outline-offset: 2px;
         }
 
@@ -1889,14 +1889,14 @@
         }
 
         .comprehension-image-card:hover {
-            border-color: #6750A4;
-            box-shadow: 0 4px 12px rgba(103, 80, 164, 0.15);
+            border-color: #1E3A5F;
+            box-shadow: 0 4px 12px rgba(30, 58, 95, 0.15);
         }
 
         .comprehension-image-card.selected {
-            border-color: #6750A4;
-            background: #E8DEF8;
-            box-shadow: 0 4px 16px rgba(103, 80, 164, 0.3);
+            border-color: #1E3A5F;
+            background: rgba(33, 117, 165, 0.15);
+            box-shadow: 0 4px 16px rgba(30, 58, 95, 0.3);
             transform: scale(1.02);
         }
 
@@ -1906,8 +1906,8 @@
         }
 
         .comprehension-image-card.correct {
-            border-color: #6750A4;
-            background: #6750A4;
+            border-color: #1E3A5F;
+            background: #1E3A5F;
         }
 
         .comprehension-image-card.correct .comprehension-image-description {
@@ -1925,7 +1925,7 @@
             left: -8px;
             width: 24px;
             height: 24px;
-            background: #6750A4;
+            background: #1E3A5F;
             color: white;
             border-radius: 50%;
             display: flex;
@@ -1936,7 +1936,7 @@
         }
 
         .comprehension-image-card.correct .comprehension-image-number {
-            background: #6750A4;
+            background: #1E3A5F;
         }
 
         .comprehension-image-card.incorrect .comprehension-image-number {
@@ -1983,7 +1983,7 @@
         .comprehension-check-btn {
             width: 100%;
             padding: 12px 20px;
-            background: #6750A4;
+            background: #1E3A5F;
             color: white;
             border: none;
             border-radius: 8px;
@@ -2006,9 +2006,9 @@
         }
 
         .comprehension-success {
-            background: #E8DEF8;
+            background: rgba(33, 117, 165, 0.15);
             color: #4A3780;
-            border: 1px solid #6750A4;
+            border: 1px solid #1E3A5F;
         }
 
         .comprehension-hint {
@@ -2061,7 +2061,7 @@
         }
 
         .comprehension-option-btn:hover:not(:disabled) {
-            border-color: #6750A4;
+            border-color: #1E3A5F;
             background: #f3f0ff;
         }
 
@@ -2071,8 +2071,8 @@
         }
 
         .comprehension-option-btn.correct {
-            background: #E8DEF8;
-            border-color: #6750A4;
+            background: rgba(33, 117, 165, 0.15);
+            border-color: #1E3A5F;
             color: #4A3780;
         }
 
@@ -2216,7 +2216,7 @@
         }
 
         .mindmap-expression-tag .speaker-icon.persona1 {
-            background: #6750A4;
+            background: #1E3A5F;
         }
 
         .mindmap-expression-tag .speaker-icon.persona2 {
@@ -2224,7 +2224,7 @@
         }
 
         .mindmap-expression-tag .speaker-icon.both {
-            background: linear-gradient(135deg, #6750A4 50%, #E07B39 50%);
+            background: linear-gradient(135deg, #1E3A5F 50%, #E07B39 50%);
         }
 
         /* Lugares opcionales */
@@ -2249,7 +2249,7 @@
         }
 
         .mindmap-place-tag {
-            background: #E8DEF8;
+            background: rgba(33, 117, 165, 0.15);
             color: #4A3780;
             padding: 4px 10px;
             border-radius: 12px;
@@ -2263,7 +2263,7 @@
             border-radius: 12px;
             padding: 20px;
             text-align: center;
-            border: 2px solid #E8DEF8;
+            border: 2px solid rgba(33, 117, 165, 0.15);
         }
 
         .mindmap-summary-title {
@@ -2290,7 +2290,7 @@
         }
 
         .mindmap-summary-arrow {
-            color: #6750A4;
+            color: #1E3A5F;
             font-size: 1.2em;
         }
 
@@ -2365,7 +2365,7 @@
         }
 
         .mindmap-speaker-1 {
-            color: #6750A4;
+            color: #1E3A5F;
         }
 
         .mindmap-speaker-2 {
@@ -2373,7 +2373,7 @@
         }
 
         .mindmap-speaker-both {
-            background: linear-gradient(90deg, #6750A4, #E07B39);
+            background: linear-gradient(90deg, #1E3A5F, #E07B39);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -2759,52 +2759,194 @@
             color: white;
         }
 
-        /* Agent cards grid */
-        .agents-grid {
+        /* Destrezas grid */
+        .destrezas-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 20px;
-            max-width: 900px;
-            margin: 0 auto;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
         }
 
-        .agent-card {
-            background: #ffffff;
+        .destreza-card {
+            background: var(--destreza-bg);
             border-radius: 20px;
             cursor: pointer;
-            padding: 32px 28px;
-            border: 2px solid #f0f0f0;
-            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid var(--destreza-border);
         }
 
-        .agent-card:hover {
-            border-color: var(--agent-color);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-            transform: translateY(-4px);
+        .destreza-card:not(.open):hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+            border-color: var(--destreza-color);
         }
 
-        .agent-siglas {
-            font-family: 'Space Grotesk', 'Lexend', sans-serif;
-            font-size: 2.5em;
-            font-weight: 800;
-            color: var(--agent-color);
-            margin-bottom: 12px;
-            letter-spacing: 2px;
+        .destreza-card.open {
+            border-color: var(--destreza-color);
         }
 
-        .agent-name {
+        .destreza-header {
+            padding: 30px;
+            position: relative;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .destreza-card.open .destreza-header {
+            min-height: auto;
+            padding: 20px 30px;
+        }
+
+        .destreza-info {
+            position: relative;
+            z-index: 1;
+        }
+
+        .destreza-name {
             font-family: 'Lexend', sans-serif;
-            font-size: 1.2em;
+            font-size: 1.8em;
             font-weight: 700;
-            color: #1E3A5F;
-            margin-bottom: 8px;
+            color: var(--destreza-text, #333);
+            margin: 0 0 10px 0;
+            padding-right: 60px;
         }
 
-        .agent-desc {
-            font-size: 0.9em;
-            color: #8A9AAC;
-            line-height: 1.5;
+        .destreza-card.open .destreza-name {
+            font-size: 1.4em;
+            margin-bottom: 5px;
+        }
+
+        .destreza-count {
+            color: var(--destreza-text, #666);
+            opacity: 0.7;
+            font-size: 1em;
+            line-height: 1.4;
+        }
+
+        /* Siglas grandes */
+        .destreza-siglas {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-family: 'Space Grotesk', 'Lexend', sans-serif;
+            font-size: 80px;
+            font-weight: 900;
+            opacity: 0.18;
+            line-height: 1;
+            pointer-events: none;
+            z-index: 0;
+            color: var(--destreza-color);
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .destreza-card.open .destreza-siglas {
+            font-size: 36px;
+            opacity: 0.25;
+            top: 18px;
+            bottom: auto;
+        }
+
+        .destreza-icon { display: none; }
+
+        /* Chevron */
+        .destreza-chevron {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+            color: var(--destreza-color);
+        }
+
+        .destreza-card:hover .destreza-chevron {
+            opacity: 0.6;
+            transform: translateX(0);
+        }
+
+        .destreza-card.open .destreza-chevron {
+            opacity: 1;
+            transform: rotate(180deg);
+        }
+
+        /* Panel agentes */
+        .destreza-agents {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+            background: rgba(255,255,255,0.5);
+        }
+
+        .destreza-card.open .destreza-agents {
+            max-height: 600px;
+            border-top: 1px solid var(--destreza-border);
+        }
+
+        .destreza-empty {
+            padding: 24px 30px;
+            text-align: center;
+            color: var(--destreza-color);
+            opacity: 0.5;
+            font-size: 0.95em;
+            font-style: italic;
+        }
+
+        /* Agent items */
+        .agent-mini {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 30px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .agent-mini:hover {
+            background: rgba(255,255,255,0.6);
+            border-left-color: var(--destreza-color);
+        }
+
+        .agent-mini-siglas {
+            font-family: 'Space Grotesk', 'Lexend', sans-serif;
+            font-size: 1.1em;
+            font-weight: 800;
+            letter-spacing: 1px;
+            min-width: 48px;
+            color: var(--destreza-color);
+        }
+
+        .agent-mini-info { flex: 1; }
+
+        .agent-mini-name {
+            display: block;
+            font-family: 'Lexend', sans-serif;
+            font-size: 1em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .agent-mini-desc {
+            display: block;
+            font-size: 0.85em;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .agent-mini-arrow {
+            color: #ccc;
+            font-size: 1.2em;
+            transition: all 0.2s;
+        }
+
+        .agent-mini:hover .agent-mini-arrow {
+            transform: translateX(4px);
+            color: var(--destreza-color);
         }
     </style>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -2824,40 +2966,195 @@
 
     <div class="container">
         <div class="page-intro">
-            <p>Elige tu agente</p>
+            <p>Elige una destreza</p>
         </div>
 
-        <div class="agents-grid">
-            <div class="agent-card" onclick="openAgent('comprension')" style="--agent-color: #2175A5">
-                <div class="agent-siglas">CMP</div>
-                <h3 class="agent-name">Comprensión</h3>
-                <p class="agent-desc">Analiza textos y organiza ideas visualmente</p>
+        <div class="destrezas-grid">
+
+            <!-- Comprensión lectora -->
+            <div class="destreza-card" style="--destreza-color: #2175A5; --destreza-bg: #E8F4FD; --destreza-border: #B8DCF0; --destreza-text: #14567A" onclick="toggleDestreza(this)">
+                <div class="destreza-header">
+                    <div class="destreza-info">
+                        <h3 class="destreza-name">Comprensión lectora</h3>
+                        <span class="destreza-count">2 agentes</span>
+                    </div>
+                    <div class="destreza-siglas">CL</div>
+                    <svg class="destreza-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="destreza-agents">
+                    <div class="agent-mini" onclick="event.stopPropagation(); openAgent('comprension')">
+                        <span class="agent-mini-siglas" style="color: #2175A5">CMP</span>
+                        <div class="agent-mini-info">
+                            <span class="agent-mini-name">Comprensión</span>
+                            <span class="agent-mini-desc">Analiza textos y organiza ideas visualmente</span>
+                        </div>
+                        <span class="agent-mini-arrow">&rarr;</span>
+                    </div>
+                    <div class="agent-mini" onclick="event.stopPropagation(); openAgent('mapamental')">
+                        <span class="agent-mini-siglas" style="color: #1E3A5F">MAP</span>
+                        <div class="agent-mini-info">
+                            <span class="agent-mini-name">Mapa Mental</span>
+                            <span class="agent-mini-desc">Conecta ideas y construye mapas para entender</span>
+                        </div>
+                        <span class="agent-mini-arrow">&rarr;</span>
+                    </div>
+                </div>
             </div>
-            <div class="agent-card" onclick="openAgent('gramapop')" style="--agent-color: #78B042">
-                <div class="agent-siglas">GRM</div>
-                <h3 class="agent-name">Gramapop</h3>
-                <p class="agent-desc">Te explica la gramática con ejemplos que conectan</p>
+
+            <!-- Comprensión auditiva -->
+            <div class="destreza-card" style="--destreza-color: #7B2D8E; --destreza-bg: #F3E5F5; --destreza-border: #D4A5E0; --destreza-text: #5C1A6E" onclick="toggleDestreza(this)">
+                <div class="destreza-header">
+                    <div class="destreza-info">
+                        <h3 class="destreza-name">Comprensión auditiva</h3>
+                        <span class="destreza-count">Próximamente</span>
+                    </div>
+                    <div class="destreza-siglas">CA</div>
+                    <svg class="destreza-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="destreza-agents">
+                    <div class="destreza-empty">Agentes en desarrollo</div>
+                </div>
             </div>
-            <div class="agent-card" onclick="openAgent('lexico')" style="--agent-color: #EEA028">
-                <div class="agent-siglas">LEX</div>
-                <h3 class="agent-name">Léxico</h3>
-                <p class="agent-desc">Descubre vocabulario y expresiones clave</p>
+
+            <!-- Expresión e interacción escrita -->
+            <div class="destreza-card" style="--destreza-color: #2E7D32; --destreza-bg: #E8F5E9; --destreza-border: #A5D6A7; --destreza-text: #1B5E20" onclick="toggleDestreza(this)">
+                <div class="destreza-header">
+                    <div class="destreza-info">
+                        <h3 class="destreza-name">Expresión e interacción escrita</h3>
+                        <span class="destreza-count">Próximamente</span>
+                    </div>
+                    <div class="destreza-siglas">EIE</div>
+                    <svg class="destreza-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="destreza-agents">
+                    <div class="destreza-empty">Agentes en desarrollo</div>
+                </div>
             </div>
-            <div class="agent-card" onclick="openAgent('mapamental')" style="--agent-color: #1E3A5F">
-                <div class="agent-siglas">MAP</div>
-                <h3 class="agent-name">Mapa Mental</h3>
-                <p class="agent-desc">Conecta ideas y construye mapas para entender</p>
+
+            <!-- Expresión e interacción oral -->
+            <div class="destreza-card" style="--destreza-color: #00838F; --destreza-bg: #E0F7FA; --destreza-border: #80DEEA; --destreza-text: #00606A" onclick="toggleDestreza(this)">
+                <div class="destreza-header">
+                    <div class="destreza-info">
+                        <h3 class="destreza-name">Expresión e interacción oral</h3>
+                        <span class="destreza-count">Próximamente</span>
+                    </div>
+                    <div class="destreza-siglas">EIO</div>
+                    <svg class="destreza-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="destreza-agents">
+                    <div class="destreza-empty">Agentes en desarrollo</div>
+                </div>
             </div>
-            <div class="agent-card" onclick="openAgent('traduccion')" style="--agent-color: #D4A800">
-                <div class="agent-siglas">TRD</div>
-                <h3 class="agent-name">Traductor</h3>
-                <p class="agent-desc">Traduce frases y expresiones al instante</p>
+
+            <!-- Gramática -->
+            <div class="destreza-card" style="--destreza-color: #E65100; --destreza-bg: #FFF3E0; --destreza-border: #FFCC80; --destreza-text: #BF360C" onclick="toggleDestreza(this)">
+                <div class="destreza-header">
+                    <div class="destreza-info">
+                        <h3 class="destreza-name">Gramática</h3>
+                        <span class="destreza-count">1 agente</span>
+                    </div>
+                    <div class="destreza-siglas">GR</div>
+                    <svg class="destreza-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="destreza-agents">
+                    <div class="agent-mini" onclick="event.stopPropagation(); openAgent('gramapop')">
+                        <span class="agent-mini-siglas" style="color: #EEA028">GRM</span>
+                        <div class="agent-mini-info">
+                            <span class="agent-mini-name">Gramapop</span>
+                            <span class="agent-mini-desc">Te explica la gramática con ejemplos que conectan</span>
+                        </div>
+                        <span class="agent-mini-arrow">&rarr;</span>
+                    </div>
+                </div>
             </div>
+
+            <!-- Vocabulario -->
+            <div class="destreza-card" style="--destreza-color: #F9A825; --destreza-bg: #FFFDE7; --destreza-border: #FFF176; --destreza-text: #F57F17" onclick="toggleDestreza(this)">
+                <div class="destreza-header">
+                    <div class="destreza-info">
+                        <h3 class="destreza-name">Vocabulario</h3>
+                        <span class="destreza-count">1 agente</span>
+                    </div>
+                    <div class="destreza-siglas">VC</div>
+                    <svg class="destreza-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="destreza-agents">
+                    <div class="agent-mini" onclick="event.stopPropagation(); openAgent('lexico')">
+                        <span class="agent-mini-siglas" style="color: #D4A800">LEX</span>
+                        <div class="agent-mini-info">
+                            <span class="agent-mini-name">Léxico</span>
+                            <span class="agent-mini-desc">Descubre vocabulario y expresiones clave</span>
+                        </div>
+                        <span class="agent-mini-arrow">&rarr;</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mediación lingüística -->
+            <div class="destreza-card" style="--destreza-color: #AD1457; --destreza-bg: #FCE4EC; --destreza-border: #F48FB1; --destreza-text: #880E4F" onclick="toggleDestreza(this)">
+                <div class="destreza-header">
+                    <div class="destreza-info">
+                        <h3 class="destreza-name">Mediación lingüística</h3>
+                        <span class="destreza-count">1 agente</span>
+                    </div>
+                    <div class="destreza-siglas">ML</div>
+                    <svg class="destreza-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="destreza-agents">
+                    <div class="agent-mini" onclick="event.stopPropagation(); openAgent('traduccion')">
+                        <span class="agent-mini-siglas" style="color: #9B59B6">TRD</span>
+                        <div class="agent-mini-info">
+                            <span class="agent-mini-name">Traductor</span>
+                            <span class="agent-mini-desc">Traduce frases y expresiones al instante</span>
+                        </div>
+                        <span class="agent-mini-arrow">&rarr;</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fonética -->
+            <div class="destreza-card" style="--destreza-color: #C62828; --destreza-bg: #FFEBEE; --destreza-border: #EF9A9A; --destreza-text: #B71C1C" onclick="toggleDestreza(this)">
+                <div class="destreza-header">
+                    <div class="destreza-info">
+                        <h3 class="destreza-name">Fonética</h3>
+                        <span class="destreza-count">Próximamente</span>
+                    </div>
+                    <div class="destreza-siglas">FN</div>
+                    <svg class="destreza-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="destreza-agents">
+                    <div class="destreza-empty">Agentes en desarrollo</div>
+                </div>
+            </div>
+
+            <!-- Ortografía -->
+            <div class="destreza-card" style="--destreza-color: #283593; --destreza-bg: #E8EAF6; --destreza-border: #9FA8DA; --destreza-text: #1A237E" onclick="toggleDestreza(this)">
+                <div class="destreza-header">
+                    <div class="destreza-info">
+                        <h3 class="destreza-name">Ortografía</h3>
+                        <span class="destreza-count">Próximamente</span>
+                    </div>
+                    <div class="destreza-siglas">OG</div>
+                    <svg class="destreza-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="destreza-agents">
+                    <div class="destreza-empty">Agentes en desarrollo</div>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <script>
         let currentExpanded = null;
+
+        function toggleDestreza(card) {
+            if (currentExpanded && currentExpanded !== card) {
+                currentExpanded.classList.remove('open');
+            }
+            card.classList.toggle('open');
+            currentExpanded = card.classList.contains('open') ? card : null;
+        }
 
         function openAgent(agentType) {
             // Open the modal
@@ -3224,7 +3521,7 @@
         let currentActivityContext = "";
         let currentActivityId = 1;
         let activityActions = {}; // Almacena las acciones cargadas desde la API
-        let currentUnitColor = '#6750A4'; // Color por defecto (morado Material Design)
+        let currentUnitColor = '#1E3A5F'; // Color por defecto (morado Material Design)
         let waitingForCustomLanguage = false; // Flag para saber si esperamos un idioma personalizado
         let waitingForAge = false; // Flag para saber si esperamos la edad del usuario
         let waitingForMyWords = false; // Flag para saber si esperamos las palabras del usuario
@@ -5858,7 +6155,7 @@ IMPORTANTE:
             let dialogueHTML = '<div class="lexical-dialogue" id="lexicalDialogue">';
             lexicalData.phrases.forEach(phrase => {
                 const speakerLabel = phrase.speaker === 'persona1' ? '■' : '●';
-                const speakerColor = phrase.speaker === 'persona1' ? '#6750A4' : '#10B981';
+                const speakerColor = phrase.speaker === 'persona1' ? '#1E3A5F' : '#10B981';
 
                 // Marcar expresiones en el texto
                 let markedText = phrase.text;
@@ -6192,7 +6489,7 @@ IMPORTANTE:
                 successDiv.innerHTML = `
                     <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
                     <div class="comprehension-success">
-                        <i data-lucide="party-popper" style="width: 24px; height: 24px; color: #6750A4;"></i>
+                        <i data-lucide="party-popper" style="width: 24px; height: 24px; color: #1E3A5F;"></i>
                         ¡Excelente! Has ordenado todas las viñetas correctamente.
                     </div>
                 `;
@@ -6289,7 +6586,7 @@ IMPORTANTE:
                     resultDiv.innerHTML = `
                         <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
                         <div class="comprehension-final-result">
-                            <i data-lucide="bar-chart-2" style="width: 24px; height: 24px; color: #6750A4;"></i>
+                            <i data-lucide="bar-chart-2" style="width: 24px; height: 24px; color: #1E3A5F;"></i>
                             Has acertado ${correctAnswers} de ${currentComprehensionData.questions.length} preguntas.
                             ${correctAnswers === currentComprehensionData.questions.length
                                 ? '¡Perfecto! Entiendes muy bien el diálogo.'

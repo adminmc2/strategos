@@ -22,14 +22,14 @@ exports.handler = async (event, context) => {
   try {
     const { messages, model, temperature, max_tokens } = JSON.parse(event.body);
 
-    const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
       },
       body: JSON.stringify({
-        model: model || 'deepseek-chat',
+        model: 'llama-3.3-70b-versatile',
         messages: messages,
         temperature: temperature || 0.7,
         max_tokens: max_tokens || 300
@@ -38,14 +38,14 @@ exports.handler = async (event, context) => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('DeepSeek error:', errorText);
+      console.error('Groq error:', errorText);
       return {
         statusCode: response.status,
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*'
         },
-        body: JSON.stringify({ error: 'Error en DeepSeek API', details: errorText })
+        body: JSON.stringify({ error: 'Error en Groq API', details: errorText })
       };
     }
 

@@ -66,8 +66,9 @@ app.use(express.static(__dirname, {
 
 // --- HTML routes (from netlify.toml redirects) ---
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'landing.html')));
-app.get('/index', (req, res) => res.sendFile(path.join(__dirname, 'ejercicios.html')));
-app.get('/ejercicios', (req, res) => res.sendFile(path.join(__dirname, 'ejercicios.html')));
+app.get('/index', (req, res) => res.sendFile(path.join(__dirname, 'agentes.html')));
+app.get('/ejercicios', (req, res) => res.sendFile(path.join(__dirname, 'agentes.html')));
+app.get('/agentes', (req, res) => res.sendFile(path.join(__dirname, 'agentes.html')));
 app.get('/landing', (req, res) => res.sendFile(path.join(__dirname, 'landing.html')));
 
 // --- Start ---

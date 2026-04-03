@@ -22,28 +22,26 @@ exports.handler = async (event, context) => {
   try {
     const { messages, system, max_tokens } = JSON.parse(event.body);
 
-    // Construir array de mensajes con system prompt al inicio
     const systemPrompt = system || messages.find(m => m.role === 'system')?.content || '';
-    const deepseekMessages = [];
+    const groqMessages = [];
 
     if (systemPrompt) {
-      deepseekMessages.push({ role: 'system', content: systemPrompt });
+      groqMessages.push({ role: 'system', content: systemPrompt });
     }
 
-    // Añadir mensajes filtrando system (ya lo añadimos arriba)
     messages.filter(m => m.role !== 'system').forEach(m => {
-      deepseekMessages.push({ role: m.role, content: m.content });
+      groqMessages.push({ role: m.role, content: m.content });
     });
 
-    const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages: deepseekMessages,
+        model: 'llama-3.3-70b-versatile',
+        messages: groqMessages,
         temperature: 0.5,
         max_tokens: max_tokens || 500
       })
@@ -51,14 +49,14 @@ exports.handler = async (event, context) => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('DeepSeek error:', errorText);
+      console.error('Groq error:', errorText);
       return {
         statusCode: response.status,
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*'
         },
-        body: JSON.stringify({ error: 'Error en DeepSeek API', details: errorText })
+        body: JSON.stringify({ error: 'Error en Groq API', details: errorText })
       };
     }
 

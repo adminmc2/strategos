@@ -3156,7 +3156,22 @@
             currentExpanded = card.classList.contains('open') ? card : null;
         }
 
+        // Mapa de nombres URL → tipo de agente
+        const agentUrlMap = {
+            'comprension': 'comprension',
+            'gramapop': 'gramapop',
+            'lexico': 'lexico',
+            'mapamental': 'mapamental',
+            'mapa-mental': 'mapamental',
+            'traductor': 'traduccion',
+            'traduccion': 'traduccion'
+        };
+
         function openAgent(agentType) {
+            // Actualizar la URL sin recargar
+            const urlName = Object.keys(agentUrlMap).find(k => agentUrlMap[k] === agentType) || agentType;
+            history.pushState({ agent: agentType }, '', '/agente/' + urlName);
+
             // Open the modal
             const overlay = document.getElementById('aiModalOverlay');
             if (overlay) {
@@ -3173,6 +3188,26 @@
                 selectOption({ stopPropagation: () => {} }, agentType);
             }, 500);
         }
+
+        // Detectar URL directa /agente/:nombre al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            const match = window.location.pathname.match(/^\/agente\/(.+)$/);
+            if (match) {
+                const nombre = match[1].toLowerCase();
+                const agentType = agentUrlMap[nombre];
+                if (agentType) {
+                    setTimeout(() => openAgent(agentType), 300);
+                }
+            }
+        });
+
+        // Manejar botón atrás del navegador
+        window.addEventListener('popstate', () => {
+            const overlay = document.getElementById('aiModalOverlay');
+            if (overlay && overlay.classList.contains('active')) {
+                overlay.classList.remove('active');
+            }
+        });
 
         function toggleUnit(event, card) {
             // Si el clic fue en una sección, no hacer nada
@@ -3493,6 +3528,10 @@
 
         function closeAIModal(event) {
             if (event) event.stopPropagation();
+            // Restaurar URL a /agentes
+            if (window.location.pathname.startsWith('/agente/')) {
+                history.pushState(null, '', '/agentes');
+            }
             const overlay = document.getElementById('aiModalOverlay');
             if (overlay) {
                 overlay.classList.remove('active');

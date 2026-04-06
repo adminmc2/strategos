@@ -9,6 +9,16 @@ Formato: [Semantic Versioning](https://semver.org/lang/es/) `vX.Y.Z`
 
 ---
 
+## [1.1.0] - 2026-04-06
+
+### Añadido
+- URLs directas a tarjetas de agente: `/agente/lucapi` y `/agente/reca`
+- Abren directamente la tarjeta flip modal (no el chat)
+- Agentes sin tarjeta siguen abriendo el chat como antes
+- `lucapi` añadido al mapa de URLs de agentes
+
+---
+
 ## [1.0.2] - 2026-04-06
 
 ### Corregido

@@ -3555,6 +3555,7 @@
         // Mapa de nombres URL → tipo de agente
         const agentUrlMap = {
             'comprension': 'comprension',
+            'lucapi': 'comprension',
             'gramapop': 'gramapop',
             'lexico': 'lexico',
             'mapamental': 'mapamental',
@@ -3604,9 +3605,14 @@
             const match = window.location.pathname.match(/^\/agente\/(.+)$/);
             if (match) {
                 const nombre = match[1].toLowerCase();
-                const agentType = agentUrlMap[nombre];
-                if (agentType) {
-                    setTimeout(() => openAgent(agentType), 300);
+                // Si tiene tarjeta, abrir la tarjeta modal
+                if (tarjetaModalMap[nombre]) {
+                    setTimeout(() => openTarjetaModal(nombre), 300);
+                } else {
+                    const agentType = agentUrlMap[nombre];
+                    if (agentType) {
+                        setTimeout(() => openAgent(agentType), 300);
+                    }
                 }
             }
         });

@@ -9,6 +9,14 @@ Formato: [Semantic Versioning](https://semver.org/lang/es/) `vX.Y.Z`
 
 ---
 
+## [1.1.1] - 2026-04-06
+
+### Corregido
+- URL se actualiza a `/agente/lucapi` o `/agente/reca` al abrir la tarjeta modal
+- URL restaura a `/agentes` al cerrar el modal
+
+---
+
 ## [1.1.0] - 2026-04-06
 
 ### Añadido

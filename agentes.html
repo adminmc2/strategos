@@ -3537,11 +3537,15 @@
                 const flipContainer = overlay.querySelector('.tarjeta-flip-container');
                 if (flipContainer) flipContainer.classList.remove('flipped');
             }
+            history.pushState({ tarjeta: agentId }, '', '/agente/' + agentId);
         }
 
         function closeTarjetaModal(event) {
             if (event && event.target !== event.currentTarget) return;
             document.querySelectorAll('.tarjeta-modal-overlay').forEach(o => o.classList.remove('active'));
+            if (window.location.pathname.startsWith('/agente/')) {
+                history.pushState(null, '', '/agentes');
+            }
         }
 
         function toggleDestreza(card) {

@@ -32,8 +32,10 @@ function netlifyAdapter(handlerPath) {
   };
 }
 
-// --- Health check (no DB needed) ---
-app.get('/health', (req, res) => res.json({ status: 'ok' }));
+// --- Health check & version (no DB needed) ---
+const { version } = require('./package.json');
+app.get('/health', (req, res) => res.json({ status: 'ok', version }));
+app.get('/api/version', (req, res) => res.json({ version }));
 
 // --- API Routes (mapped from netlify.toml redirects) ---
 const functionsDir = './netlify/functions';

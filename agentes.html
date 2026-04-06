@@ -813,7 +813,7 @@
             line-height: 1.5;
         }
 
-        .message.eliana {
+        .message.eliana, .message.agent {
             align-self: flex-start;
             background: #FFFFFF;
             color: #1E3A5F;
@@ -821,9 +821,23 @@
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
         }
 
-        .message.eliana br {
+        .message.eliana br, .message.agent br {
             display: block;
             margin: 6px 0;
+        }
+
+        .agent-avatar-mini {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6em;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+            flex-shrink: 0;
         }
 
         .message.user {
@@ -2948,6 +2962,361 @@
             transform: translateX(4px);
             color: var(--destreza-color);
         }
+
+        /* === Modal de tarjeta === */
+        .tarjeta-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2500;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tarjeta-modal-overlay.active {
+            display: flex;
+        }
+
+        .tarjeta-modal {
+            background: #fff;
+            border-radius: 24px;
+            max-width: 960px;
+            width: 95%;
+            max-height: 92vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            animation: modalIn 0.3s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        .tarjeta-modal-close {
+            position: absolute;
+            top: 16px; right: 16px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 50%;
+            width: 36px; height: 36px;
+            font-size: 1.4em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            z-index: 10;
+            transition: background 0.2s;
+        }
+
+        .tarjeta-modal-close:hover {
+            background: #e0e0e0;
+        }
+
+        .tarjeta-modal-content {
+            display: flex;
+            gap: 32px;
+            padding: 40px 36px;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 768px) {
+            .tarjeta-modal-content {
+                flex-direction: column;
+                align-items: center;
+                gap: 24px;
+                padding: 32px 20px;
+            }
+        }
+
+        /* Flip container */
+        .tarjeta-flip-container {
+            width: 440px;
+            min-width: 440px;
+            height: 630px;
+            perspective: 1000px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 768px) {
+            .tarjeta-flip-container {
+                width: 100%;
+                min-width: unset;
+                max-width: 440px;
+                height: 600px;
+            }
+        }
+
+        .tarjeta-flipper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .tarjeta-flip-container.flipped .tarjeta-flipper {
+            transform: rotateY(180deg);
+        }
+
+        .tarjeta-face {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tarjeta-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Header de la tarjeta */
+        .tarjeta-header {
+            background: #8B1A1A;
+            padding: 14px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .tarjeta-header-title {
+            font-family: 'Lexend', sans-serif;
+            font-weight: 800;
+            font-size: 1.05em;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .tarjeta-header-icon {
+            width: 28px;
+            height: 28px;
+            filter: brightness(0) invert(1);
+        }
+
+        /* Body de la tarjeta */
+        .tarjeta-body {
+            flex: 1;
+            background: #F5ECD7;
+            padding: 20px 24px;
+            overflow-y: hidden;
+            font-size: 0.9em;
+            line-height: 1.55;
+            color: #333;
+        }
+
+        /* Pasos (cara A) */
+        .tarjeta-paso {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+            align-items: flex-start;
+        }
+
+        .paso-num {
+            font-family: 'Lexend', sans-serif;
+            font-size: 2.2em;
+            font-weight: 800;
+            color: #8B1A1A;
+            line-height: 1;
+            min-width: 28px;
+        }
+
+        .paso-content {
+            flex: 1;
+        }
+
+        .paso-content strong {
+            font-family: 'Lexend', sans-serif;
+            font-size: 1.05em;
+            color: #222;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .paso-img {
+            width: 56px;
+            height: auto;
+            flex-shrink: 0;
+            align-self: center;
+        }
+
+        .paso-img-sm {
+            width: 48px;
+        }
+
+        .reca-img.paso-img {
+            width: 90px;
+        }
+
+        .reca-img.truco-img {
+            width: 130px;
+        }
+
+        /* Section title (cara B) */
+        .tarjeta-section-title {
+            font-family: 'Lexend', sans-serif;
+            font-weight: 700;
+            font-size: 1em;
+            color: #222;
+            text-align: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        /* Trucos (cara B) */
+        .tarjeta-truco {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+            align-items: flex-start;
+        }
+
+        .truco-content {
+            flex: 1;
+        }
+
+        .truco-content strong {
+            font-family: 'Lexend', sans-serif;
+            font-size: 1.05em;
+            color: #222;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .truco-img {
+            width: 56px;
+            height: auto;
+            flex-shrink: 0;
+            align-self: center;
+        }
+
+        .truco-img-left {
+            order: -1;
+        }
+
+        /* Flip hint */
+        .tarjeta-flip-hint {
+            background: rgba(139, 26, 26, 0.08);
+            text-align: center;
+            padding: 6px;
+            font-size: 0.7em;
+            color: #8B1A1A;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            flex-shrink: 0;
+        }
+
+        /* Agent detail panel */
+        .agent-detail {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .agent-detail {
+                text-align: center;
+                align-items: center;
+            }
+        }
+
+        .agent-detail-siglas {
+            font-family: 'Space Grotesk', 'Lexend', sans-serif;
+            font-size: 3.5em;
+            font-weight: 900;
+            color: #2175A5;
+            letter-spacing: 3px;
+            line-height: 1;
+            opacity: 0.15;
+        }
+
+        .agent-detail-name {
+            font-family: 'Space Grotesk', 'Lexend', sans-serif;
+            font-size: 2.2em;
+            font-weight: 800;
+            color: #1E3A5F;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+        }
+
+        .agent-detail-desc {
+            font-size: 0.95em;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 24px;
+            max-width: 360px;
+        }
+
+        .agent-detail-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .agent-detail-actions {
+                justify-content: center;
+            }
+        }
+
+        .btn-download {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 18px 24px;
+            border-radius: 14px;
+            font-family: 'Lexend', sans-serif;
+            font-size: 0.95em;
+            font-weight: 700;
+            text-decoration: none;
+            color: #8B1A1A;
+            background: #FFF3E0;
+            border: 2px dashed #D4A373;
+            transition: all 0.25s;
+            cursor: pointer;
+        }
+
+        .btn-download:hover {
+            background: #FFE8CC;
+            border-color: #8B1A1A;
+            box-shadow: 0 4px 16px rgba(139, 26, 26, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .btn-activate {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px 24px;
+            border-radius: 14px;
+            font-family: 'Lexend', sans-serif;
+            font-size: 0.95em;
+            font-weight: 700;
+            color: #fff;
+            background: #1E3A5F;
+            border: 2px solid #1E3A5F;
+            transition: all 0.25s;
+            cursor: pointer;
+        }
+
+        .btn-activate:hover {
+            transform: translateY(-2px);
+            background: #264d78;
+            box-shadow: 0 6px 20px rgba(30, 58, 95, 0.25);
+        }
     </style>
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -2976,25 +3345,17 @@
                 <div class="destreza-header">
                     <div class="destreza-info">
                         <h3 class="destreza-name">Comprensión lectora</h3>
-                        <span class="destreza-count">2 agentes</span>
+                        <span class="destreza-count">1 agente</span>
                     </div>
                     <div class="destreza-siglas">CL</div>
                     <svg class="destreza-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                 </div>
                 <div class="destreza-agents">
-                    <div class="agent-mini" onclick="event.stopPropagation(); openAgent('comprension')">
-                        <span class="agent-mini-siglas" style="color: #2175A5">CMP</span>
+                    <div class="agent-mini" onclick="event.stopPropagation(); openTarjetaModal('lucapi')">
+                        <span class="agent-mini-siglas" style="color: #2175A5">LCP</span>
                         <div class="agent-mini-info">
-                            <span class="agent-mini-name">Comprensión</span>
-                            <span class="agent-mini-desc">Analiza textos y organiza ideas visualmente</span>
-                        </div>
-                        <span class="agent-mini-arrow">&rarr;</span>
-                    </div>
-                    <div class="agent-mini" onclick="event.stopPropagation(); openAgent('mapamental')">
-                        <span class="agent-mini-siglas" style="color: #1E3A5F">MAP</span>
-                        <div class="agent-mini-info">
-                            <span class="agent-mini-name">Mapa Mental</span>
-                            <span class="agent-mini-desc">Conecta ideas y construye mapas para entender</span>
+                            <span class="agent-mini-name">LUCAPI</span>
+                            <span class="agent-mini-desc">Lee en Cuatro Pasos — Estrategia de comprensión lectora</span>
                         </div>
                         <span class="agent-mini-arrow">&rarr;</span>
                     </div>
@@ -3021,13 +3382,20 @@
                 <div class="destreza-header">
                     <div class="destreza-info">
                         <h3 class="destreza-name">Expresión e interacción escrita</h3>
-                        <span class="destreza-count">Próximamente</span>
+                        <span class="destreza-count">1 agente</span>
                     </div>
                     <div class="destreza-siglas">EIE</div>
                     <svg class="destreza-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                 </div>
                 <div class="destreza-agents">
-                    <div class="destreza-empty">Agentes en desarrollo</div>
+                    <div class="agent-mini" onclick="event.stopPropagation(); openTarjetaModal('reca')">
+                        <span class="agent-mini-siglas" style="color: #2E7D32">RC</span>
+                        <div class="agent-mini-info">
+                            <span class="agent-mini-name">RECA</span>
+                            <span class="agent-mini-desc">Escribe un Email — Estrategia de expresión escrita</span>
+                        </div>
+                        <span class="agent-mini-arrow">&rarr;</span>
+                    </div>
                 </div>
             </div>
 
@@ -3148,6 +3516,34 @@
     <script>
         let currentExpanded = null;
 
+        // Registro de agentes
+        const agentRegistry = {
+            'lucapi': { name: 'LUCAPI', siglas: 'LCP', color: '#2175A5', desc: 'Estrategia de comprensión lectora en 4 pasos' },
+            'reca': { name: 'RECA', siglas: 'RC', color: '#2E7D32', desc: 'Estrategia para escribir un email en 4 pasos' },
+        };
+        let currentAgent = null;
+
+        const tarjetaModalMap = {
+            'lucapi': 'tarjetaModalOverlay',
+            'reca': 'tarjetaModalOverlayReca',
+        };
+
+        function openTarjetaModal(agentId) {
+            currentAgent = agentRegistry[agentId] || { name: agentId.toUpperCase(), siglas: '??', color: '#1E3A5F', desc: '' };
+            const overlayId = tarjetaModalMap[agentId] || 'tarjetaModalOverlay';
+            const overlay = document.getElementById(overlayId);
+            if (overlay) {
+                overlay.classList.add('active');
+                const flipContainer = overlay.querySelector('.tarjeta-flip-container');
+                if (flipContainer) flipContainer.classList.remove('flipped');
+            }
+        }
+
+        function closeTarjetaModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.querySelectorAll('.tarjeta-modal-overlay').forEach(o => o.classList.remove('active'));
+        }
+
         function toggleDestreza(card) {
             if (currentExpanded && currentExpanded !== card) {
                 currentExpanded.classList.remove('open');
@@ -3164,7 +3560,8 @@
             'mapamental': 'mapamental',
             'mapa-mental': 'mapamental',
             'traductor': 'traduccion',
-            'traduccion': 'traduccion'
+            'traduccion': 'traduccion',
+            'reca': 'reca'
         };
 
         function openAgent(agentType) {
@@ -3172,12 +3569,25 @@
             const urlName = Object.keys(agentUrlMap).find(k => agentUrlMap[k] === agentType) || agentType;
             history.pushState({ agent: agentType }, '', '/agente/' + urlName);
 
+            // Actualizar header del chat con el agente actual
+            if (currentAgent) {
+                const headerAvatar = document.getElementById('chatAgentAvatar');
+                const headerName = document.getElementById('chatAgentName');
+                const headerDesc = document.getElementById('chatAgentDesc');
+                if (headerAvatar) {
+                    headerAvatar.textContent = currentAgent.siglas;
+                    headerAvatar.style.background = currentAgent.color;
+                }
+                if (headerName) headerName.textContent = currentAgent.name;
+                if (headerDesc) headerDesc.textContent = currentAgent.desc;
+            }
+
             // Open the modal
             const overlay = document.getElementById('aiModalOverlay');
             if (overlay) {
                 overlay.classList.add('active');
                 restoreAccessibilityPreference();
-                const welcomeDiv = document.querySelector('#chatMessages .message.eliana > div:last-child');
+                const welcomeDiv = document.querySelector('#chatMessages .message.agent > div:last-child');
                 if (welcomeDiv) {
                     welcomeDiv.textContent = getRandomWelcomeMessage();
                 }
@@ -3320,7 +3730,7 @@
                 // Restaurar preferencia de accesibilidad
                 restoreAccessibilityPreference();
                 // Actualizar mensaje de bienvenida con uno aleatorio
-                const welcomeDiv = document.querySelector('#chatMessages .message.eliana > div:last-child');
+                const welcomeDiv = document.querySelector('#chatMessages .message.agent > div:last-child');
                 if (welcomeDiv) {
                     welcomeDiv.textContent = getRandomWelcomeMessage();
                 }
@@ -3555,7 +3965,7 @@
             }
         }
 
-        const CHAT_API_URL = '/api/chat';
+        const CHAT_API_URL = '/api/chat-agent';
         let chatHistory = [];
         let currentActivityContext = "";
         let currentActivityId = 1;
@@ -3573,12 +3983,11 @@
 
         // Mensajes de bienvenida variados
         const welcomeMessages = [
-            "¡Hola! Soy Eliana, tu tutora de español. Elige una opción para empezar:",
-            "¡Bienvenido/a! Estoy aquí para ayudarte con esta actividad. ¿Qué te gustaría hacer?",
+            "¡Hola! Elige una opción para empezar:",
+            "¡Bienvenido/a! Estoy aquí para ayudarte. ¿Qué te gustaría hacer?",
             "¡Hola! ¿Listo/a para practicar? Aquí tienes algunas opciones:",
-            "¡Hey! Vamos a trabajar juntos en esta actividad. ¿Por dónde empezamos?",
+            "¡Vamos a trabajar juntos! ¿Por dónde empezamos?",
             "¡Qué bien verte! Estas son mis propuestas para ayudarte:",
-            "¡Hola! Soy Eliana y estoy aquí para acompañarte. ¿Qué necesitas?",
             "¡Genial que estés aquí! Elige cómo puedo ayudarte hoy:",
             "¡Hola! ¿Empezamos? Aquí tienes varias formas en las que puedo ayudarte:"
         ];
@@ -3635,9 +4044,9 @@
 
                 // Simular delay de IA
                 const loadingDiv = document.createElement('div');
-                loadingDiv.className = 'message eliana thinking-message';
+                loadingDiv.className = 'message agent thinking-message';
                 loadingDiv.innerHTML = `
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div class="thinking-indicator">
                         <div class="typing-dots"><span></span><span></span><span></span></div>
                         <span style="margin-left: 5px;">Analizando el texto...</span>
@@ -3655,7 +4064,7 @@
                 if (lexicoAction && lexicoAction.options_json && lexicoAction.options_json.type === 'lexical_analysis') {
                     showLexicalAnalysis(lexicoAction.options_json);
                 } else {
-                    addMessageToChat("Lo siento, el análisis léxico no está disponible para esta actividad.", 'eliana', false);
+                    addMessageToChat("Lo siento, el análisis léxico no está disponible para esta actividad.", 'agent', false);
                 }
                 return;
             }
@@ -3666,9 +4075,9 @@
 
                 // Simular delay de IA
                 const loadingDiv = document.createElement('div');
-                loadingDiv.className = 'message eliana thinking-message';
+                loadingDiv.className = 'message agent thinking-message';
                 loadingDiv.innerHTML = `
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div class="thinking-indicator">
                         <div class="typing-dots"><span></span><span></span><span></span></div>
                         <span style="margin-left: 5px;">Preparando las imágenes...</span>
@@ -3686,7 +4095,7 @@
                 if (comprensionAction && comprensionAction.options_json && comprensionAction.options_json.type === 'visual_comprehension') {
                     showVisualComprehension(comprensionAction.options_json);
                 } else {
-                    addMessageToChat("Lo siento, la actividad de comprensión visual no está disponible.", 'eliana', false);
+                    addMessageToChat("Lo siento, la actividad de comprensión visual no está disponible.", 'agent', false);
                 }
                 return;
             }
@@ -3697,9 +4106,9 @@
 
                 // Simular delay de IA
                 const loadingDiv = document.createElement('div');
-                loadingDiv.className = 'message eliana thinking-message';
+                loadingDiv.className = 'message agent thinking-message';
                 loadingDiv.innerHTML = `
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div class="thinking-indicator">
                         <div class="typing-dots"><span></span><span></span><span></span></div>
                         <span style="margin-left: 5px;">Preparando el mapa mental...</span>
@@ -3718,7 +4127,7 @@
                     (mapamentalAction.options_json.type === 'mind_map_timeline' || mapamentalAction.options_json.type === 'mind_map_builder')) {
                     showMindMap(mapamentalAction.options_json);
                 } else {
-                    addMessageToChat("Lo siento, el mapa mental no está disponible para esta actividad.", 'eliana', false);
+                    addMessageToChat("Lo siento, el mapa mental no está disponible para esta actividad.", 'agent', false);
                 }
                 return;
             }
@@ -3729,9 +4138,9 @@
 
                 // Simular delay de IA
                 const loadingDiv = document.createElement('div');
-                loadingDiv.className = 'message eliana thinking-message';
+                loadingDiv.className = 'message agent thinking-message';
                 loadingDiv.innerHTML = `
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div class="thinking-indicator">
                         <div class="typing-dots"><span></span><span></span><span></span></div>
                         <span style="margin-left: 5px;">Preparando la explicación gramatical...</span>
@@ -3747,12 +4156,12 @@
                 // Obtener datos del agente gramapop
                 const gramapopAction = activityActions['gramapop'];
                 if (gramapopAction && gramapopAction.initial_prompt) {
-                    // Mostrar el initial_prompt como mensaje de Eliana
-                    addMessageToChat(gramapopAction.initial_prompt, 'eliana', false);
+                    // Mostrar el initial_prompt como mensaje del agente
+                    addMessageToChat(gramapopAction.initial_prompt, 'agent', false);
                     // Mostrar selector de idiomas para gramapop
                     showGramapopLanguageSelector();
                 } else {
-                    addMessageToChat("Lo siento, la explicación gramatical no está disponible para esta actividad.", 'eliana', false);
+                    addMessageToChat("Lo siento, la explicación gramatical no está disponible para esta actividad.", 'agent', false);
                 }
                 return;
             }
@@ -3777,12 +4186,12 @@
 
                 // Simular delay de IA
                 const loadingDiv = document.createElement('div');
-                loadingDiv.className = 'message eliana thinking-message';
+                loadingDiv.className = 'message agent thinking-message';
                 loadingDiv.innerHTML = `
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div class="thinking-indicator">
                         <div class="typing-dots"><span></span><span></span><span></span></div>
-                        <span style="margin-left: 5px;">Eliana está pensando...</span>
+                        <span style="margin-left: 5px;">Pensando...</span>
                     </div>
                 `;
                 document.getElementById('chatMessages').appendChild(loadingDiv);
@@ -3794,7 +4203,7 @@
 
                 // Activar flag para esperar la edad
                 waitingForAge = true;
-                addMessageToChat("Para darte el mejor vocabulario, ¿cuántos años tienes?", 'eliana', false);
+                addMessageToChat("Para darte el mejor vocabulario, ¿cuántos años tienes?", 'agent', false);
                 return;
             }
 
@@ -3804,12 +4213,12 @@
 
                 // Simular delay de IA
                 const loadingDiv = document.createElement('div');
-                loadingDiv.className = 'message eliana thinking-message';
+                loadingDiv.className = 'message agent thinking-message';
                 loadingDiv.innerHTML = `
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div class="thinking-indicator">
                         <div class="typing-dots"><span></span><span></span><span></span></div>
-                        <span style="margin-left: 5px;">Eliana está pensando...</span>
+                        <span style="margin-left: 5px;">Pensando...</span>
                     </div>
                 `;
                 document.getElementById('chatMessages').appendChild(loadingDiv);
@@ -3821,7 +4230,7 @@
 
                 // Activar flag para esperar las palabras del usuario
                 waitingForMyWords = true;
-                addMessageToChat("¿Qué quieres decir? Escríbelo en tu idioma.<br><em style=\"font-size: 0.85em; color: #666;\">What do you want to say? Write it in your language.</em>", 'eliana', false);
+                addMessageToChat("¿Qué quieres decir? Escríbelo en tu idioma.<br><em style=\"font-size: 0.85em; color: #666;\">What do you want to say? Write it in your language.</em>", 'agent', false);
                 return;
             }
 
@@ -3831,12 +4240,12 @@
 
                 // Simular delay
                 const loadingDiv = document.createElement('div');
-                loadingDiv.className = 'message eliana thinking-message';
+                loadingDiv.className = 'message agent thinking-message';
                 loadingDiv.innerHTML = `
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div class="thinking-indicator">
                         <div class="typing-dots"><span></span><span></span><span></span></div>
-                        <span style="margin-left: 5px;">Eliana está pensando...</span>
+                        <span style="margin-left: 5px;">Pensando...</span>
                     </div>
                 `;
                 document.getElementById('chatMessages').appendChild(loadingDiv);
@@ -3851,7 +4260,7 @@
                     showRandomLuckyQuestion(action.options_json.questions);
                 } else {
                     // Fallback: si no hay options_json, usar la IA directamente
-                    addMessageToChat("¡Vamos a hacer algo divertido! ¿Cómo te sientes hoy?", 'eliana', false);
+                    addMessageToChat("¡Vamos a hacer algo divertido! ¿Cómo te sientes hoy?", 'agent', false);
                     waitingForLuckyChoice = true;
                 }
                 return;
@@ -3880,9 +4289,9 @@
 
             // Mostrar indicador de pensando
             const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'message eliana thinking-message';
+            loadingDiv.className = 'message agent thinking-message';
             loadingDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div class="thinking-indicator">
                     <div class="typing-dots">
                         <span></span>
@@ -3898,14 +4307,8 @@
             // Marcar tiempo de inicio para asegurar duración mínima
             const startTime = Date.now();
 
-            // Obtener parámetros del agente actual o usar defaults
-            const currentAction = action || {};
-            const llmModel = currentAction.llm_model || 'deepseek-chat';
-            const temperature = parseFloat(currentAction.temperature) || 0.7;
-            const maxTokens = parseInt(currentAction.max_tokens) || 300;
-            const systemPrompt = currentAction.system_prompt
-                ? currentAction.system_prompt.replace('{activity_context}', currentActivityContext)
-                : `Eres Eliana, una asistente virtual especializada en enseñar español nivel A1. Contexto: ${currentActivityContext}`;
+            // Agent key for BD-first endpoint (system prompt loaded from crew_agents)
+            const agentKey = currentAgent ? Object.keys(agentRegistry).find(k => agentRegistry[k] === currentAgent) || 'lucapi' : 'lucapi';
 
             try {
                 const response = await fetch(CHAT_API_URL, {
@@ -3914,20 +4317,15 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: llmModel,
+                        agent_key: agentKey,
                         messages: [
-                            {
-                                role: 'system',
-                                content: systemPrompt
-                            },
                             ...chatHistory,
                             {
                                 role: 'user',
                                 content: prompt
                             }
                         ],
-                        temperature: temperature,
-                        max_tokens: maxTokens
+                        max_tokens: 800
                     })
                 });
 
@@ -3949,7 +4347,7 @@
                         const shouldShowOptions = !aiResponse.includes('¿En qué idioma quieres') &&
                                                  !aiResponse.includes('¿Qué idioma prefieres') &&
                                                  !aiResponse.endsWith('?');
-                        addMessageToChat(aiResponse, 'eliana', shouldShowOptions);
+                        addMessageToChat(aiResponse, 'agent', shouldShowOptions);
 
                         // Actualizar historial
                         chatHistory.push({role: 'user', content: prompt});
@@ -3960,14 +4358,14 @@
                     if (loadingDiv && loadingDiv.parentNode) {
                         loadingDiv.remove();
                     }
-                    addMessageToChat('Lo siento, no pude obtener la respuesta. Por favor, intenta de nuevo.', 'eliana');
+                    addMessageToChat('Lo siento, no pude obtener la respuesta. Por favor, intenta de nuevo.', 'agent');
                 }
             } catch (error) {
                 console.error('Error al conectar con DeepSeek:', error);
                 if (loadingDiv && loadingDiv.parentNode) {
                     loadingDiv.remove();
                 }
-                addMessageToChat('Error de conexión. Verifica tu conexión a internet.', 'eliana');
+                addMessageToChat('Error de conexión. Verifica tu conexión a internet.', 'agent');
             }
         }
 
@@ -3976,10 +4374,13 @@
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}`;
 
-            if (sender === 'eliana') {
+            if (sender === 'agent') {
+                const agentName = currentAgent ? currentAgent.name : 'LUCAPI';
+                const agentSiglas = currentAgent ? currentAgent.siglas : 'LCP';
+                const agentColor = currentAgent ? currentAgent.color : '#2175A5';
                 // Procesar el texto para respetar los saltos de línea
                 const formattedText = text.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
-                messageDiv.innerHTML = `<div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div><div>${formattedText}</div>`;
+                messageDiv.innerHTML = `<div class="message-header"><span class="agent-avatar-mini" style="background: ${agentColor};">${agentSiglas}</span>${agentName}</div><div>${formattedText}</div>`;
             } else {
                 messageDiv.innerHTML = `<div>${text}</div>`;
             }
@@ -3994,7 +4395,7 @@
                                       isTranslationResponse;
             const isQuestion = (text.includes('¿') || text.includes('?')) && !isCompleteResponse;
 
-            if (showOptions && sender === 'eliana' && !isQuestion) {
+            if (showOptions && sender === 'agent' && !isQuestion) {
                 showActionOptions();
             }
 
@@ -4009,7 +4410,7 @@
             if (Object.keys(activityActions).length === 0) return;
 
             const optionsDiv = document.createElement('div');
-            optionsDiv.className = 'message eliana action-options';
+            optionsDiv.className = 'message agent action-options';
 
             // Generar botones dinámicos según activityActions
             let buttonsHTML = '';
@@ -4028,7 +4429,7 @@
             });
 
             optionsDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div style="margin-bottom: 8px; color: #666;">¿Quieres hacer otra actividad?</div>
                 <div class="ai-options" style="display: flex; flex-wrap: wrap; gap: 8px;">
                     ${buttonsHTML}
@@ -4042,9 +4443,9 @@
         function showLanguageSelector() {
             const messagesDiv = document.getElementById('chatMessages');
             const selectorDiv = document.createElement('div');
-            selectorDiv.className = 'message eliana';
+            selectorDiv.className = 'message agent';
             selectorDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div>Elige la lengua:</div>
                 <div class="language-selector" style="--unit-color: ${currentUnitColor};">
                     <button class="language-btn" onclick="selectLanguage('EN')">EN</button>
@@ -4064,7 +4465,7 @@
         function showGramapopLanguageSelector() {
             const messagesDiv = document.getElementById('chatMessages');
             const selectorDiv = document.createElement('div');
-            selectorDiv.className = 'message eliana';
+            selectorDiv.className = 'message agent';
             selectorDiv.innerHTML = `
                 <div class="language-selector" style="--unit-color: ${currentUnitColor};">
                     <button class="language-btn" onclick="selectGramapopLanguage('EN')">EN</button>
@@ -4101,9 +4502,9 @@
                 addMessageToChat('Otra lengua', 'user');
                 const messagesDiv = document.getElementById('chatMessages');
                 const inputDiv = document.createElement('div');
-                inputDiv.className = 'message eliana';
+                inputDiv.className = 'message agent';
                 inputDiv.innerHTML = `
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div>¿En qué idioma quieres que te explique?</div>
                     <div style="margin-top: 10px;">
                         <input type="text" id="gramapopCustomLang" placeholder="Escribe tu idioma..." style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; width: 200px;">
@@ -4201,10 +4602,10 @@ CRITICAL RULES:
 
             // Mostrar indicador de carga
             const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'message eliana';
+            loadingDiv.className = 'message agent';
             loadingDiv.id = 'gramapop-loading';
             loadingDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <div class="typing-dots"><span></span><span></span><span></span></div>
                     <span style="color: #666;">Traduciendo a ${langName}...</span>
@@ -4236,10 +4637,10 @@ CRITICAL RULES:
 
             // Mostrar indicador de carga
             const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'message eliana';
+            loadingDiv.className = 'message agent';
             loadingDiv.id = 'gramapop-ai-loading';
             loadingDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div class="typing-dots"><span></span><span></span><span></span></div>
             `;
             messagesDiv.appendChild(loadingDiv);
@@ -4252,7 +4653,7 @@ CRITICAL RULES:
                 4: 'SENTENCE BUILDER phase - practice constructing sentences with QUEDAR and QUEDARSE'
             };
 
-            const systemPrompt = `You are Eliana, a friendly Spanish teacher helping A1 level students understand the difference between QUEDAR and QUEDARSE.
+            const systemPrompt = `You are ${currentAgent ? currentAgent.name : 'LUCAPI'}, a friendly Spanish teacher helping A1 level students understand the difference between QUEDAR and QUEDARSE.
 
 Current phase: ${phaseContext[phase] || 'Grammar explanation'}
 
@@ -4287,9 +4688,9 @@ If the student asks something unrelated to this grammar topic, gently redirect t
                 document.getElementById('gramapop-ai-loading')?.remove();
 
                 const responseDiv = document.createElement('div');
-                responseDiv.className = 'message eliana';
+                responseDiv.className = 'message agent';
                 responseDiv.innerHTML = `
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana <i data-lucide="sparkles" style="width: 12px; height: 12px; color: #f59e0b; margin-left: 4px;"></i></div>
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'} <i data-lucide="sparkles" style="width: 12px; height: 12px; color: #f59e0b; margin-left: 4px;"></i></div>
                     <div>${aiResponse.replace(/\n/g, '<br>')}</div>
                 `;
                 messagesDiv.appendChild(responseDiv);
@@ -4301,9 +4702,9 @@ If the student asks something unrelated to this grammar topic, gently redirect t
                 document.getElementById('gramapop-ai-loading')?.remove();
 
                 const errorDiv = document.createElement('div');
-                errorDiv.className = 'message eliana';
+                errorDiv.className = 'message agent';
                 errorDiv.innerHTML = `
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div style="color: #ef4444;">Lo siento, ha ocurrido un error. Inténtalo de nuevo.</div>
                 `;
                 messagesDiv.appendChild(errorDiv);
@@ -4317,10 +4718,10 @@ If the student asks something unrelated to this grammar topic, gently redirect t
             const t = window.gramapopTexts || gramapopTranslations['English'];
 
             const inputDiv = document.createElement('div');
-            inputDiv.className = 'message eliana gramapop-question-input';
+            inputDiv.className = 'message agent gramapop-question-input';
             inputDiv.id = `gramapop-question-${phase}`;
             inputDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 12px;">
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                         <i data-lucide="message-circle-question" style="width: 16px; height: 16px; color: #0284c7;"></i>
@@ -4766,8 +5167,8 @@ If the student asks something unrelated to this grammar topic, gently redirect t
 
             // Fase 1a: Exposición de los ejemplos
             const modellingHTML = `
-                <div class="message eliana">
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message agent">
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div class="mars-phase mars-modelling" style="--unit-color: ${currentUnitColor};">
 
                         <div class="mars-example" data-example="1">
@@ -4837,8 +5238,8 @@ If the student asks something unrelated to this grammar topic, gently redirect t
             const t = window.gramapopTexts;
 
             const q1HTML = `
-                <div class="message eliana" id="modelling-q1">
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message agent" id="modelling-q1">
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div class="mars-phase" style="--unit-color: ${currentUnitColor};">
                         <p style="font-weight: 600; margin-bottom: 12px;"><i data-lucide="help-circle" style="width: 16px; height: 16px; display: inline; vertical-align: middle;"></i> ${t.modellingQ1}</p>
                         <div class="mars-options" id="modelling-q1-options">
@@ -4887,8 +5288,8 @@ If the student asks something unrelated to this grammar topic, gently redirect t
             const t = window.gramapopTexts;
 
             const q2HTML = `
-                <div class="message eliana" id="modelling-q2">
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message agent" id="modelling-q2">
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div class="mars-phase" style="--unit-color: ${currentUnitColor};">
                         <p style="font-weight: 600; margin-bottom: 12px;"><i data-lucide="help-circle" style="width: 16px; height: 16px; display: inline; vertical-align: middle;"></i> ${t.modellingQ2}</p>
                         <div class="mars-options" id="modelling-q2-options">
@@ -4937,8 +5338,8 @@ If the student asks something unrelated to this grammar topic, gently redirect t
             const t = window.gramapopTexts;
 
             const q3HTML = `
-                <div class="message eliana" id="modelling-q3">
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message agent" id="modelling-q3">
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div class="mars-phase" style="--unit-color: ${currentUnitColor};">
                         <p style="font-weight: 600; margin-bottom: 12px;"><i data-lucide="help-circle" style="width: 16px; height: 16px; display: inline; vertical-align: middle;"></i> ${t.modellingQ3}</p>
                         <div class="mars-options" id="modelling-q3-options">
@@ -4987,8 +5388,8 @@ If the student asks something unrelated to this grammar topic, gently redirect t
             const t = window.gramapopTexts;
 
             const summaryHTML = `
-                <div class="message eliana">
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message agent">
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div class="mars-phase" style="--unit-color: ${currentUnitColor};">
                         <div style="background: linear-gradient(135deg, ${currentUnitColor}15, ${currentUnitColor}05); border: 2px solid ${currentUnitColor}; padding: 16px; border-radius: 8px; text-align: center;">
                             <p style="font-size: 1.1em; font-weight: 700; margin: 0;">${t.modellingSummary}</p>
@@ -5013,8 +5414,8 @@ If the student asks something unrelated to this grammar topic, gently redirect t
             const t = window.gramapopTexts;
 
             const awarenessHTML = `
-                <div class="message eliana">
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message agent">
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div class="mars-phase mars-awareness" style="--unit-color: ${currentUnitColor};">
                         <div style="font-weight: 600; margin-bottom: 16px; font-size: 1.1em;"><i data-lucide="lightbulb" style="width: 18px; height: 18px; display: inline; vertical-align: middle; color: #f59e0b;"></i> ${t.awarenessTitle}</div>
 
@@ -5115,8 +5516,8 @@ If the student asks something unrelated to this grammar topic, gently redirect t
             const t = window.gramapopTexts;
 
             const receptiveHTML = `
-                <div class="message eliana">
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message agent">
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div class="mars-phase mars-receptive" style="--unit-color: ${currentUnitColor};">
                         <div style="font-weight: 600; margin-bottom: 12px;"><i data-lucide="eye" style="width: 16px; height: 16px; display: inline; vertical-align: middle;"></i> ${t.receptiveTitle}</div>
 
@@ -5215,8 +5616,8 @@ If the student asks something unrelated to this grammar topic, gently redirect t
 
             // Primero mostrar las tablas como MODELO (sin interacción)
             const modelHTML = `
-                <div class="message eliana">
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message agent">
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div style="margin-bottom: 12px;">
                         <div style="font-weight: 600; font-size: 1.1em; margin-bottom: 8px;"><i data-lucide="table" style="width: 18px; height: 18px; display: inline; vertical-align: middle; color: ${currentUnitColor};"></i> ${t.sbTitle}</div>
                         <div style="background: #f0f9ff; border-left: 4px solid #0284c7; padding: 10px; border-radius: 4px; color: #0369a1;">
@@ -5369,8 +5770,8 @@ If the student asks something unrelated to this grammar topic, gently redirect t
             const showInstructions = window.sbPracticeIndex === 0;
 
             const practiceHTML = `
-                <div class="message eliana" id="sb-practice-${window.sbPracticeIndex}">
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message agent" id="sb-practice-${window.sbPracticeIndex}">
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
 
                     ${showInstructions ? `
                     <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 10px; border-radius: 4px; margin-bottom: 12px; color: #92400e;">
@@ -5581,8 +5982,8 @@ If the student asks something unrelated to this grammar topic, gently redirect t
             const t = window.gramapopTexts;
 
             const completeHTML = `
-                <div class="message eliana">
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message agent">
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div style="text-align: center; padding: 20px;">
                         <i data-lucide="party-popper" style="width: 32px; height: 32px; color: #22c55e;"></i>
                         <p style="color: #22c55e; font-size: 1.2em; font-weight: 600; margin-top: 12px;">Has completado el Gramapop</p>
@@ -5609,10 +6010,10 @@ If the student asks something unrelated to this grammar topic, gently redirect t
 
             // Mostrar indicador de carga
             const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'message eliana';
+            loadingDiv.className = 'message agent';
             loadingDiv.id = 'explain-loading';
             loadingDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <div style="width: 16px; height: 16px; border: 2px solid #8b5cf6; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
                     <span style="color: #666;">Preparando explicación detallada...</span>
@@ -5622,7 +6023,7 @@ If the student asks something unrelated to this grammar topic, gently redirect t
             scrollToNewContent();
 
             try {
-                const systemPrompt = `Eres Eliana, profesora de español. Explica QUEDAR vs QUEDARSE en ${lang}. Sé breve y clara.
+                const systemPrompt = `Eres ${currentAgent ? currentAgent.name : 'LUCAPI'}, profesora de español. Explica QUEDAR vs QUEDARSE en ${lang}. Sé breve y clara.
 
 QUEDAR = concertar cita (movimiento): quedar CON amigos, EN el parque, A LAS cinco.
 QUEDARSE = permanecer (sin movimiento): quedarse EN casa, CON mi madre.
@@ -5648,8 +6049,8 @@ Da 2 ejemplos de cada uno. Responde en ${lang}.`;
 
                 // Mostrar respuesta
                 const responseHTML = `
-                    <div class="message eliana">
-                        <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                    <div class="message agent">
+                        <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                         <div style="background: linear-gradient(135deg, #8b5cf615, #8b5cf605); border: 1px solid #8b5cf6; padding: 16px; border-radius: 8px;">
                             <div style="font-weight: 600; margin-bottom: 12px; color: #7c3aed;"><i data-lucide="book-open" style="width: 16px; height: 16px; display: inline; vertical-align: middle;"></i> ${t.explainMoreBtn}</div>
                             <div style="white-space: pre-wrap; line-height: 1.6;">${aiResponse}</div>
@@ -5664,8 +6065,8 @@ Da 2 ejemplos de cada uno. Responde en ${lang}.`;
                 console.error('Error:', error);
                 document.getElementById('explain-loading')?.remove();
                 messagesDiv.innerHTML += `
-                    <div class="message eliana">
-                        <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                    <div class="message agent">
+                        <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                         <p style="color: #dc2626;">Error al obtener la explicación. Por favor, intenta de nuevo.</p>
                     </div>
                 `;
@@ -5699,7 +6100,7 @@ Da 2 ejemplos de cada uno. Responde en ${lang}.`;
             // Si es "OTHER", preguntar por el idioma
             if (lang === 'OTHER') {
                 waitingForCustomLanguage = true;
-                addMessageToChat("¿A qué idioma quieres traducir? Escribe el nombre del idioma:", 'eliana', false);
+                addMessageToChat("¿A qué idioma quieres traducir? Escribe el nombre del idioma:", 'agent', false);
                 return;
             }
 
@@ -5721,16 +6122,16 @@ Da 2 ejemplos de cada uno. Responde en ${lang}.`;
 
             // Mostrar indicador de cargando
             const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'message eliana thinking-message';
+            loadingDiv.className = 'message agent thinking-message';
             loadingDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div class="thinking-indicator">
                     <div class="typing-dots">
                         <span></span>
                         <span></span>
                         <span></span>
                     </div>
-                    <span style="margin-left: 5px;">Eliana está pensando...</span>
+                    <span style="margin-left: 5px;">Pensando...</span>
                 </div>
             `;
             const messagesDiv = document.getElementById('chatMessages');
@@ -5757,12 +6158,12 @@ Da 2 ejemplos de cada uno. Responde en ${lang}.`;
                     // No hay traducción en la BD, usar DeepSeek como fallback
                     await getTranslationFromAI(lang, langNames[lang]);
                 } else {
-                    addMessageToChat("Lo siento, hubo un error al obtener la traducción. Inténtalo de nuevo.", 'eliana', true);
+                    addMessageToChat("Lo siento, hubo un error al obtener la traducción. Inténtalo de nuevo.", 'agent', true);
                 }
             } catch (error) {
                 console.error('Error al obtener traducción:', error);
                 loadingDiv.remove();
-                addMessageToChat("Error de conexión. Verifica tu conexión a internet.", 'eliana', true);
+                addMessageToChat("Error de conexión. Verifica tu conexión a internet.", 'agent', true);
             }
         }
 
@@ -5800,9 +6201,9 @@ Da 2 ejemplos de cada uno. Responde en ${lang}.`;
             // Añadir al chat
             const messagesDiv = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'message eliana';
+            messageDiv.className = 'message agent';
             messageDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div>¡Aquí tienes el vocabulario!</div>
                 ${cardsHTML}
             `;
@@ -5852,9 +6253,9 @@ Da 2 ejemplos de cada uno. Responde en ${lang}.`;
             // Añadir al chat
             const messagesDiv = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'message eliana';
+            messageDiv.className = 'message agent';
             messageDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div>¡Aquí tienes el vocabulario en ${langName}!</div>
                 ${cardsHTML}
             `;
@@ -5892,9 +6293,9 @@ Da 2 ejemplos de cada uno. Responde en ${lang}.`;
             // Añadir al chat
             const messagesDiv = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'message eliana';
+            messageDiv.className = 'message agent';
             messageDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div>¡Aquí tienes el vocabulario en ${langName}!</div>
                 ${cardsHTML}
             `;
@@ -5963,9 +6364,9 @@ Da 2 ejemplos de cada uno. Responde en ${lang}.`;
 
             // Añadir al chat (messagesDiv ya está declarado arriba)
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'message eliana';
+            messageDiv.className = 'message agent';
             messageDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div>Aquí está el diálogo. Marca las frases que quieres traducir al ${langName.toLowerCase()}:</div>
                 ${chunksHTML}
             `;
@@ -6029,9 +6430,9 @@ Da 2 ejemplos de cada uno. Responde en ${lang}.`;
 
             // Añadir al chat
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'message eliana';
+            messageDiv.className = 'message agent';
             messageDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div>Aquí está el diálogo. Marca las frases que quieres traducir al ${langName.toLowerCase()}:</div>
                 ${chunksHTML}
             `;
@@ -6072,10 +6473,10 @@ Da 2 ejemplos de cada uno. Responde en ${lang}.`;
             // Mostrar indicador de carga
             const messagesDiv = document.getElementById('chatMessages');
             const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'message eliana thinking-message';
+            loadingDiv.className = 'message agent thinking-message';
             loadingDiv.id = 'dialogue-ai-loading';
             loadingDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div class="thinking-indicator">
                     <div class="typing-dots">
                         <span></span>
@@ -6135,9 +6536,9 @@ IMPORTANTE:
                     translationsHTML += '</div>';
 
                     const translationDiv = document.createElement('div');
-                    translationDiv.className = 'message eliana';
+                    translationDiv.className = 'message agent';
                     translationDiv.innerHTML = `
-                        <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                        <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                         <div>¡Aquí tienes las traducciones al ${langName}!</div>
                         ${translationsHTML}
                     `;
@@ -6147,12 +6548,12 @@ IMPORTANTE:
                     // Mostrar opciones de acción
                     showActionOptions();
                 } else {
-                    addMessageToChat("Lo siento, no pude generar la traducción. Inténtalo de nuevo.", 'eliana', true);
+                    addMessageToChat("Lo siento, no pude generar la traducción. Inténtalo de nuevo.", 'agent', true);
                 }
             } catch (error) {
                 console.error('Error al traducir:', error);
                 document.getElementById('dialogue-ai-loading')?.remove();
-                addMessageToChat("Error de conexión. Verifica tu conexión a internet.", 'eliana', true);
+                addMessageToChat("Error de conexión. Verifica tu conexión a internet.", 'agent', true);
             }
         }
 
@@ -6223,9 +6624,9 @@ IMPORTANTE:
             `;
 
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'message eliana';
+            messageDiv.className = 'message agent';
             messageDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div>He analizado el diálogo y encontré estos campos léxicos:</div>
                 ${analysisHTML}
             `;
@@ -6389,9 +6790,9 @@ IMPORTANTE:
             `;
 
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'message eliana';
+            messageDiv.className = 'message agent';
             messageDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div>¡Vamos a comprobar si entiendes el diálogo!</div>
                 ${instructionHTML}
             `;
@@ -6524,9 +6925,9 @@ IMPORTANTE:
             if (isCorrect) {
                 // Todas correctas
                 const successDiv = document.createElement('div');
-                successDiv.className = 'message eliana';
+                successDiv.className = 'message agent';
                 successDiv.innerHTML = `
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div class="comprehension-success">
                         <i data-lucide="party-popper" style="width: 24px; height: 24px; color: #1E3A5F;"></i>
                         ¡Excelente! Has ordenado todas las viñetas correctamente.
@@ -6545,9 +6946,9 @@ IMPORTANTE:
             } else {
                 // Algunas incorrectas
                 const hintDiv = document.createElement('div');
-                hintDiv.className = 'message eliana comprehension-hint-message';
+                hintDiv.className = 'message agent comprehension-hint-message';
                 hintDiv.innerHTML = `
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div class="comprehension-hint">
                         Tienes ${correctCount} de ${correctOrder.length} en la posición correcta.
                         Las imágenes marcadas en violeta están bien. ¡Intenta de nuevo con las rojas!
@@ -6584,9 +6985,9 @@ IMPORTANTE:
 
             const messagesDiv = document.getElementById('chatMessages');
             const questionDiv = document.createElement('div');
-            questionDiv.className = 'message eliana';
+            questionDiv.className = 'message agent';
             questionDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div>Ahora responde estas preguntas sobre el diálogo:</div>
                 ${questionsHTML}
             `;
@@ -6621,9 +7022,9 @@ IMPORTANTE:
                 setTimeout(() => {
                     const messagesDiv = document.getElementById('chatMessages');
                     const resultDiv = document.createElement('div');
-                    resultDiv.className = 'message eliana';
+                    resultDiv.className = 'message agent';
                     resultDiv.innerHTML = `
-                        <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                        <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                         <div class="comprehension-final-result">
                             <i data-lucide="bar-chart-2" style="width: 24px; height: 24px; color: #1E3A5F;"></i>
                             Has acertado ${correctAnswers} de ${currentComprehensionData.questions.length} preguntas.
@@ -6748,9 +7149,9 @@ IMPORTANTE:
             `;
 
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'message eliana';
+            messageDiv.className = 'message agent';
             messageDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div>Aquí tienes el mapa de la conversación. Observa cómo se estructura un diálogo para quedar con amigos:</div>
                 ${timelineHTML}
             `;
@@ -6842,9 +7243,9 @@ IMPORTANTE:
 
                 const messagesDiv = document.getElementById('chatMessages');
                 const messageDiv = document.createElement('div');
-                messageDiv.className = 'message eliana';
+                messageDiv.className = 'message agent';
                 messageDiv.innerHTML = `
-                    <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                    <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                     <div>¡Aquí tienes las traducciones!</div>
                     ${translationsHTML}
                 `;
@@ -6884,9 +7285,9 @@ IMPORTANTE:
 
             // Mostrar indicador de carga
             const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'message eliana thinking-message';
+            loadingDiv.className = 'message agent thinking-message';
             loadingDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div class="thinking-indicator">
                     <div class="typing-dots"><span></span><span></span><span></span></div>
                     <span style="margin-left: 5px;">Traduciendo al ${langName.toLowerCase()}...</span>
@@ -6933,9 +7334,9 @@ IMPORTANTE:
                     translationsHTML += '</div>';
 
                     const messageDiv = document.createElement('div');
-                    messageDiv.className = 'message eliana';
+                    messageDiv.className = 'message agent';
                     messageDiv.innerHTML = `
-                        <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                        <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                         <div>¡Aquí tienes las traducciones!</div>
                         ${translationsHTML}
                     `;
@@ -6947,7 +7348,7 @@ IMPORTANTE:
             } catch (error) {
                 console.error('Error:', error);
                 loadingDiv.remove();
-                addMessageToChat('Error al traducir. Inténtalo de nuevo.', 'eliana', true);
+                addMessageToChat('Error al traducir. Inténtalo de nuevo.', 'agent', true);
             }
         }
 
@@ -6987,9 +7388,9 @@ IMPORTANTE:
             // Añadir al chat
             const messagesDiv = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'message eliana';
+            messageDiv.className = 'message agent';
             messageDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div>¡Vamos a conocerte mejor!</div>
                 ${cardsHTML}
             `;
@@ -7020,12 +7421,12 @@ IMPORTANTE:
 
             // Mostrar indicador de pensando
             const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'message eliana thinking-message';
+            loadingDiv.className = 'message agent thinking-message';
             loadingDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div class="thinking-indicator">
                     <div class="typing-dots"><span></span><span></span><span></span></div>
-                    <span style="margin-left: 5px;">Eliana está preparando algo especial...</span>
+                    <span style="margin-left: 5px;">Preparando algo especial...</span>
                 </div>
             `;
             document.getElementById('chatMessages').appendChild(loadingDiv);
@@ -7037,7 +7438,7 @@ IMPORTANTE:
             // Obtener el estilo de vida desde la opción seleccionada (viene de la BD)
             const estilo = selectedOption.estilo || 'activo y social';
 
-            const systemPrompt = `Eres Eliana, profesora de español A1.
+            const systemPrompt = `Eres ${currentAgent ? currentAgent.name : 'LUCAPI'}, profesora de español A1.
 
 El usuario eligió "${selectedOption.label}" que indica un estilo: ${estilo}.
 
@@ -7060,7 +7461,7 @@ REGLAS:
             const userContext = `Elegí: ${selectedOption.label}`;
 
             try {
-                const response = await fetch(CHAT_API_URL, {
+                const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -7094,20 +7495,20 @@ REGLAS:
                         if (jsonData.frases && Array.isArray(jsonData.frases)) {
                             displayLuckyCards(jsonData.frases);
                         } else {
-                            addMessageToChat(aiResponse, 'eliana', true);
+                            addMessageToChat(aiResponse, 'agent', true);
                         }
                     } catch (e) {
                         // Si no es JSON válido, mostrar como texto normal
                         console.log('No es JSON, mostrando como texto:', e);
-                        addMessageToChat(aiResponse, 'eliana', true);
+                        addMessageToChat(aiResponse, 'agent', true);
                     }
                 } else {
-                    addMessageToChat("¡Ups! Algo salió mal. ¿Intentamos de nuevo?", 'eliana', true);
+                    addMessageToChat("¡Ups! Algo salió mal. ¿Intentamos de nuevo?", 'agent', true);
                 }
             } catch (error) {
                 console.error('Error:', error);
                 loadingDiv.remove();
-                addMessageToChat("Error de conexión. Verifica tu conexión a internet.", 'eliana', true);
+                addMessageToChat("Error de conexión. Verifica tu conexión a internet.", 'agent', true);
             }
 
             currentLuckyQuestion = null;
@@ -7131,9 +7532,9 @@ REGLAS:
             // Añadir al chat
             const messagesDiv = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'message eliana';
+            messageDiv.className = 'message agent';
             messageDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div>¡Aquí tienes ideas para ti!</div>
                 ${cardsHTML}
             `;
@@ -7160,16 +7561,16 @@ REGLAS:
 
             // Usar DeepSeek para generar la traducción de vocabulario
             const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'message eliana thinking-message';
+            loadingDiv.className = 'message agent thinking-message';
             loadingDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div class="thinking-indicator">
                     <div class="typing-dots">
                         <span></span>
                         <span></span>
                         <span></span>
                     </div>
-                    <span style="margin-left: 5px;">Eliana está pensando...</span>
+                    <span style="margin-left: 5px;">Pensando...</span>
                 </div>
             `;
             const messagesDiv = document.getElementById('chatMessages');
@@ -7236,28 +7637,28 @@ IMPORTANTE:
                         displayVocabCards(formattedTranslation, langName);
                     }
                 } else {
-                    addMessageToChat("Lo siento, no pude generar la traducción. Inténtalo de nuevo.", 'eliana', true);
+                    addMessageToChat("Lo siento, no pude generar la traducción. Inténtalo de nuevo.", 'agent', true);
                 }
             } catch (error) {
                 console.error('Error al generar traducción:', error);
                 loadingDiv.remove();
-                addMessageToChat("Error de conexión. Verifica tu conexión a internet.", 'eliana', true);
+                addMessageToChat("Error de conexión. Verifica tu conexión a internet.", 'agent', true);
             }
         }
 
         async function generatePersonalizedVocabulary(ageResponse) {
             // Mostrar indicador de cargando
             const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'message eliana thinking-message';
+            loadingDiv.className = 'message agent thinking-message';
             loadingDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div class="thinking-indicator">
                     <div class="typing-dots">
                         <span></span>
                         <span></span>
                         <span></span>
                     </div>
-                    <span style="margin-left: 5px;">Eliana está pensando...</span>
+                    <span style="margin-left: 5px;">Pensando...</span>
                 </div>
             `;
             const messagesDiv = document.getElementById('chatMessages');
@@ -7279,7 +7680,7 @@ IMPORTANTE:
             const targetLang = selectedLanguageName || 'Inglés';
 
             try {
-                const response = await fetch(CHAT_API_URL, {
+                const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -7347,9 +7748,9 @@ ${shouldTranslate ? 'expresión en español|traducción' : 'expresión en españ
 
                     // Añadir al chat
                     const messageDiv = document.createElement('div');
-                    messageDiv.className = 'message eliana';
+                    messageDiv.className = 'message agent';
                     messageDiv.innerHTML = `
-                        <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                        <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                         <div>¡Aquí tienes más vocabulario para ti!</div>
                         ${cardsHTML}
                     `;
@@ -7364,12 +7765,12 @@ ${shouldTranslate ? 'expresión en español|traducción' : 'expresión en españ
                     // Mostrar opciones
                     showActionOptions();
                 } else {
-                    addMessageToChat("Lo siento, no pude generar el vocabulario. Inténtalo de nuevo.", 'eliana', true);
+                    addMessageToChat("Lo siento, no pude generar el vocabulario. Inténtalo de nuevo.", 'agent', true);
                 }
             } catch (error) {
                 console.error('Error al generar vocabulario:', error);
                 loadingDiv.remove();
-                addMessageToChat("Error de conexión. Verifica tu conexión a internet.", 'eliana', true);
+                addMessageToChat("Error de conexión. Verifica tu conexión a internet.", 'agent', true);
             }
         }
 
@@ -7377,18 +7778,18 @@ ${shouldTranslate ? 'expresión en español|traducción' : 'expresión en españ
         async function translateUserWords(userText) {
             // Mostrar indicador de pensando
             const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'message eliana thinking-message';
+            loadingDiv.className = 'message agent thinking-message';
             loadingDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div class="thinking-indicator">
                     <div class="typing-dots"><span></span><span></span><span></span></div>
-                    <span style="margin-left: 5px;">Eliana está pensando...</span>
+                    <span style="margin-left: 5px;">Pensando...</span>
                 </div>
             `;
             document.getElementById('chatMessages').appendChild(loadingDiv);
             scrollToNewContent();
 
-            const systemPrompt = `Eres Eliana, profesora de español nivel A1.
+            const systemPrompt = `Eres ${currentAgent ? currentAgent.name : 'LUCAPI'}, profesora de español nivel A1.
 
 CONTEXTO: El usuario está aprendiendo a EXPRESAR PLANES en español usando la estructura "ir + a + infinitivo".
 
@@ -7451,15 +7852,15 @@ IMPORTANTE:
                 loadingDiv.remove();
 
                 if (data.choices && data.choices[0] && data.choices[0].message) {
-                    addMessageToChat(data.choices[0].message.content, 'eliana', false);
+                    addMessageToChat(data.choices[0].message.content, 'agent', false);
                     showActionOptions();
                 } else {
-                    addMessageToChat("No pude traducir. Inténtalo de nuevo.", 'eliana', true);
+                    addMessageToChat("No pude traducir. Inténtalo de nuevo.", 'agent', true);
                 }
             } catch (error) {
                 console.error('Error al traducir:', error);
                 loadingDiv.remove();
-                addMessageToChat("Error de conexión. Verifica tu conexión a internet.", 'eliana', true);
+                addMessageToChat("Error de conexión. Verifica tu conexión a internet.", 'agent', true);
             }
         }
 
@@ -7508,9 +7909,9 @@ IMPORTANTE:
 
             // Mostrar indicador de escribiendo
             const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'message eliana thinking-message';
+            loadingDiv.className = 'message agent thinking-message';
             loadingDiv.innerHTML = `
-                <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
+                <div class="message-header"><span class="agent-avatar-mini" style="background: ${currentAgent ? currentAgent.color : '#2175A5'};">${currentAgent ? currentAgent.siglas : 'LCP'}</span>${currentAgent ? currentAgent.name : 'LUCAPI'}</div>
                 <div class="thinking-indicator">
                     <div class="typing-dots">
                         <span></span>
@@ -7527,7 +7928,7 @@ IMPORTANTE:
             const startTime = Date.now();
 
             // Construir system prompt combinando todos los prompts de agentes
-            let combinedSystemPrompt = `Eres Eliana, una asistente virtual especializada en enseñar español nivel A1.
+            let combinedSystemPrompt = `Eres ${currentAgent ? currentAgent.name : 'LUCAPI'}, una asistente virtual especializada en enseñar español nivel A1.
 Contexto de la actividad actual: ${currentActivityContext}
 
 Instrucciones:
@@ -7545,7 +7946,7 @@ Instrucciones:
             });
 
             try {
-                const response = await fetch(CHAT_API_URL, {
+                const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -7586,7 +7987,7 @@ Instrucciones:
                         const shouldShowOptions = !aiResponse.includes('¿En qué idioma quieres') &&
                                                  !aiResponse.includes('¿Qué idioma prefieres') &&
                                                  !aiResponse.endsWith('?');
-                        addMessageToChat(aiResponse, 'eliana', shouldShowOptions);
+                        addMessageToChat(aiResponse, 'agent', shouldShowOptions);
 
                         // Actualizar historial
                         chatHistory.push({role: 'user', content: message});
@@ -7597,14 +7998,14 @@ Instrucciones:
                     if (loadingDiv && loadingDiv.parentNode) {
                         loadingDiv.remove();
                     }
-                    addMessageToChat('Lo siento, no pude procesar tu mensaje. Por favor, intenta de nuevo.', 'eliana');
+                    addMessageToChat('Lo siento, no pude procesar tu mensaje. Por favor, intenta de nuevo.', 'agent');
                 }
             } catch (error) {
                 console.error('Error:', error);
                 if (loadingDiv && loadingDiv.parentNode) {
                     loadingDiv.remove();
                 }
-                addMessageToChat('Error de conexión. Verifica tu conexión a internet.', 'eliana');
+                addMessageToChat('Error de conexión. Verifica tu conexión a internet.', 'agent');
             }
 
             // Habilitar input de nuevo
@@ -7637,16 +8038,225 @@ Instrucciones:
             }
         });
     </script>
+    <!-- Modal de Tarjeta -->
+    <div class="tarjeta-modal-overlay" id="tarjetaModalOverlay" onclick="closeTarjetaModal(event)">
+        <div class="tarjeta-modal" onclick="event.stopPropagation()">
+            <button class="tarjeta-modal-close" onclick="closeTarjetaModal()">&times;</button>
+            <div class="tarjeta-modal-content">
+                <!-- Tarjeta flip -->
+                <div class="tarjeta-flip-container" onclick="this.classList.toggle('flipped')">
+                    <div class="tarjeta-flipper">
+                        <!-- CARA A -->
+                        <div class="tarjeta-face tarjeta-front">
+                            <div class="tarjeta-header">
+                                <span class="tarjeta-header-title">LEE EN CUATRO PASOS</span>
+                                <img src="/public/bookicon.png" class="tarjeta-header-icon" alt="libro">
+                            </div>
+                            <div class="tarjeta-body">
+                                <div class="tarjeta-paso">
+                                    <span class="paso-num">1</span>
+                                    <div class="paso-content">
+                                        <strong>PREPÁRATE</strong><br>
+                                        Antes de leer, mira todo lo que no es texto. Fotos, títulos, remitente, formato. Pregúntate: ¿Quién escribe? ¿A quién? ¿Sobre qué?
+                                    </div>
+                                    <img src="/public/lector1.png" class="paso-img paso-img-sm" alt="">
+                                </div>
+                                <div class="tarjeta-paso">
+                                    <span class="paso-num">2</span>
+                                    <div class="paso-content">
+                                        <strong>LEE CON UNA MISIÓN</strong><br>
+                                        Lee todo sin parar. Solo buscas una cosa. Tu profesor te da la misión: ¿De qué habla? Lee para responder solo eso. No te pares en palabras difíciles.
+                                    </div>
+                                </div>
+                                <div class="tarjeta-paso">
+                                    <span class="paso-num">3</span>
+                                    <div class="paso-content">
+                                        <strong>BUSCA LAS PRUEBAS</strong><br>
+                                        Lee con las preguntas delante. Lee cada pregunta → busca la respuesta en el texto → subraya dónde está. Si la afirmación no coincide, corrígela.
+                                    </div>
+                                </div>
+                                <div class="tarjeta-paso">
+                                    <span class="paso-num">4</span>
+                                    <div class="paso-content">
+                                        <strong>CONECTA</strong><br>
+                                        ¿Qué tiene que ver contigo? Piensa en ti: tus gustos, tu experiencia y relaciónalo.
+                                    </div>
+                                    <img src="/public/lupa1.png" class="paso-img" alt="">
+                                </div>
+                            </div>
+                            <div class="tarjeta-flip-hint">Toca para ver los trucos →</div>
+                        </div>
+                        <!-- CARA B -->
+                        <div class="tarjeta-face tarjeta-back">
+                            <div class="tarjeta-header">
+                                <span class="tarjeta-header-title">COMPRENSIÓN LECTORA</span>
+                                <img src="/public/bookicon.png" class="tarjeta-header-icon" alt="libro">
+                            </div>
+                            <div class="tarjeta-body">
+                                <div class="tarjeta-section-title">TRES TRUCOS DEL LECTOR INTELIGENTE</div>
+                                <div class="tarjeta-truco">
+                                    <div class="truco-content">
+                                        <strong>Truco del espía lingüístico</strong><br>
+                                        Busca palabras que se parecen a tu lengua: hospital, programa, restaurante, televisión. Ya sabes más de lo que crees.
+                                    </div>
+                                    <img src="/public/cerebro1.png" class="truco-img" alt="">
+                                </div>
+                                <div class="tarjeta-truco">
+                                    <img src="/public/word1.png" class="truco-img truco-img-left" alt="">
+                                    <div class="truco-content">
+                                        <strong>Truco del contexto</strong><br>
+                                        Si no entiendes una palabra, no pares. Sigue leyendo — muchas veces la frase siguiente te da la pista.
+                                    </div>
+                                </div>
+                                <div class="tarjeta-truco">
+                                    <div class="truco-content">
+                                        <strong>Truco de la evidencia</strong><br>
+                                        Nunca respondas de memoria. Señala con el dedo dónde en el texto está la respuesta.
+                                    </div>
+                                    <img src="/public/lectura1.png" class="truco-img" alt="">
+                                </div>
+                            </div>
+                            <div class="tarjeta-flip-hint">← Toca para ver los pasos</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Panel detalle -->
+                <div class="agent-detail">
+                    <div class="agent-detail-siglas">LCP</div>
+                    <div class="agent-detail-name">LUCAPI</div>
+                    <p class="agent-detail-desc">Estrategia de lectura en 4 pasos: prepárate, lee con una misión, busca las pruebas y conecta con tu experiencia.</p>
+                    <div class="agent-detail-actions">
+                        <a href="/public/lucapi.pdf" download class="btn-download">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Descargar PDF
+                        </a>
+                        <button class="btn-activate" onclick="closeTarjetaModal(); openAgent('comprension')">
+                            Activar agente LUCAPI
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12H19M19 12L12 5M19 12L12 19"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Tarjeta RECA -->
+    <div class="tarjeta-modal-overlay" id="tarjetaModalOverlayReca" onclick="closeTarjetaModal(event)">
+        <div class="tarjeta-modal" onclick="event.stopPropagation()">
+            <button class="tarjeta-modal-close" onclick="closeTarjetaModal()">&times;</button>
+            <div class="tarjeta-modal-content">
+                <!-- Tarjeta flip -->
+                <div class="tarjeta-flip-container" onclick="this.classList.toggle('flipped')">
+                    <div class="tarjeta-flipper">
+                        <!-- CARA A -->
+                        <div class="tarjeta-face tarjeta-front" style="background: #FAF6F0;">
+                            <div class="tarjeta-header" style="background: #4A6741;">
+                                <span class="tarjeta-header-title">ESCRIBE UN EMAIL</span>
+                                <img src="/public/1x/libro.png" class="tarjeta-header-icon" alt="libro">
+                            </div>
+                            <div class="tarjeta-body">
+                                <div class="tarjeta-paso">
+                                    <span class="paso-num">1</span>
+                                    <div class="paso-content">
+                                        <strong>LEE EL MODELO DE EMAIL</strong><br>
+                                        ¿Cómo empieza? ¿De qué habla? ¿Cómo termina?
+                                    </div>
+                                    <img src="/public/EE1.png" class="paso-img reca-img" alt="">
+                                </div>
+                                <div class="tarjeta-paso">
+                                    <span class="paso-num">2</span>
+                                    <div class="paso-content">
+                                        <strong>MARCA CON DOS COLORES</strong><br>
+                                        Un color = copio (estructura): saludo, conectores, cambios de tema, despedida.<br>
+                                        Otro color = cambio (mis datos): nombres, edades, lugares, profesiones, opiniones.
+                                    </div>
+                                </div>
+                                <div class="tarjeta-paso">
+                                    <span class="paso-num">3</span>
+                                    <div class="paso-content">
+                                        <strong>PLANIFICA</strong><br>
+                                        Para cada parte del segundo color, escribe 2-3 palabras con tu información.
+                                    </div>
+                                    <img src="/public/ee2.png" class="paso-img reca-img" alt="">
+                                </div>
+                                <div class="tarjeta-paso">
+                                    <span class="paso-num">4</span>
+                                    <div class="paso-content">
+                                        <strong>ESCRIBE</strong><br>
+                                        Copia las estructuras fijas y complétalas con tu información personal.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tarjeta-flip-hint">Toca para revisar tu email →</div>
+                        </div>
+                        <!-- CARA B -->
+                        <div class="tarjeta-face tarjeta-back" style="background: #FAF6F0;">
+                            <div class="tarjeta-header" style="background: #4A6741;">
+                                <span class="tarjeta-header-title">EXPRESIÓN ESCRITA</span>
+                                <img src="/public/1x/libro.png" class="tarjeta-header-icon" alt="libro">
+                            </div>
+                            <div class="tarjeta-body">
+                                <div class="tarjeta-section-title">REVISA TU EMAIL</div>
+                                <div class="tarjeta-truco">
+                                    <div class="truco-content">
+                                        <strong>Lee tu texto en voz alta y comprueba</strong><br>
+                                        ☐ ¿Tiene principio? (saludo o frase de inicio)<br>
+                                        ☐ ¿Tiene final? (despedida o frase de cierre)<br>
+                                        ☐ ¿Cada frase tiene un verbo?<br>
+                                        ☐ ¿Los verbos están bien?<br>
+                                        <em>(una persona = trabaja, tiene, estudia / yo = trabajo, tengo, estudio)</em><br>
+                                        ☐ ¿Las mayúsculas están bien?<br>
+                                        <em>(nombres propios, inicio de frase)</em>
+                                    </div>
+                                    <img src="/public/ee3.png" class="truco-img reca-img" alt="">
+                                </div>
+                                <div class="tarjeta-truco">
+                                    <div class="truco-content">
+                                        <strong>Intercambia con tu compañero/a</strong><br>
+                                        ✓ Marca lo que te gusta.<br>
+                                        ✓ Marca lo que no entiendes.
+                                    </div>
+                                </div>
+                                <div class="tarjeta-truco">
+                                    <div class="truco-content">
+                                        <strong>Corrige y escribe la versión final.</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tarjeta-flip-hint">← Toca para ver los pasos</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Panel detalle -->
+                <div class="agent-detail">
+                    <div class="agent-detail-siglas" style="background: #4A6741;">RC</div>
+                    <div class="agent-detail-name">RECA</div>
+                    <p class="agent-detail-desc">Estrategia de escritura en 4 pasos: lee el modelo, marca con dos colores, planifica y escribe tu email.</p>
+                    <div class="agent-detail-actions">
+                        <a href="/public/reca.pdf" download class="btn-download">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Descargar PDF
+                        </a>
+                        <button class="btn-activate" onclick="closeTarjetaModal(); openAgent('reca')">
+                            Activar agente RECA
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12H19M19 12L12 5M19 12L12 19"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal de IA -->
     <div class="ai-modal-overlay" id="aiModalOverlay" onclick="closeAIModal(event)">
         <div class="ai-bubble" onclick="event.stopPropagation()">
             <div class="chat-container">
                 <div class="ai-bubble-header" style="padding: 15px 20px; border-bottom: 1px solid #f0f0f0;">
                     <div class="ai-header-info">
-                        <img src="/public/eliana-v2.png" alt="Eliana" class="ai-bubble-avatar-img">
+                        <div id="chatAgentAvatar" style="width: 40px; height: 40px; border-radius: 50%; background: #2175A5; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.75em; letter-spacing: 0.5px; flex-shrink: 0;">LCP</div>
                         <div>
-                            <div class="ai-bubble-name">Eliana</div>
-                            <div style="color: #666; font-size: 0.85em;">Tutora de español</div>
+                            <div class="ai-bubble-name" id="chatAgentName">LUCAPI</div>
+                            <div style="color: #666; font-size: 0.85em;" id="chatAgentDesc">Estrategia de comprensión lectora en 4 pasos</div>
                         </div>
                     </div>
                     <button class="accessibility-btn" onclick="toggleAccessibility()" title="Modo accesible" aria-label="Activar modo accesible">
@@ -7664,9 +8274,9 @@ Instrucciones:
                 </div>
 
                 <div class="chat-messages" id="chatMessages">
-                    <div class="message eliana">
-                        <div class="message-header"><img src="/public/eliana-v2.png" alt="Eliana" class="eliana-avatar">Eliana</div>
-                        <div>Hola! Estas son mis propuestas para esta actividad:</div>
+                    <div class="message agent">
+                        <div class="message-header"><span class="agent-avatar-mini" style="background: #2175A5;">LCP</span>LUCAPI</div>
+                        <div>¡Hola! Soy LUCAPI. Elige una opción para empezar:</div>
                     </div>
                     <div class="ai-options" style="padding: 0 20px;">
                         <div class="ai-pill" onclick="selectOption(event, 'traduccion')">

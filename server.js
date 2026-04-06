@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 
@@ -45,6 +46,7 @@ app.get('/api/test-claude', netlifyAdapter(`${functionsDir}/test-claude`));
 // POST endpoints
 app.post('/api/chat', netlifyAdapter(`${functionsDir}/chat`));
 app.post('/api/chat-claude', netlifyAdapter(`${functionsDir}/chat-claude`));
+app.post('/api/chat-agent', netlifyAdapter(`${functionsDir}/chat-agent`));
 app.post('/api/setup-db', netlifyAdapter(`${functionsDir}/setup-db`));
 app.post('/api/seed-translations', netlifyAdapter(`${functionsDir}/seed-translations`));
 app.post('/api/setup-agent-comprension', netlifyAdapter(`${functionsDir}/setup-agent-comprension`));

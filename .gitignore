@@ -1,5 +1,5 @@
 # Dependencies
-node_modules/
+apps/web/node_modules/
 
 # Local Netlify folder
 .netlify
@@ -9,3 +9,8 @@ node_modules/
 
 # OS
 .DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.venv/

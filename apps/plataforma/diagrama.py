@@ -22,7 +22,7 @@ from urllib.parse import parse_qs, urlparse
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', '.env'))
 
 PROJECT = Path(__file__).parent
 PORT = 4567

@@ -3160,19 +3160,93 @@
             width: 130px;
         }
 
+        /* SOTAMA card overrides */
+        .sotama-flip .tarjeta-flip-container {
+            height: 540px;
+        }
+
+        @media (max-width: 768px) {
+            .sotama-flip .tarjeta-flip-container {
+                height: 520px;
+            }
+        }
+
         .sotama-card .tarjeta-body {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-evenly;
-            padding: 16px 22px;
+            padding: 18px 22px;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .sotama-card .tarjeta-flip-hint {
+            font-size: 0.65em;
+            padding: 4px;
+        }
+
+        .sotama-card .sotama-intro {
+            margin: 0 0 12px 0;
+            color: #444;
+        }
+
+        .sotama-card .tarjeta-paso {
+            margin-bottom: 10px;
+        }
+
+        .sotama-card .paso-content strong {
+            display: inline;
+            margin-bottom: 0;
+            margin-right: 4px;
         }
 
         .sotama-card .paso-img {
-            width: 80px;
+            width: 90px;
+        }
+
+        .sotama-card .sotama-antes {
+            border-top: 1.5px solid rgba(0,0,0,0.15);
+            margin-top: 6px;
+            padding-top: 8px;
+        }
+
+        .sotama-card .sotama-antes strong {
+            display: block;
+            font-family: 'Lexend', sans-serif;
+            font-size: 1.05em;
+            margin-bottom: 4px;
+        }
+
+        .sotama-card .sotama-antes .sotama-antes-body {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .sotama-card .sotama-antes .sotama-antes-body img {
+            width: 130px;
+            height: auto;
+            flex-shrink: 0;
+        }
+
+        .sotama-card .tarjeta-truco {
+            margin-bottom: 10px;
         }
 
         .sotama-card .truco-img {
-            width: 80px;
+            width: 100px;
+        }
+
+        .sotama-card .tarjeta-section-title {
+            margin-bottom: 8px;
+        }
+
+        .sotama-cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 18px;
+        }
+
+        .sotama-cols p {
+            margin: 0;
+            line-height: 1.45;
         }
 
 
@@ -8287,7 +8361,7 @@ Instrucciones:
     <div class="tarjeta-modal-overlay" id="tarjetaModalOverlaySotama" onclick="closeTarjetaModal(event)">
         <div class="tarjeta-modal" onclick="event.stopPropagation()">
             <button class="tarjeta-modal-close" onclick="closeTarjetaModal()">&times;</button>
-            <div class="tarjeta-modal-content">
+            <div class="tarjeta-modal-content sotama-flip">
                 <!-- Tarjeta flip -->
                 <div class="tarjeta-flip-container" onclick="this.classList.toggle('flipped')">
                     <div class="tarjeta-flipper">
@@ -8298,36 +8372,34 @@ Instrucciones:
                                 <img src="/public/comprensionadutivia.svg" class="tarjeta-header-icon" alt="icono">
                             </div>
                             <div class="tarjeta-body">
+                                <p class="sotama-intro">Cuando escuchas un audio, no necesitas entender todo. Elige un modo según lo que necesites:</p>
                                 <div class="tarjeta-paso">
                                     <span class="paso-num">1</span>
                                     <div class="paso-content">
-                                        <strong>EXPRESS</strong><br>
-                                        Solo escucho. Quiero saber de qué va.
+                                        <strong>EXPRESS</strong> Solo escucho. Quiero saber de qué va.
                                     </div>
                                     <img src="/public/ca_express1.png" class="paso-img" alt="">
                                 </div>
                                 <div class="tarjeta-paso">
                                     <span class="paso-num">2</span>
                                     <div class="paso-content">
-                                        <strong>RASTREADOR</strong><br>
-                                        Busco un dato: <em>horas / nombres / lugares / precios, etc.</em> No necesito entender todo.
+                                        <strong>RASTREADOR</strong> Busco un dato: <em>horas / nombres / lugares / precios, etc.</em> No necesito entender todo.
                                     </div>
                                     <img src="/public/ca_foto2.png" class="paso-img" alt="">
                                 </div>
                                 <div class="tarjeta-paso">
                                     <span class="paso-num">3</span>
                                     <div class="paso-content">
-                                        <strong>DETECTIVE</strong><br>
-                                        Escucho cada detalle. Completo lo que me falta.
+                                        <strong>DETECTIVE</strong> Escucho cada detalle. Completo lo que me falta.
                                     </div>
                                     <img src="/public/ca_foto3.png" class="paso-img" alt="">
                                 </div>
-                                <div class="tarjeta-paso">
-                                    <div class="paso-content">
-                                        <strong>ANTES DE ESCUCHAR</strong><br>
-                                        Mira las imágenes y la ficha. Pregúntate: ¿qué dato busco? Elige tu modo: express, rastreador o detective.
+                                <div class="sotama-antes">
+                                    <strong>ANTES DE ESCUCHAR</strong>
+                                    <div class="sotama-antes-body">
+                                        <span>Mira las imágenes y la ficha. Pregúntate: ¿qué dato busco? Elige tu modo: express, rastreador o detective.</span>
+                                        <img src="/public/ca_foto4.png" alt="">
                                     </div>
-                                    <img src="/public/ca_foto4.png" class="paso-img" alt="">
                                 </div>
                             </div>
                             <div class="tarjeta-flip-hint">Toca para ver los trucos →</div>
@@ -8342,8 +8414,8 @@ Instrucciones:
                                 <div class="tarjeta-section-title">MIENTRAS ESCUCHAS</div>
                                 <div class="tarjeta-truco">
                                     <div class="truco-content">
-                                        <strong>Anota solo lo importante</strong><br>
-                                        ✓ Solo palabras clave, no frases completas.<br>
+                                        ✓ Anota solo palabras clave.<br>
+                                        ✓ No frases completas.<br>
                                         ✓ Si oyes un número, anótalo ya.<br>
                                         ✓ Si pierdes algo, no pares.<br>
                                         ✓ Sigue: viene el siguiente dato.
@@ -8353,16 +8425,14 @@ Instrucciones:
                                 <div class="tarjeta-section-title">ENTRE ESCUCHAS</div>
                                 <div class="tarjeta-truco">
                                     <div class="truco-content">
-                                        <strong>Compara con tu compañero/a</strong><br>
                                         1. Mira tus notas. ¿Qué has entendido?<br>
-                                        2. ¿Qué tenéis diferente? Completad juntos.
+                                        2. Compara con tu compañero/a. ¿Qué tenéis diferente? Completad juntos.
                                     </div>
                                     <img src="/public/ca_foto7.png" class="truco-img" alt="">
                                 </div>
                                 <div class="tarjeta-truco">
                                     <div class="truco-content">
-                                        <strong>Vuelve a escuchar con foco</strong><br>
-                                        3. ¿Qué te falta? Decide: <em>Ahora busco solo...</em><br>
+                                        3. ¿Qué te falta? Antes de volver a escuchar, decide: <em>Ahora busco solo...</em><br>
                                         4. Escucha otra vez. Busca SOLO eso. Lo demás ya lo tienes.
                                     </div>
                                     <img src="/public/ca_foto6.png" class="truco-img" alt="">

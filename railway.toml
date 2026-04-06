@@ -1,5 +1,7 @@
 [build]
 builder = "NIXPACKS"
+buildCommand = "cd apps/web && npm ci"
+watchPatterns = ["apps/web/**"]
 
 [deploy]
 startCommand = "cd apps/web && npm start"

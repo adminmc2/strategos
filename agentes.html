@@ -3160,6 +3160,22 @@
             width: 130px;
         }
 
+        .sotama-card .tarjeta-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            padding: 16px 22px;
+        }
+
+        .sotama-card .paso-img {
+            width: 80px;
+        }
+
+        .sotama-card .truco-img {
+            width: 80px;
+        }
+
+
         /* Section title (cara B) */
         .tarjeta-section-title {
             font-family: 'Lexend', sans-serif;
@@ -3367,13 +3383,20 @@
                 <div class="destreza-header">
                     <div class="destreza-info">
                         <h3 class="destreza-name">Comprensión auditiva</h3>
-                        <span class="destreza-count">Próximamente</span>
+                        <span class="destreza-count">1 agente</span>
                     </div>
                     <div class="destreza-siglas">CA</div>
                     <svg class="destreza-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                 </div>
                 <div class="destreza-agents">
-                    <div class="destreza-empty">Agentes en desarrollo</div>
+                    <div class="agent-mini" onclick="event.stopPropagation(); openTarjetaModal('sotama')">
+                        <span class="agent-mini-siglas" style="color: #7B2D8E">STM</span>
+                        <div class="agent-mini-info">
+                            <span class="agent-mini-name">SOTAMA</span>
+                            <span class="agent-mini-desc">Escucha en Tres Modos — Estrategia de comprensión auditiva</span>
+                        </div>
+                        <span class="agent-mini-arrow">&rarr;</span>
+                    </div>
                 </div>
             </div>
 
@@ -3520,12 +3543,14 @@
         const agentRegistry = {
             'lucapi': { name: 'LUCAPI', siglas: 'LCP', color: '#2175A5', desc: 'Estrategia de comprensión lectora en 4 pasos' },
             'reca': { name: 'RECA', siglas: 'RC', color: '#2E7D32', desc: 'Estrategia para escribir un email en 4 pasos' },
+            'sotama': { name: 'SOTAMA', siglas: 'STM', color: '#7B2D8E', desc: 'Estrategia de comprensión auditiva en 3 modos' },
         };
         let currentAgent = null;
 
         const tarjetaModalMap = {
             'lucapi': 'tarjetaModalOverlay',
             'reca': 'tarjetaModalOverlayReca',
+            'sotama': 'tarjetaModalOverlaySotama',
         };
 
         function openTarjetaModal(agentId) {
@@ -3566,7 +3591,8 @@
             'mapa-mental': 'mapamental',
             'traductor': 'traduccion',
             'traduccion': 'traduccion',
-            'reca': 'reca'
+            'reca': 'reca',
+            'sotama': 'sotama'
         };
 
         function openAgent(agentType) {
@@ -8249,6 +8275,115 @@ Instrucciones:
                         </a>
                         <button class="btn-activate" onclick="closeTarjetaModal(); openAgent('reca')">
                             Activar agente RECA
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12H19M19 12L12 5M19 12L12 19"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Tarjeta SOTAMA -->
+    <div class="tarjeta-modal-overlay" id="tarjetaModalOverlaySotama" onclick="closeTarjetaModal(event)">
+        <div class="tarjeta-modal" onclick="event.stopPropagation()">
+            <button class="tarjeta-modal-close" onclick="closeTarjetaModal()">&times;</button>
+            <div class="tarjeta-modal-content">
+                <!-- Tarjeta flip -->
+                <div class="tarjeta-flip-container" onclick="this.classList.toggle('flipped')">
+                    <div class="tarjeta-flipper">
+                        <!-- CARA A -->
+                        <div class="tarjeta-face tarjeta-front sotama-card" style="background: #FAF6F0;">
+                            <div class="tarjeta-header" style="background: #1E3A5F;">
+                                <span class="tarjeta-header-title">ESCUCHA EN TRES MODOS</span>
+                                <img src="/public/comprensionadutivia.svg" class="tarjeta-header-icon" alt="icono">
+                            </div>
+                            <div class="tarjeta-body">
+                                <div class="tarjeta-paso">
+                                    <span class="paso-num">1</span>
+                                    <div class="paso-content">
+                                        <strong>EXPRESS</strong><br>
+                                        Solo escucho. Quiero saber de qué va.
+                                    </div>
+                                    <img src="/public/ca_express1.png" class="paso-img" alt="">
+                                </div>
+                                <div class="tarjeta-paso">
+                                    <span class="paso-num">2</span>
+                                    <div class="paso-content">
+                                        <strong>RASTREADOR</strong><br>
+                                        Busco un dato: <em>horas / nombres / lugares / precios, etc.</em> No necesito entender todo.
+                                    </div>
+                                    <img src="/public/ca_foto2.png" class="paso-img" alt="">
+                                </div>
+                                <div class="tarjeta-paso">
+                                    <span class="paso-num">3</span>
+                                    <div class="paso-content">
+                                        <strong>DETECTIVE</strong><br>
+                                        Escucho cada detalle. Completo lo que me falta.
+                                    </div>
+                                    <img src="/public/ca_foto3.png" class="paso-img" alt="">
+                                </div>
+                                <div class="tarjeta-paso">
+                                    <div class="paso-content">
+                                        <strong>ANTES DE ESCUCHAR</strong><br>
+                                        Mira las imágenes y la ficha. Pregúntate: ¿qué dato busco? Elige tu modo: express, rastreador o detective.
+                                    </div>
+                                    <img src="/public/ca_foto4.png" class="paso-img" alt="">
+                                </div>
+                            </div>
+                            <div class="tarjeta-flip-hint">Toca para ver los trucos →</div>
+                        </div>
+                        <!-- CARA B -->
+                        <div class="tarjeta-face tarjeta-back sotama-card" style="background: #FAF6F0;">
+                            <div class="tarjeta-header" style="background: #1E3A5F;">
+                                <span class="tarjeta-header-title">COMPRENSIÓN AUDITIVA</span>
+                                <img src="/public/comprensionadutivia.svg" class="tarjeta-header-icon" alt="icono">
+                            </div>
+                            <div class="tarjeta-body">
+                                <div class="tarjeta-section-title">MIENTRAS ESCUCHAS</div>
+                                <div class="tarjeta-truco">
+                                    <div class="truco-content">
+                                        <strong>Anota solo lo importante</strong><br>
+                                        ✓ Solo palabras clave, no frases completas.<br>
+                                        ✓ Si oyes un número, anótalo ya.<br>
+                                        ✓ Si pierdes algo, no pares.<br>
+                                        ✓ Sigue: viene el siguiente dato.
+                                    </div>
+                                    <img src="/public/ca_foto5.png" class="truco-img" alt="">
+                                </div>
+                                <div class="tarjeta-section-title">ENTRE ESCUCHAS</div>
+                                <div class="tarjeta-truco">
+                                    <div class="truco-content">
+                                        <strong>Compara con tu compañero/a</strong><br>
+                                        1. Mira tus notas. ¿Qué has entendido?<br>
+                                        2. ¿Qué tenéis diferente? Completad juntos.
+                                    </div>
+                                    <img src="/public/ca_foto7.png" class="truco-img" alt="">
+                                </div>
+                                <div class="tarjeta-truco">
+                                    <div class="truco-content">
+                                        <strong>Vuelve a escuchar con foco</strong><br>
+                                        3. ¿Qué te falta? Decide: <em>Ahora busco solo...</em><br>
+                                        4. Escucha otra vez. Busca SOLO eso. Lo demás ya lo tienes.
+                                    </div>
+                                    <img src="/public/ca_foto6.png" class="truco-img" alt="">
+                                </div>
+                            </div>
+                            <div class="tarjeta-flip-hint">← Toca para ver los modos</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Panel detalle -->
+                <div class="agent-detail">
+                    <div class="agent-detail-siglas">STM</div>
+                    <div class="agent-detail-name">SOTAMA</div>
+                    <p class="agent-detail-desc">Estrategia de comprensión auditiva en 3 modos: express (idea general), rastreador (dato concreto) y detective (todos los detalles).</p>
+                    <div class="agent-detail-actions">
+                        <a href="/public/sotama.pdf" download class="btn-download">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Descargar PDF
+                        </a>
+                        <button class="btn-activate" onclick="closeTarjetaModal(); openAgent('sotama')">
+                            Activar agente SOTAMA
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12H19M19 12L12 5M19 12L12 19"/></svg>
                         </button>
                     </div>

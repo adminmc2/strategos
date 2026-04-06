@@ -1,0 +1,4 @@
+crewai[litellm]==1.9.3
+psycopg2-binary==2.9.11
+python-dotenv==1.1.1
+langfuse==2.60.10

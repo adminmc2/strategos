@@ -1,0 +1,11 @@
+{
+  "name": "strategos-monorepo",
+  "private": true,
+  "scripts": {
+    "start": "cd apps/web && npm start",
+    "build": "cd apps/web && npm ci"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

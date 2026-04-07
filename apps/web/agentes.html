@@ -3106,10 +3106,72 @@
             flex: 1;
             background: #F5ECD7;
             padding: 20px 24px;
-            overflow-y: hidden;
+            overflow-y: auto;
             font-size: 0.9em;
             line-height: 1.55;
             color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .tarjeta-body {
+                padding: 14px 16px;
+                font-size: 0.82em;
+                line-height: 1.45;
+            }
+
+            .paso-num {
+                font-size: 1.8em;
+                min-width: 22px;
+            }
+
+            .paso-img {
+                width: 50px;
+            }
+
+            .truco-img {
+                width: 50px;
+            }
+
+            .tarjeta-paso {
+                margin-bottom: 8px;
+                gap: 8px;
+            }
+
+            .tarjeta-truco {
+                margin-bottom: 8px;
+                gap: 8px;
+            }
+
+            .tarjeta-section-title {
+                margin-bottom: 8px;
+                padding-bottom: 4px;
+                font-size: 0.9em;
+            }
+
+            .reca-img.paso-img {
+                width: 70px;
+            }
+
+            .reca-img.truco-img {
+                width: 100px;
+            }
+
+            .sotama-card .paso-img {
+                width: 65px;
+            }
+
+            .sotama-card .truco-img {
+                width: 65px;
+            }
+
+            .sotama-card .sotama-antes .sotama-antes-body img {
+                width: 90px;
+            }
+
+            .sotama-card .tarjeta-body {
+                padding: 10px 14px;
+                font-size: 0.82em;
+            }
         }
 
         /* Pasos (cara A) */
@@ -8339,7 +8401,7 @@ Instrucciones:
                 </div>
                 <!-- Panel detalle -->
                 <div class="agent-detail">
-                    <div class="agent-detail-siglas" style="background: #4A6741;">RC</div>
+                    <div class="agent-detail-siglas">RC</div>
                     <div class="agent-detail-name">RECA</div>
                     <p class="agent-detail-desc">Estrategia de escritura en 4 pasos: lee el modelo, marca con dos colores, planifica y escribe tu email.</p>
                     <div class="agent-detail-actions">

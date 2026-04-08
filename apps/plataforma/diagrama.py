@@ -26,7 +26,7 @@ load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', '.env'))
 
 PROJECT = Path(__file__).parent
 PORT = 4567
-SERVER_VERSION = "2.0"
+SERVER_VERSION = "2.1.0"
 
 # --- Langfuse client (para API de trazas) ---
 _langfuse_client = None
@@ -49,12 +49,24 @@ def _db():
 #  CRUD: crew_agents
 # ─────────────────────────────────────────────────
 
+def get_crews():
+    """Autodiscover all crews from BD."""
+    conn = _db()
+    cur = conn.cursor()
+    cur.execute("SELECT DISTINCT crew FROM crew_agents ORDER BY crew")
+    crews = [r[0] for r in cur.fetchall()]
+    conn.close()
+    return crews
+
+
 def get_crew_agents(crew_name):
     conn = _db()
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute("""
         SELECT id, crew, agent_key, agent_order, role, goal, backstory,
-               task_description, task_expected_output, max_iter, updated_at
+               task_description, task_expected_output, max_iter,
+               llm_model, llm_temperature, llm_max_tokens, llm_top_p,
+               updated_at
         FROM crew_agents
         WHERE crew = %s
         ORDER BY agent_order
@@ -66,7 +78,8 @@ def get_crew_agents(crew_name):
 
 def update_crew_agent(agent_id, data):
     allowed = {"role", "goal", "backstory", "task_description",
-               "task_expected_output", "max_iter"}
+               "task_expected_output", "max_iter",
+               "llm_model", "llm_temperature", "llm_max_tokens", "llm_top_p"}
     fields = {k: v for k, v in data.items() if k in allowed}
     if not fields:
         return False
@@ -157,7 +170,7 @@ def get_correcciones_stats(agent_key=None):
 #  CRUD: reglas_aprendidas
 # ─────────────────────────────────────────────────
 
-def get_reglas(crew="strategos"):
+def get_reglas(crew=None):
     conn = _db()
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute("""
@@ -191,7 +204,7 @@ def upsert_regla(data):
             INSERT INTO reglas_aprendidas (crew, tipo_error, regla, ejemplos, n_correcciones, activa)
             VALUES (%s, %s, %s, %s, %s, %s) RETURNING id
         """, (
-            data.get("crew", "strategos"), data["tipo_error"], data["regla"],
+            data.get("crew", "lucapi"), data["tipo_error"], data["regla"],
             data.get("ejemplos", ""), data.get("n_correcciones", 0),
             data.get("activa", True)
         ))
@@ -306,62 +319,79 @@ def get_traza_detalle(trace_id):
 
 _agent_runs = {}  # run_id -> {status, agente, modelo, output, start_time, end_time}
 
-AGENT_SCRIPTS = {
-    "strategos": "scripts/crewai/strategos.py",
-}
+# Crew runners are autodiscovered: scripts/crewai/{crew_name}.py
+# No hardcoded mapping needed.
 
 AVAILABLE_MODELS = [
-    # --- Groq (gratis) ---
-    {"id": "groq/openai/gpt-oss-120b", "name": "GPT-OSS 120B (Groq)", "provider": "groq", "cost": "gratis", "ctx": "131K", "nota": "Probado — funciona"},
-    {"id": "groq/openai/gpt-oss-20b", "name": "GPT-OSS 20B (Groq)", "provider": "groq", "cost": "gratis", "ctx": "131K", "nota": "Más rápido, menor calidad"},
-    {"id": "groq/llama-3.3-70b-versatile", "name": "Llama 3.3 70B (Groq)", "provider": "groq", "cost": "gratis", "ctx": "131K", "nota": "Buen instruction-following"},
-    {"id": "groq/llama-3.1-8b-instant", "name": "Llama 3.1 8B (Groq)", "provider": "groq", "cost": "gratis", "ctx": "131K", "nota": "Ultra-rápido, ideal para tools"},
-    {"id": "groq/meta-llama/llama-4-scout-17b-16e-instruct", "name": "Llama 4 Scout 17B (Groq)", "provider": "groq", "cost": "gratis", "ctx": "131K", "nota": "MoE, Llama 4"},
-    {"id": "groq/moonshotai/kimi-k2-instruct-0905", "name": "Kimi K2 (Groq)", "provider": "groq", "cost": "gratis", "ctx": "262K", "nota": "Versión nueva, preview"},
-    {"id": "groq/qwen/qwen3-32b", "name": "Qwen 3 32B (Groq)", "provider": "groq", "cost": "gratis", "ctx": "131K", "nota": "Errores factuales en pruebas"},
-    # --- Anthropic (Claude) ---
-    {"id": "anthropic/claude-opus-4-20250514", "name": "Claude Opus 4", "provider": "anthropic", "cost": "$15/$75", "ctx": "200K", "nota": "Máxima capacidad, costoso"},
-    {"id": "anthropic/claude-sonnet-4-20250514", "name": "Claude Sonnet 4", "provider": "anthropic", "cost": "$3/$15", "ctx": "200K", "nota": "Mejor equilibrio calidad/precio"},
-    {"id": "anthropic/claude-haiku-3-5-20241022", "name": "Claude Haiku 3.5", "provider": "anthropic", "cost": "$0.80/$4", "ctx": "200K", "nota": "Rápido y barato"},
+    # --- Groq ---
+    {"id": "groq/openai/gpt-oss-120b", "name": "GPT OSS 120B", "provider": "groq",
+     "cost": "$0.15/$0.60", "ctx": "131K", "vision": False, "function_calling": True,
+     "reasoning": True, "multilingual": True},
+    {"id": "groq/openai/gpt-oss-20b", "name": "GPT OSS 20B", "provider": "groq",
+     "cost": "$0.075/$0.30", "ctx": "131K", "vision": False, "function_calling": True,
+     "reasoning": True, "multilingual": True},
+    {"id": "groq/meta-llama/llama-4-scout-17b-16e-instruct", "name": "Llama 4 Scout 17B", "provider": "groq",
+     "cost": "$0.11/$0.34", "ctx": "131K", "vision": True, "function_calling": True,
+     "reasoning": False, "multilingual": True},
+    {"id": "groq/llama-3.3-70b-versatile", "name": "Llama 3.3 70B", "provider": "groq",
+     "cost": "$0.59/$0.79", "ctx": "131K", "vision": False, "function_calling": False,
+     "reasoning": False, "multilingual": True},
+    {"id": "groq/llama-3.1-8b-instant", "name": "Llama 3.1 8B", "provider": "groq",
+     "cost": "$0.05/$0.08", "ctx": "131K", "vision": False, "function_calling": True,
+     "reasoning": False, "multilingual": True},
+    {"id": "groq/qwen/qwen3-32b", "name": "Qwen 3 32B", "provider": "groq",
+     "cost": "$0.29/$0.59", "ctx": "131K", "vision": False, "function_calling": True,
+     "reasoning": True, "multilingual": True},
     # --- DeepSeek ---
-    {"id": "deepseek/deepseek-chat", "name": "DeepSeek V3", "provider": "deepseek", "cost": "$0.27/$1.10", "ctx": "64K", "nota": "Buena calidad, muy económico"},
-    {"id": "deepseek/deepseek-reasoner", "name": "DeepSeek R1", "provider": "deepseek", "cost": "$0.55/$2.19", "ctx": "64K", "nota": "Razonamiento avanzado (CoT)"},
+    {"id": "deepseek/deepseek-chat", "name": "DeepSeek V3", "provider": "deepseek",
+     "cost": "$0.27/$1.10", "ctx": "64K", "vision": False, "function_calling": True,
+     "reasoning": False, "multilingual": True},
+    {"id": "deepseek/deepseek-reasoner", "name": "DeepSeek R1", "provider": "deepseek",
+     "cost": "$0.55/$2.19", "ctx": "64K", "vision": False, "function_calling": False,
+     "reasoning": True, "multilingual": True},
+    # --- Anthropic ---
+    {"id": "anthropic/claude-sonnet-4-20250514", "name": "Claude Sonnet 4", "provider": "anthropic",
+     "cost": "$3/$15", "ctx": "200K", "vision": True, "function_calling": True,
+     "reasoning": True, "multilingual": True},
+    {"id": "anthropic/claude-haiku-4-5-20251001", "name": "Claude Haiku 4.5", "provider": "anthropic",
+     "cost": "$0.80/$4", "ctx": "200K", "vision": True, "function_calling": True,
+     "reasoning": False, "multilingual": True},
 ]
 
 
+def get_modelos():
+    """Return model catalog with availability based on configured API keys."""
+    api_keys = {
+        "groq": bool(os.environ.get("GROQ_API_KEY")),
+        "deepseek": bool(os.environ.get("DEEPSEEK_API_KEY")),
+        "anthropic": bool(os.environ.get("ANTHROPIC_API_KEY")),
+    }
+    result = []
+    for m in AVAILABLE_MODELS:
+        m_copy = dict(m)
+        m_copy["available"] = api_keys.get(m["provider"], False)
+        result.append(m_copy)
+    return result
+
+
 def start_agent(agente, agent_key, agents_cfg):
-    """Lanza un agente en un subproceso. Devuelve run_id.
-    agents_cfg: dict con config de LLM por agente index.
+    """Lanza un crew en un subproceso. Devuelve run_id.
+    agente: crew name (e.g. 'lucapi'). Script autodiscovered as scripts/crewai/{agente}.py
+    agent_key: optional, to run a single agent within the crew.
+    agents_cfg: ignored (LLM config now comes from BD).
     """
-    script = AGENT_SCRIPTS.get(agente)
-    if not script:
-        return {"error": f"Agente '{agente}' no tiene script asignado"}
+    script_path = (PROJECT / "scripts" / "crewai" / f"{agente}.py").resolve()
+    if not script_path.exists():
+        return {"error": f"Script '{agente}.py' not found in scripts/crewai/"}
 
     run_id = str(uuid.uuid4())[:8]
-    script_path = (PROJECT / script).resolve()
     cmd = [sys.executable, str(script_path)]
     if agent_key:
         cmd.append(agent_key)
     env = os.environ.copy()
     env["PYTHONUNBUFFERED"] = "1"
 
-    # Map per-agent config to env vars
-    if isinstance(agents_cfg, dict):
-        for idx, cfg in agents_cfg.items():
-            key = str(idx).upper()
-            if isinstance(cfg, dict):
-                if "model" in cfg:
-                    env[f"STRATEGOS_LLM_{key}"] = str(cfg["model"])
-                if "temperature" in cfg:
-                    env[f"STRATEGOS_TEMP_{key}"] = str(cfg["temperature"])
-                if "max_tokens" in cfg:
-                    env[f"STRATEGOS_MAXTOK_{key}"] = str(cfg["max_tokens"])
-                if "top_p" in cfg:
-                    env[f"STRATEGOS_TOPP_{key}"] = str(cfg["top_p"])
-            else:
-                env[f"STRATEGOS_LLM_{key}"] = str(cfg)
-
-    modelo_display = str(agents_cfg) if agents_cfg else "default"
+    modelo_display = "from BD"
     cwd = str(script_path.parent)
 
     _agent_runs[run_id] = {
@@ -541,8 +571,15 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._respond(200, "application/json; charset=utf-8",
                           json.dumps({"version": SERVER_VERSION}))
 
+        elif parsed.path == "/api/crews":
+            self._respond(200, "application/json; charset=utf-8",
+                          json.dumps(get_crews(), ensure_ascii=False, default=str))
+
         elif parsed.path == "/api/crew_agents":
-            crew = qs.get("crew", ["strategos"])[0]
+            crew = qs.get("crew", [None])[0]
+            if not crew:
+                crews = get_crews()
+                crew = crews[0] if crews else "lucapi"
             self._respond(200, "application/json; charset=utf-8",
                           json.dumps(get_crew_agents(crew), ensure_ascii=False, default=str))
 
@@ -557,7 +594,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                           json.dumps(get_correcciones_stats(agent_key), ensure_ascii=False, default=str))
 
         elif parsed.path == "/api/reglas":
-            crew = qs.get("crew", ["strategos"])[0]
+            crew = qs.get("crew", [None])[0]
             self._respond(200, "application/json; charset=utf-8",
                           json.dumps(get_reglas(crew), ensure_ascii=False, default=str))
 
@@ -579,7 +616,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
         elif parsed.path == "/api/modelos":
             self._respond(200, "application/json; charset=utf-8",
-                          json.dumps(AVAILABLE_MODELS, ensure_ascii=False))
+                          json.dumps(get_modelos(), ensure_ascii=False))
 
         elif parsed.path == "/api/tool_sources":
             sources = get_tool_sources()
@@ -655,7 +692,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                               json.dumps({"ok": False, "error": result}, ensure_ascii=False))
 
         elif parsed.path == "/api/agente/run":
-            agente = body.get("agente", "strategos")
+            agente = body.get("agente", "lucapi")
             agent_key = body.get("agent_key")
             agents_cfg = body.get("agents", body.get("modelo", {}))
             result = start_agent(agente, agent_key, agents_cfg)
@@ -670,7 +707,7 @@ if __name__ == "__main__":
     HOST = os.environ.get("HOST", "0.0.0.0")
     PORT = int(os.environ.get("PORT", PORT))
     server = http.server.HTTPServer((HOST, PORT), Handler)
-    print(f"Strategos Dashboard: http://{HOST}:{PORT}")
+    print(f"AgentIAELE Dashboard: http://{HOST}:{PORT}")
     print("En vivo - se actualiza cada 3 segundos")
     print("Ctrl+C para detener")
     try:

@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 """
-Crew Strategos — Learning strategy agent pipeline.
-Run with: python scripts/crewai/strategos.py [agent_key]
+Crew LUCAPI — Reading comprehension agent pipeline.
+Run with: python scripts/crewai/lucapi.py [agent_key]
 
-Architecture: N sequential agents, each with its own LLM.
+Architecture: 2 sequential agents, each with its own LLM (from BD).
+  Agent 1 (Analizador): analyzes text → produces lesson plan
+  Agent 2 (Coach):      interacts with student using the lesson plan
+
 Agent config (role, goal, backstory, task_description, task_expected_output,
-max_iter) lives in the crew_agents table in Neon PostgreSQL.
-Tools and LLM params stay in code / env vars.
+max_iter, llm_model, llm_temperature, llm_max_tokens, llm_top_p) lives
+in the crew_agents table in Neon PostgreSQL.
+Tools stay in code (Python class instances, not serializable).
 """
 
 import os
@@ -34,34 +38,25 @@ if os.environ.get("LANGFUSE_PUBLIC_KEY"):
 else:
     print("[Langfuse] No configurado — ejecutando sin trazabilidad")
 
-# --- LLMs (configurable per agent via env vars) ---
-# Default: all agents use DeepSeek (affordable, good quality)
-# Override with STRATEGOS_LLM_<KEY>, STRATEGOS_TEMP_<KEY>, etc.
-DEFAULT_MODEL = os.environ.get("STRATEGOS_LLM", "deepseek/deepseek-chat")
-DEFAULT_TEMP = float(os.environ.get("STRATEGOS_TEMP", "0.5"))
-DEFAULT_MAXTOK = int(os.environ.get("STRATEGOS_MAXTOK", "4096"))
-DEFAULT_TOPP = float(os.environ.get("STRATEGOS_TOPP", "1.0"))
-
-# --- Tools by agent_key (stays in code, not in BD) ---
+# --- Tools by agent_key (stays in code — class instances, not serializable) ---
 TOOLS_MAP = {
-    "lucapi": [
+    "analizador": [
         ConsultarReglas(),
         ConsultarCorrecciones(),
+    ],
+    "coach": [
         ConsultarSesionesPrevias(),
         RegistrarSesion(),
     ],
 }
 
-
-def _get_llm_config(agent_key: str) -> dict:
-    """Build LLM config for an agent from env vars, with fallback to defaults."""
-    key = agent_key.upper()
-    return {
-        "model": os.environ.get(f"STRATEGOS_LLM_{key}", DEFAULT_MODEL),
-        "max_tokens": int(os.environ.get(f"STRATEGOS_MAXTOK_{key}", str(DEFAULT_MAXTOK))),
-        "temperature": float(os.environ.get(f"STRATEGOS_TEMP_{key}", str(DEFAULT_TEMP))),
-        "top_p": float(os.environ.get(f"STRATEGOS_TOPP_{key}", str(DEFAULT_TOPP))),
-    }
+# Default LLM values (used when BD columns are NULL)
+DEFAULT_LLM = {
+    "model": "groq/llama-3.3-70b-versatile",
+    "temperature": 0.5,
+    "max_tokens": 4096,
+    "top_p": 1.0,
+}
 
 
 def cargar_config_bd(crew_name: str) -> list[dict]:
@@ -70,7 +65,8 @@ def cargar_config_bd(crew_name: str) -> list[dict]:
     cur = conn.cursor()
     cur.execute(
         "SELECT agent_key, agent_order, role, goal, backstory, "
-        "task_description, task_expected_output, max_iter "
+        "task_description, task_expected_output, max_iter, "
+        "llm_model, llm_temperature, llm_max_tokens, llm_top_p "
         "FROM crew_agents WHERE crew = %s ORDER BY agent_order",
         (crew_name,),
     )
@@ -85,16 +81,24 @@ def cargar_config_bd(crew_name: str) -> list[dict]:
     return rows
 
 
+def _build_llm(cfg: dict) -> LLM:
+    """Build an LLM instance from BD config, with defaults for NULL values."""
+    return LLM(
+        model=cfg.get("llm_model") or DEFAULT_LLM["model"],
+        temperature=cfg.get("llm_temperature") if cfg.get("llm_temperature") is not None else DEFAULT_LLM["temperature"],
+        max_tokens=cfg.get("llm_max_tokens") or DEFAULT_LLM["max_tokens"],
+        top_p=cfg.get("llm_top_p") if cfg.get("llm_top_p") is not None else DEFAULT_LLM["top_p"],
+    )
+
+
 def crear_crew(agent_key: str = None) -> Crew:
-    """Build agents, tasks and Crew from BD config + code-level tools/LLMs.
-    If agent_key is specified, only that agent runs (single-agent crew).
-    """
-    configs = cargar_config_bd("strategos")
+    """Build agents, tasks and Crew from BD config + code-level tools."""
+    configs = cargar_config_bd("lucapi")
 
     if agent_key:
         configs = [c for c in configs if c["agent_key"] == agent_key]
         if not configs:
-            raise RuntimeError(f"Agent '{agent_key}' not found in crew strategos")
+            raise RuntimeError(f"Agent '{agent_key}' not found in crew lucapi")
 
     agents = []
     tasks = []
@@ -102,11 +106,10 @@ def crear_crew(agent_key: str = None) -> Crew:
 
     for cfg in configs:
         key = cfg["agent_key"]
-        llm_cfg = _get_llm_config(key)
-        llm = LLM(**llm_cfg)
+        llm = _build_llm(cfg)
 
         agent = Agent(
-            name=f"strategos_{key}",
+            name=f"lucapi_{key}",
             role=cfg["role"],
             goal=cfg["goal"],
             backstory=cfg["backstory"],
@@ -140,19 +143,20 @@ def main():
     agent_key = sys.argv[1] if len(sys.argv) > 1 else None
     t0 = time.time()
 
-    configs = cargar_config_bd("strategos")
+    configs = cargar_config_bd("lucapi")
     if agent_key:
         configs = [c for c in configs if c["agent_key"] == agent_key]
 
     print(f"\n{'='*70}")
-    print(f"  CREW STRATEGOS")
+    print(f"  CREW LUCAPI")
     if agent_key:
         print(f"  Agent: {agent_key}")
-    print(f"  Agents: {', '.join(c['agent_key'] for c in configs)}")
+    print(f"  Pipeline: {' → '.join(c['agent_key'] for c in configs)}")
     for cfg in configs:
-        llm_cfg = _get_llm_config(cfg["agent_key"])
-        print(f"  {cfg['agent_key']}: {llm_cfg['model']}  "
-              f"temp={llm_cfg['temperature']}  max={llm_cfg['max_tokens']}")
+        model = cfg.get("llm_model") or DEFAULT_LLM["model"]
+        temp = cfg.get("llm_temperature") if cfg.get("llm_temperature") is not None else DEFAULT_LLM["temperature"]
+        maxt = cfg.get("llm_max_tokens") or DEFAULT_LLM["max_tokens"]
+        print(f"  {cfg['agent_key']}: {model}  temp={temp}  max={maxt}")
     print(f"  Config: crew_agents table (Neon PostgreSQL)")
     print(f"{'='*70}\n")
 

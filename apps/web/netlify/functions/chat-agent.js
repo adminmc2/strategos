@@ -30,11 +30,12 @@ exports.handler = async (event, context) => {
 
     const sql = neon(process.env.DATABASE_URL);
 
-    // 1. Load agent config from crew_agents
+    // 1. Load agent config from crew_agents (search by agent_key across all crews)
     const agentRows = await sql`
-      SELECT task_description, goal, role
+      SELECT task_description, goal, role, crew
       FROM crew_agents
-      WHERE crew = 'strategos' AND agent_key = ${agent_key}
+      WHERE agent_key = ${agent_key}
+      ORDER BY agent_order DESC
       LIMIT 1
     `;
 
@@ -42,17 +43,17 @@ exports.handler = async (event, context) => {
       return {
         statusCode: 404,
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-        body: JSON.stringify({ error: `Agent '${agent_key}' not found in crew strategos` })
+        body: JSON.stringify({ error: `Agent '${agent_key}' not found in crew_agents` })
       };
     }
 
     const agent = agentRows[0];
 
-    // 2. Load active learned rules
+    // 2. Load active learned rules for the agent's crew
     const reglas = await sql`
       SELECT tipo_error, regla
       FROM reglas_aprendidas
-      WHERE crew = 'strategos' AND activa = true
+      WHERE crew = ${agent.crew} AND activa = true
       ORDER BY n_correcciones DESC
     `;
 

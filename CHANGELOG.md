@@ -9,6 +9,58 @@ Formato: [Semantic Versioning](https://semver.org/lang/es/) `vX.Y.Z`
 
 ---
 
+## [2.2.9] - 2026-04-08
+
+### Añadido (plataforma)
+- **Políticas de diseño de agentes** integradas en `.claude/rules/agent-prompt-design.md`
+  - Adaptado del proyecto Guía Didáctica: frontmatter, language policy generalizada,
+    terminología agnóstica de lengua, ejemplos de referencia (Recurvo + LUCAPI)
+  - LLM config actualizado: ahora en BD (`crew_agents`), no en env vars
+  - CLAUDE.md apunta a ruta local en vez de ruta externa
+
+---
+
+## [2.1.0] - 2026-04-07
+
+### Añadido
+- **Crew LUCAPI con 2 agentes** (patrón guía del profesor):
+  - `analizador` (order 1): analiza texto, genera plan de lección por Protocolo L
+  - `coach` (order 2): interactúa con el estudiante usando el plan del analizador
+  - Cada crew tiene su propio runner: `scripts/crewai/lucapi.py`
+- **LLM config en BD** — columnas `llm_model`, `llm_temperature`, `llm_max_tokens`, `llm_top_p` en tabla `crew_agents`
+  - Analizador: `groq/llama-3.3-70b-versatile`, temp 0.3, max 4096
+  - Coach: `groq/llama-3.3-70b-versatile`, temp 0.6, max 2048
+  - Editable desde el dashboard sin tocar código
+- **Autodescubrimiento de crews** — endpoint `/api/crews` (SELECT DISTINCT crew FROM crew_agents)
+- **Autodescubrimiento de runners** — `scripts/crewai/{crew_name}.py` (sin AGENT_SCRIPTS hardcodeado)
+
+### Eliminado
+- `LLM_CFG`, `LLM_KEY_MAP` hardcodeados en runner (ahora se leen de BD)
+- `AGENT_SCRIPTS` dict hardcodeado en `diagrama.py`
+- `crew = 'strategos'` hardcodeado en `chat-agent.js` (ahora busca por agent_key)
+- Defaults `"strategos"` en `diagrama.py` (reglas, evaluaciones, run)
+
+### Cambiado
+- `strategos.py` renombrado a `lucapi.py` (crew = runner)
+- `crear_crew_agents.py`: crew `"lucapi"` con agent_keys `analizador` y `coach`
+- `chat-agent.js`: busca agente por `agent_key` sin filtrar por crew fijo, carga reglas del crew del agente encontrado
+- `diagrama.py`: `get_crew_agents` y `update_crew_agent` incluyen columnas LLM
+- Regla en CLAUDE.md: bump version + changelog con cada cambio
+
+---
+
+## [2.0.0] - 2026-04-07
+
+### Cambiado (breaking)
+- **Monorepo**: reorganización completa del proyecto
+  - Web pública → `apps/web/`
+  - Plataforma de Agentes → `apps/plataforma/`
+  - Archivos legacy → `_legacy/`
+  - `railway.toml` y `netlify.toml` en raíz con paths actualizados
+  - `.env` compartido en raíz, referenciado con path relativo `../../.env`
+
+---
+
 ## [1.1.1] - 2026-04-06
 
 ### Corregido

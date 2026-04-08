@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>Strategos - Sistema de Agentes</title>
+<title>AgentIAELE - Red de Agentes</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -183,12 +183,14 @@ main { overflow-y: auto; padding: 24px; }
 <body>
 
 <header>
-    <h1>Strategos</h1>
+    <h1>AgentIAELE</h1>
     <span class="live"><span class="live-dot"></span><span id="status-text">Conectando...</span></span>
 </header>
 
 <div class="sidebar">
     <div>
+        <h3>Crew</h3>
+        <select id="crew-select" onchange="switchCrew(this.value)" style="width:100%;padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-size:13px;margin-bottom:8px"></select>
         <h3>Agentes</h3>
         <div id="nav-agents"></div>
     </div>
@@ -216,8 +218,8 @@ main { overflow-y: auto; padding: 24px; }
     <!-- ===== PROYECTO ===== -->
     <div id="view-proyecto" style="display:none">
         <div class="page-header">
-            <span class="page-title">Proyecto Strategos</span>
-            <div class="page-subtitle">Sistema de agentes de estrategias de aprendizaje</div>
+            <span class="page-title">AgentIAELE</span>
+            <div class="page-subtitle">Red de Agentes</div>
         </div>
         <div id="proyecto-agents"></div>
         <div class="section" id="sec-runs">
@@ -339,12 +341,18 @@ let currentRunId = null;
 let crewAgents = [];
 let toolSources = {};
 let serverVersion = '?';
+let availableModels = [];
+let crews = [];
+let currentCrew = '';
 
 const VIEWS = ['proyecto','agente','nueva','ejecucion','correcciones','reglas','trazas'];
 
 // ===== INIT =====
 async function init() {
     try { const r = await fetch('/api/version'); const d = await r.json(); serverVersion = d.version; } catch(e) {}
+    try { const r = await fetch('/api/modelos'); availableModels = await r.json(); } catch(e) {}
+    try { const r = await fetch('/api/crews'); crews = await r.json(); } catch(e) {}
+    currentCrew = crews[0] || 'lucapi';
     await loadCrewAgents();
     renderSidebar();
     goTo('proyecto');
@@ -352,7 +360,7 @@ async function init() {
 }
 
 async function loadCrewAgents() {
-    try { const r = await fetch('/api/crew_agents?crew=strategos'); crewAgents = await r.json(); }
+    try { const r = await fetch('/api/crew_agents?crew=' + encodeURIComponent(currentCrew)); crewAgents = await r.json(); }
     catch(e) { crewAgents = []; }
 }
 
@@ -400,7 +408,16 @@ async function goToEjecucion(runId) {
     renderSidebar();
 }
 
+async function switchCrew(crew) {
+    currentCrew = crew;
+    await loadCrewAgents();
+    renderSidebar();
+    goTo('proyecto');
+}
+
 function renderSidebar() {
+    const sel = document.getElementById('crew-select');
+    sel.innerHTML = crews.map(c => `<option value="${c}" ${c===currentCrew?'selected':''}>${c.toUpperCase()}</option>`).join('');
     document.getElementById('nav-agents').innerHTML = crewAgents.map(a => {
         const cls = currentView==='agente' && currentAgentKey===a.agent_key ? 'active' : '';
         return `<button class="nav-btn ${cls}" onclick="goToAgente('${a.agent_key}')">
@@ -469,6 +486,24 @@ function toggleCfgEdit(section, editing) {
     const btnSave = document.getElementById('btn-save-'+section);
     if (btnEdit) btnEdit.style.display = editing ? 'none' : '';
     if (btnSave) btnSave.style.display = editing ? '' : 'none';
+}
+
+async function saveLLMConfig() {
+    const agent = crewAgents.find(a => a.agent_key === currentAgentKey);
+    if (!agent) return;
+    const data = {
+        id: agent.id,
+        llm_model: document.getElementById('ed-llm-model-0').value,
+        llm_temperature: parseFloat(document.getElementById('ed-llm-temp-0').value),
+        llm_max_tokens: parseInt(document.getElementById('ed-llm-maxtok-0').value),
+        llm_top_p: parseFloat(document.getElementById('ed-llm-topp-0').value),
+    };
+    try {
+        const r = await fetch('/api/crew_agents/update', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)});
+        const d = await r.json();
+        if (d.ok) { Object.assign(agent, data); showSaved('saved-llm'); }
+        else alert('Error al guardar LLM config');
+    } catch(e) { alert('Error al guardar LLM config'); }
 }
 
 async function savePipeline() {
@@ -574,7 +609,51 @@ async function renderAgente() {
             <div class="config-field"><div class="config-label">Expected output</div><textarea class="config-edit cfg-pipeline" disabled id="ed-pipe-taskout-0" style="min-height:60px">${esc(agent.task_expected_output)}</textarea></div>
         </div>`;
 
+    const currentModel = agent.llm_model || '';
+    const modelOptions = availableModels.map(m => {
+        const sel = m.id === currentModel ? 'selected' : '';
+        const badges = [m.vision?'👁':'', m.function_calling?'🔧':'', m.reasoning?'🧠':''].filter(Boolean).join('');
+        const avail = m.available ? '' : ' (no API key)';
+        return `<option value="${m.id}" ${sel} ${m.available?'':'disabled'}>${m.name} — ${m.provider}${avail} ${badges} ${m.cost}</option>`;
+    }).join('');
+
+    const llmHtml = `
+        <div style="padding:14px;border:1px solid var(--md-outline-variant);border-radius:12px;background:var(--md-surface)">
+            <div class="config-field">
+                <div class="config-label">Modelo</div>
+                <select class="config-input cfg-llm" disabled id="ed-llm-model-0" style="padding:8px;border-radius:8px;border:1px solid var(--md-outline-variant);width:100%;font-size:13px">
+                    <option value="">— Seleccionar modelo —</option>
+                    ${modelOptions}
+                </select>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:8px">
+                <div class="config-field">
+                    <div class="config-label">Temperature</div>
+                    <input type="number" class="config-input cfg-llm" disabled id="ed-llm-temp-0" value="${agent.llm_temperature ?? 0.5}" min="0" max="2" step="0.1" style="width:100%;padding:6px 8px;font-size:13px">
+                </div>
+                <div class="config-field">
+                    <div class="config-label">Max tokens</div>
+                    <input type="number" class="config-input cfg-llm" disabled id="ed-llm-maxtok-0" value="${agent.llm_max_tokens ?? 4096}" min="256" max="32768" step="256" style="width:100%;padding:6px 8px;font-size:13px">
+                </div>
+                <div class="config-field">
+                    <div class="config-label">Top P</div>
+                    <input type="number" class="config-input cfg-llm" disabled id="ed-llm-topp-0" value="${agent.llm_top_p ?? 1.0}" min="0" max="1" step="0.1" style="width:100%;padding:6px 8px;font-size:13px">
+                </div>
+            </div>
+        </div>`;
+
     document.getElementById('agente-content').innerHTML = `
+        <div class="section text-card" id="sec-ag-llm">
+            <div class="section-header" onclick="toggleSection('sec-ag-llm')"><h2>LLM Config</h2><span class="chevron">&#9660;</span></div>
+            <div class="section-body">
+                ${llmHtml}
+                <div class="save-bar">
+                    <span class="saved-toast" id="saved-llm">Guardado en BD</span>
+                    <button class="btn btn-secondary btn-sm" id="btn-edit-llm" onclick="toggleCfgEdit('llm',true)">Editar</button>
+                    <button class="btn btn-primary btn-sm" id="btn-save-llm" onclick="saveLLMConfig();toggleCfgEdit('llm',false)" style="display:none">Guardar</button>
+                </div>
+            </div>
+        </div>
         <div class="section text-card" id="sec-ag-pipeline">
             <div class="section-header" onclick="toggleSection('sec-ag-pipeline')"><h2>Config BD</h2><span class="chevron">&#9660;</span></div>
             <div class="section-body">

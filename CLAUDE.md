@@ -23,10 +23,10 @@ La Plataforma de Agentes (`apps/plataforma/diagrama.py`) tiene `SERVER_VERSION` 
 - **Y** — feature nueva visible (agente, tarjeta, destreza, endpoint)
 - **Z** — fix (CSS, icono, bug, deploy)
 
-Antes de cada push:
-1. Bump `version` en `package.json`
-2. Commit con mensaje que empiece con `vX.Y.Z —`
-3. Push
+Con cada cambio que se haga (no solo al hacer push):
+1. Bump `version` en `apps/web/package.json`
+2. Añadir entrada en `CHANGELOG.md` con fecha y descripción
+3. Commit con mensaje que empiece con `vX.Y.Z —`
 
 ## Workflow
 
@@ -65,6 +65,7 @@ Ambas apps comparten: `.env` (raíz del repo), BD Neon PostgreSQL (`crew_agents`
 ## Diseño de agentes CrewAI
 
 Las reglas de diseño de role, goal, backstory y task están en:
-`/Users/armandocruz/Desktop/guia-didactica-profesor-IA/.claude/rules/agent-prompt-design.md`
+`.claude/rules/agent-prompt-design.md`
 
+Se cargan automáticamente cuando se trabaja en `apps/plataforma/scripts/` o `apps/plataforma/ui/`.
 Respetar siempre esas políticas al crear o modificar agentes.

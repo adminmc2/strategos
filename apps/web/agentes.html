@@ -3312,6 +3312,87 @@
         }
 
 
+        /* CANOTA card overrides */
+        .canota-card .tarjeta-body {
+            padding: 16px 20px;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+
+        .canota-intro {
+            margin: 0 0 8px 0;
+            color: #444;
+        }
+
+        .canota-bloque {
+            margin-bottom: 16px;
+        }
+
+        .canota-titulo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .canota-titulo .paso-num {
+            font-size: 2.2em;
+        }
+
+        .canota-titulo strong {
+            font-family: 'Lexend', sans-serif;
+            font-size: 1.6em;
+            font-weight: 800;
+            color: #222;
+            line-height: 1;
+        }
+
+        .canota-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .canota-row > div {
+            flex: 1;
+        }
+
+        .canota-row img {
+            width: 130px;
+            height: auto;
+            flex-shrink: 0;
+        }
+
+        .canota-card table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .canota-card table td {
+            width: 50%;
+            padding: 1px 4px;
+            line-height: 1.4;
+        }
+
+        .canota-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 16px;
+            margin-bottom: 8px;
+        }
+
+        .canota-2col strong {
+            font-family: 'Lexend', sans-serif;
+            color: #222;
+        }
+
+        @media (max-width: 768px) {
+            .canota-row img {
+                width: 75px;
+            }
+        }
+
         /* Section title (cara B) */
         .tarjeta-section-title {
             font-family: 'Lexend', sans-serif;
@@ -3622,12 +3703,20 @@
                 <div class="destreza-header">
                     <div class="destreza-info">
                         <h3 class="destreza-name">Mediación lingüística</h3>
-                        <span class="destreza-count">1 agente</span>
+                        <span class="destreza-count">2 agentes</span>
                     </div>
                     <div class="destreza-siglas">ML</div>
                     <svg class="destreza-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                 </div>
                 <div class="destreza-agents">
+                    <div class="agent-mini" onclick="event.stopPropagation(); openTarjetaModal('canota')">
+                        <span class="agent-mini-siglas" style="color: #AD1457">CNT</span>
+                        <div class="agent-mini-info">
+                            <span class="agent-mini-name">CANOTA</span>
+                            <span class="agent-mini-desc">Cuenta lo que oyes — Estrategia de mediación lingüística</span>
+                        </div>
+                        <span class="agent-mini-arrow">&rarr;</span>
+                    </div>
                     <div class="agent-mini" onclick="event.stopPropagation(); openAgent('traduccion')">
                         <span class="agent-mini-siglas" style="color: #9B59B6">TRD</span>
                         <div class="agent-mini-info">
@@ -3680,6 +3769,7 @@
             'lucapi': { name: 'LUCAPI', siglas: 'LCP', color: '#2175A5', desc: 'Estrategia de comprensión lectora en 4 pasos' },
             'reca': { name: 'RECA', siglas: 'RC', color: '#2E7D32', desc: 'Estrategia para escribir un email en 4 pasos' },
             'sotama': { name: 'SOTAMA', siglas: 'STM', color: '#7B2D8E', desc: 'Estrategia de comprensión auditiva en 3 modos' },
+            'canota': { name: 'CANOTA', siglas: 'CNT', color: '#AD1457', desc: 'Estrategia de mediación: cuenta lo que oyes' },
         };
         let currentAgent = null;
 
@@ -3687,6 +3777,7 @@
             'lucapi': 'tarjetaModalOverlay',
             'reca': 'tarjetaModalOverlayReca',
             'sotama': 'tarjetaModalOverlaySotama',
+            'canota': 'tarjetaModalOverlayCanota',
         };
 
         function openTarjetaModal(agentId) {
@@ -3728,7 +3819,8 @@
             'traductor': 'traduccion',
             'traduccion': 'traduccion',
             'reca': 'reca',
-            'sotama': 'sotama'
+            'sotama': 'sotama',
+            'canota': 'canota'
         };
 
         function openAgent(agentType) {
@@ -8516,6 +8608,113 @@ Instrucciones:
                         </a>
                         <button class="btn-activate" onclick="closeTarjetaModal(); openAgent('sotama')">
                             Activar agente SOTAMA
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12H19M19 12L12 5M19 12L12 19"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Tarjeta CANOTA -->
+    <div class="tarjeta-modal-overlay" id="tarjetaModalOverlayCanota" onclick="closeTarjetaModal(event)">
+        <div class="tarjeta-modal" onclick="event.stopPropagation()">
+            <button class="tarjeta-modal-close" onclick="closeTarjetaModal()">&times;</button>
+            <div class="tarjeta-modal-content">
+                <!-- Tarjeta flip -->
+                <div class="tarjeta-flip-container" onclick="this.classList.toggle('flipped')">
+                    <div class="tarjeta-flipper">
+                        <!-- CARA A -->
+                        <div class="tarjeta-face tarjeta-front canota-card" style="background: #FAF6F0;">
+                            <div class="tarjeta-header" style="background: #4A6741;">
+                                <span class="tarjeta-header-title">CUENTA LO QUE OYES</span>
+                                <img src="/public/mediacionicon.svg" class="tarjeta-header-icon" alt="icono">
+                            </div>
+                            <div class="tarjeta-body">
+                                <div class="canota-row" style="margin-bottom:16px;">
+                                    <div>Tu compañero/a te cuenta algo. Tú se lo cuentas a otros. No repites: cambias la persona.</div>
+                                    <img src="/public/med_foto1.png" alt="">
+                                </div>
+                                <div class="canota-bloque">
+                                    <div class="canota-titulo"><span class="paso-num">1</span> <strong>MIENTRAS ESCUCHAS</strong></div>
+                                    <div>Anota en tu cuaderno solo palabras clave. No frases. Piensa en 4 datos: <em>QUIÉN · QUÉ · CUÁNDO · DÓNDE</em></div>
+                                </div>
+                                <div class="canota-bloque">
+                                    <div class="canota-row">
+                                        <div class="canota-titulo" style="margin-bottom:0;"><span class="paso-num">2</span> <strong>CAMBIA LA PERSONA</strong></div>
+                                        <img src="/public/med_foto2.png" alt="">
+                                    </div>
+                                    <table>
+                                        <tr><td><strong>ÉL/ELLA dice</strong></td><td><strong>Tú dices</strong></td></tr>
+                                        <tr><td>Me llamo...</td><td>Se llama...</td></tr>
+                                        <tr><td>Tengo... / Tengo X años</td><td>Tiene... / Tiene X años</td></tr>
+                                        <tr><td>Soy de...</td><td>Es de...</td></tr>
+                                        <tr><td>Estoy en...</td><td>Está en...</td></tr>
+                                        <tr><td>Vivo en / Estudio /</td><td>Vive en / Estudia /</td></tr>
+                                        <tr><td>Trabajo en...</td><td>Trabaja en...</td></tr>
+                                        <tr><td>Me gusta...</td><td>Le gusta...</td></tr>
+                                        <tr><td>Mi... / Mis...</td><td>Su... / Sus...</td></tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tarjeta-flip-hint">Toca para ver las fórmulas →</div>
+                        </div>
+                        <!-- CARA B -->
+                        <div class="tarjeta-face tarjeta-back canota-card" style="background: #FAF6F0;">
+                            <div class="tarjeta-header" style="background: #4A6741;">
+                                <span class="tarjeta-header-title">MEDIACIÓN LINGÜÍSTICA</span>
+                                <img src="/public/mediacionicon.svg" class="tarjeta-header-icon" alt="icono">
+                            </div>
+                            <div class="tarjeta-body" style="display:flex; flex-direction:column;">
+                                <div class="tarjeta-section-title">FÓRMULAS DEL MEDIADOR</div>
+                                <div style="flex:1; display:flex; flex-direction:column; justify-content:space-evenly;">
+                                <div class="canota-row">
+                                    <img src="/public/med_foto3.png" alt="" style="order:-1;">
+                                    <div>
+                                        <div class="canota-titulo" style="margin-bottom:2px;"><strong>Empieza así</strong></div>
+                                        [Nombre] tiene... Su ___ se llama... Estudia en / Trabaja en... Es de...
+                                    </div>
+                                </div>
+                                <div class="canota-2col" style="margin:0;">
+                                    <div class="canota-row">
+                                        <div>
+                                            <div class="canota-titulo" style="margin-bottom:2px;"><strong>Para comprobar</strong></div>
+                                            ¿Sí? ¿Vale? ¿Entiendes?
+                                        </div>
+                                    </div>
+                                    <div class="canota-row">
+                                        <div>
+                                            <div class="canota-titulo" style="margin-bottom:2px;"><strong>Si no entiendes</strong></div>
+                                            Otra vez, por favor. Más despacio.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="canota-row">
+                                    <img src="/public/med_foto4.png" alt="" style="width:140px; order:-1;">
+                                    <div>
+                                        <div class="canota-titulo" style="margin-bottom:2px;"><strong>Para corregir</strong></div>
+                                        Perdón... A ver...
+                                    </div>
+                                </div>
+                                <p style="text-align:center; font-weight:700; color:#4A6741; font-size:1.15em; margin:0;">Si el dato llega, la mediación es un éxito.</p>
+                                </div>
+                            </div>
+                            <div class="tarjeta-flip-hint">← Toca para ver los pasos</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Panel detalle -->
+                <div class="agent-detail">
+                    <div class="agent-detail-siglas">CNT</div>
+                    <div class="agent-detail-name">CANOTA</div>
+                    <p class="agent-detail-desc">Estrategia de mediación lingüística: escucha a tu compañero/a, anota los datos clave y cuéntalo cambiando la persona.</p>
+                    <div class="agent-detail-actions">
+                        <a href="/public/canota.pdf" download class="btn-download">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Descargar PDF
+                        </a>
+                        <button class="btn-activate" onclick="closeTarjetaModal(); openAgent('canota')">
+                            Activar agente CANOTA
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12H19M19 12L12 5M19 12L12 19"/></svg>
                         </button>
                     </div>

@@ -240,9 +240,6 @@ def main():
     cur.execute(CREATE_SQL)
     print("✓ Tabla crew_agents creada (o ya existía)")
 
-    # NOTE: The old strategos/lucapi entry stays — chat-agent.js depends on it.
-    # These new lucapi/analizador + lucapi/coach entries are for the CrewAI pipeline.
-
     for agent in AGENTS:
         cur.execute(INSERT_SQL, agent)
         print(f"✓ {agent['crew']}/{agent['agent_key']} (orden {agent['agent_order']}, max_iter={agent['max_iter']})")

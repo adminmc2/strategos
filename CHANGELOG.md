@@ -9,6 +9,78 @@ Formato: [Semantic Versioning](https://semver.org/lang/es/) `vX.Y.Z`
 
 ---
 
+## [3.1.0] - 2026-04-09
+
+### Añadido (plataforma — Fase 2B)
+- **ReglasView** (`/crew/:name/reglas`): CRUD completo de reglas aprendidas
+  - Cards editables con tipo de error, regla, ejemplos
+  - Crear, editar inline, eliminar con confirmacion
+  - Badge activa/inactiva
+- **CorreccionesView** (`/crew/:name/correcciones`): vista de correcciones
+  - Tabla con fecha, agente, tipo, campo
+  - Filas expandibles con valor original vs corregido
+  - Filtro por agente (dropdown)
+  - Stats agregadas arriba de la tabla
+- **TrazasView** (`/crew/:name/trazas`): vista de trazas LLM
+  - Tabla con fecha, modelo, tokens in/out, duracion, estado
+  - Filas expandibles con request/response completo en pre formateado
+  - Paginacion con "Cargar mas"
+  - Detalle de traza via API
+- **api.js**: 4 funciones nuevas (fetchTrazaDetalle, fetchCorreccionesStats, createRegla, deleteRegla)
+
+### Eliminado
+- Placeholder.jsx (reemplazado por las 3 vistas reales)
+
+---
+
+## [3.0.1] - 2026-04-08
+
+### Corregido
+- Eliminado crew STRATEGOS de BD (datos legacy)
+- Header del editor: botón volver + nombre del crew visibles
+- Panel config: ancho aumentado de 420px a 540px
+
+### Mejorado (visual)
+- Nodos con header de color por posición (azul, verde, violeta, amber) + icono + role preview
+- Edges smoothstep con flecha (reemplaza línea dashed animada)
+- Background dots (reemplaza grid)
+- Handles discretos (hidden, visible on hover)
+- MiniMap eliminado
+- Controls con bordes redondeados
+
+### Añadido
+- Dashboard: botón "+ Crear nuevo crew" con card dashed
+- Dashboard: loading state "Cargando crews..."
+- Editor: loading state "Cargando pipeline..."
+- Panel config: toast de error rojo si el save falla
+- Rutas placeholder para Correcciones, Reglas, Trazas LLM (Fase 2B)
+
+---
+
+## [3.0.0] - 2026-04-08
+
+### Cambiado (breaking — plataforma)
+- **Languagent UI**: reescrita en React + Vite + React Flow (reemplaza vanilla HTML)
+  - Estructura: `apps/plataforma/ui/` (src/, dist/, package.json, vite.config.js)
+  - `diagrama.py` sirve `ui/dist/` con fallback a `web/` (legacy)
+- **Nombre**: plataforma renombrada a Languagent (era AgentIAELE)
+
+### Añadido
+- **Dashboard** (`/`): grid de crews con pipeline preview y modelos usados
+- **Editor** (`/crew/:name`): layout 3 zonas — sidebar, canvas React Flow, panel config
+  - Canvas con nodos arrastrables, edges animados, minimap, zoom
+  - Nodos muestran modelo, temperature, badges (vision/tools/reasoning)
+  - Panel derecho slide-in: LLM Config, Identity, Task (editar + guardar)
+  - Sidebar: lista de agentes, + Añadir agente, eliminar agente, links a sistema
+- **React Router** con rutas: `/`, `/crew/:name`, `/crew/:name/trazas`, `/crew/:name/correcciones`, `/crew/:name/reglas`
+- **API endpoints nuevos**:
+  - `POST /api/crew_agents/create` — crear agente en un crew (auto agent_order)
+  - `POST /api/crew_agents/delete` — eliminar agente por id
+- **API mejoradas**: `api.js` con error handling, `runCrew`, `fetchRunStatus`, `fetchCorrecciones`, `fetchReglas`, `fetchTrazas`
+- **LLMs corregidos en BD**: analizador → Llama 4 Scout, coach → DeepSeek V3
+
+---
+
 ## [2.2.9] - 2026-04-08
 
 ### Añadido (plataforma)

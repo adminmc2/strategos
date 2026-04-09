@@ -17,7 +17,7 @@ Los nombres se generan con el sistema de mapeo consonante-vocal definido en `app
 
 Fuente única de verdad: `apps/web/package.json` → campo `version`.
 La landing lee la versión de `/api/version` (endpoint en `apps/web/server.js`). NO hardcodear versiones en HTML.
-La Plataforma de Agentes (`apps/plataforma/diagrama.py`) tiene `SERVER_VERSION` independiente.
+Languagent (`apps/plataforma/diagrama.py`) tiene `SERVER_VERSION` independiente.
 
 - **X** — cambio de arquitectura, breaking changes
 - **Y** — feature nueva visible (agente, tarjeta, destreza, endpoint)
@@ -42,22 +42,37 @@ NUNCA hacer push sin verificar local primero.
 ```
 stratega/
 ├── apps/
-│   ├── web/              # Web pública (Node/Express, puerto 3000)
+│   ├── web/                # Web pública Strategos (Node/Express, puerto 3000)
 │   │   ├── server.js
 │   │   ├── package.json
 │   │   ├── landing.html, agentes.html, ejercicios.html
-│   │   ├── netlify/functions/
 │   │   ├── config/agents.js
 │   │   └── public/
-│   └── plataforma/       # Plataforma de Agentes (Python, puerto 4567)
-│       ├── diagrama.py
-│       ├── requirements.txt
-│       ├── web/index.html
-│       └── scripts/
-├── _legacy/              # Archivos legacy (no en uso activo)
-├── .env                  # Compartido por ambas apps
-├── railway.toml          # Deploy config (web)
-└── netlify.toml          # Deploy config (web)
+│   └── plataforma/         # Languagent (Python, puerto 4567)
+│       ├── diagrama.py     # Backend server + API
+│       ├── ui/             # Frontend React (Vite + React Flow)
+│       │   ├── src/
+│       │   │   ├── App.jsx           # Router principal
+│       │   │   ├── Dashboard.jsx     # Vista lista de crews
+│       │   │   ├── Editor.jsx        # Vista editor de pipeline
+│       │   │   ├── PipelineCanvas.jsx # Canvas React Flow
+│       │   │   ├── AgentNode.jsx     # Nodo custom
+│       │   │   ├── AgentPanel.jsx    # Panel config derecho
+│       │   │   ├── Sidebar.jsx       # Sidebar izquierdo
+│       │   │   ├── Placeholder.jsx   # Páginas "Próximamente"
+│       │   │   ├── api.js            # API helpers
+│       │   │   └── styles.css        # Estilos globales
+│       │   └── dist/       # Build output (servido por diagrama.py)
+│       ├── web/            # Dashboard legacy (fallback, se eliminará)
+│       ├── scripts/
+│       │   ├── crear_crew_agents.py
+│       │   └── crewai/lucapi.py
+│       └── requirements.txt
+├── _legacy/                # Archivos legacy (no en uso activo)
+├── .claude/rules/          # Políticas de diseño de agentes
+├── .env                    # Compartido por ambas apps
+├── railway.toml            # Deploy config (web)
+└── netlify.toml            # Deploy config (web)
 ```
 
 Ambas apps comparten: `.env` (raíz del repo), BD Neon PostgreSQL (`crew_agents`).

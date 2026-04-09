@@ -1,5 +1,7 @@
 # Dependencies
 apps/web/node_modules/
+apps/plataforma/ui/node_modules/
+apps/plataforma/ui/dist/
 
 # Local Netlify folder
 .netlify

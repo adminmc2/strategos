@@ -26,7 +26,11 @@ load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', '.env'))
 
 PROJECT = Path(__file__).parent
 PORT = 4567
-SERVER_VERSION = "2.1.0"
+SERVER_VERSION = "3.1.0"
+
+# UI: serve React build (ui/dist/) if available, fallback to legacy web/
+UI_DIST = PROJECT / "ui" / "dist"
+WEB_DIR = UI_DIST if UI_DIST.exists() else PROJECT / "web"
 
 # --- Langfuse client (para API de trazas) ---
 _langfuse_client = None
@@ -91,6 +95,56 @@ def update_crew_agent(agent_id, data):
         f"UPDATE crew_agents SET {set_clause}, updated_at = NOW() WHERE id = %s",
         values,
     )
+    ok = cur.rowcount > 0
+    conn.commit()
+    conn.close()
+    return ok
+
+
+def create_crew_agent(data):
+    """Create a new agent in a crew. Returns the new agent's id."""
+    conn = _db()
+    cur = conn.cursor()
+    # Auto-assign agent_order as max+1 within the crew
+    cur.execute(
+        "SELECT COALESCE(MAX(agent_order), 0) + 1 FROM crew_agents WHERE crew = %s",
+        (data["crew"],),
+    )
+    next_order = cur.fetchone()[0]
+    cur.execute(
+        """INSERT INTO crew_agents
+           (crew, agent_key, agent_order, role, goal, backstory,
+            task_description, task_expected_output, max_iter,
+            llm_model, llm_temperature, llm_max_tokens, llm_top_p)
+           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+           RETURNING id""",
+        (
+            data["crew"],
+            data.get("agent_key", f"agent_{next_order}"),
+            next_order,
+            data.get("role", "New agent"),
+            data.get("goal", ""),
+            data.get("backstory", ""),
+            data.get("task_description", ""),
+            data.get("task_expected_output", ""),
+            data.get("max_iter", 15),
+            data.get("llm_model"),
+            data.get("llm_temperature"),
+            data.get("llm_max_tokens"),
+            data.get("llm_top_p"),
+        ),
+    )
+    new_id = cur.fetchone()[0]
+    conn.commit()
+    conn.close()
+    return new_id
+
+
+def delete_crew_agent(agent_id):
+    """Delete an agent by id."""
+    conn = _db()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM crew_agents WHERE id = %s", (agent_id,))
     ok = cur.rowcount > 0
     conn.commit()
     conn.close()
@@ -540,7 +594,7 @@ def save_tool_source(tool_name, new_source):
 #  HTML
 # ─────────────────────────────────────────────────
 
-HTML_FILE = PROJECT / "web" / "index.html"
+HTML_FILE = WEB_DIR / "index.html"
 
 
 def load_html_template():
@@ -640,26 +694,74 @@ class Handler(http.server.BaseHTTPRequestHandler):
                           json.dumps(get_traza_detalle(trace_id), ensure_ascii=False, default=str))
 
         elif parsed.path in ("/favicon.ico", "/favicon.svg", "/web/favicon.svg"):
-            svg_path = PROJECT / "web" / "favicon.svg"
+            svg_path = WEB_DIR / "favicon.svg"
+            if not svg_path.exists():
+                svg_path = PROJECT / "web" / "favicon.svg"
             if svg_path.exists():
                 self._respond(200, "image/svg+xml", svg_path.read_text(encoding="utf-8"))
             else:
                 self.send_response(204)
                 self.end_headers()
 
-        elif parsed.path == "/":
-            html = load_html_template()
-            self._respond(200, "text/html; charset=utf-8", html)
-
         else:
-            self.send_error(404)
+            # Serve static files from WEB_DIR (React build or legacy)
+            clean = parsed.path.lstrip("/")
+            file_path = (WEB_DIR / clean).resolve()
+            # Security: ensure path is within WEB_DIR
+            if str(file_path).startswith(str(WEB_DIR.resolve())) and file_path.is_file():
+                ext = file_path.suffix.lower()
+                content_types = {
+                    ".html": "text/html; charset=utf-8",
+                    ".js": "application/javascript",
+                    ".css": "text/css",
+                    ".svg": "image/svg+xml",
+                    ".png": "image/png",
+                    ".jpg": "image/jpeg",
+                    ".json": "application/json",
+                    ".ico": "image/x-icon",
+                }
+                ct = content_types.get(ext, "application/octet-stream")
+                if ext in (".png", ".jpg", ".ico"):
+                    data = file_path.read_bytes()
+                    self.send_response(200)
+                    self.send_header("Content-Type", ct)
+                    self.send_header("Content-Length", str(len(data)))
+                    self.end_headers()
+                    self.wfile.write(data)
+                else:
+                    self._respond(200, ct, file_path.read_text(encoding="utf-8"))
+            elif parsed.path == "/" or not clean or not file_path.suffix:
+                # SPA fallback: serve index.html for any non-file route
+                html = load_html_template()
+                self._respond(200, "text/html; charset=utf-8", html)
+            else:
+                self.send_error(404)
 
     def do_POST(self):
         parsed = urlparse(self.path)
         length = int(self.headers.get("Content-Length", 0))
         body = json.loads(self.rfile.read(length)) if length else {}
 
-        if parsed.path == "/api/crew_agents/update":
+        if parsed.path == "/api/crew_agents/create":
+            if not body.get("crew"):
+                self._respond(400, "application/json; charset=utf-8",
+                              json.dumps({"ok": False, "error": "crew is required"}))
+            else:
+                new_id = create_crew_agent(body)
+                self._respond(200, "application/json; charset=utf-8",
+                              json.dumps({"ok": True, "id": new_id}))
+
+        elif parsed.path == "/api/crew_agents/delete":
+            agent_id = body.get("id")
+            if not agent_id:
+                self._respond(400, "application/json; charset=utf-8",
+                              json.dumps({"ok": False, "error": "id is required"}))
+            else:
+                ok = delete_crew_agent(agent_id)
+                self._respond(200, "application/json; charset=utf-8",
+                              json.dumps({"ok": ok}))
+
+        elif parsed.path == "/api/crew_agents/update":
             agent_id = body.get("id")
             ok = update_crew_agent(agent_id, body)
             self._respond(200, "application/json; charset=utf-8",

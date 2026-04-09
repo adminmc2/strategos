@@ -1,6 +1,6 @@
 {
   "name": "strategos",
-  "version": "3.2.21",
+  "version": "3.2.22",
   "description": "Strategos - Agentes IA para aprender español con estrategias reales",
   "scripts": {
     "start": "node server.js",

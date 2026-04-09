@@ -306,6 +306,19 @@ def get_evaluaciones(agent_key=None):
 #  Langfuse: trazas
 # ─────────────────────────────────────────────────
 
+def _safe_usage(usage):
+    """Serialize Langfuse Usage object safely (may be dict, Pydantic, or dataclass)."""
+    if not usage:
+        return {}
+    if isinstance(usage, dict):
+        return usage
+    if hasattr(usage, 'model_dump'):
+        return usage.model_dump()
+    if hasattr(usage, '__dict__'):
+        return {k: v for k, v in usage.__dict__.items() if not k.startswith('_')}
+    return {"raw": str(usage)}
+
+
 def get_trazas(limit=20):
     if not _langfuse_client:
         return {"error": "Langfuse no configurado", "trazas": []}
@@ -313,16 +326,35 @@ def get_trazas(limit=20):
         traces = _langfuse_client.api.trace.list(limit=limit)
         result = []
         for t in traces.data:
+            # trace.list() returns observation IDs as strings.
+            # Fetch full trace to get model/tokens from observations.
+            modelo = None
+            tokens_in = None
+            tokens_out = None
+            try:
+                full = _langfuse_client.api.trace.get(t.id)
+                if full.observations:
+                    obs = full.observations[0]
+                    modelo = getattr(obs, 'model', None)
+                    if obs.usage:
+                        usage = _safe_usage(obs.usage)
+                        tokens_in = usage.get('input')
+                        tokens_out = usage.get('output')
+            except Exception:
+                pass
+
             result.append({
                 "id": t.id,
                 "name": t.name,
                 "timestamp": str(t.timestamp) if t.timestamp else None,
-                "latency": t.latency,
+                "modelo": modelo,
+                "tokens_input": tokens_in,
+                "tokens_output": tokens_out,
+                "duracion_s": t.latency,
                 "total_cost": t.total_cost,
                 "input": str(t.input)[:200] if t.input else None,
                 "output": str(t.output)[:500] if t.output else None,
-                "metadata": t.metadata,
-                "tags": t.tags,
+                "status": "ok",
                 "observations_count": len(t.observations) if t.observations else 0,
             })
         return {"trazas": result, "total": len(result)}
@@ -341,6 +373,7 @@ def get_traza_detalle(trace_id):
                 "id": obs.id,
                 "type": obs.type,
                 "name": obs.name,
+                "model": getattr(obs, 'model', None),
                 "start_time": str(obs.start_time) if obs.start_time else None,
                 "end_time": str(obs.end_time) if obs.end_time else None,
                 "latency": obs.latency,
@@ -348,7 +381,7 @@ def get_traza_detalle(trace_id):
                 "output": str(obs.output)[:500] if obs.output else None,
                 "level": obs.level,
                 "status_message": obs.status_message,
-                "usage": obs.usage.model_dump() if obs.usage else None,
+                "usage": _safe_usage(obs.usage),
                 "total_cost": obs.calculated_total_cost,
                 "parent_id": obs.parent_observation_id,
             })

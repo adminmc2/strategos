@@ -539,7 +539,7 @@ header .header-right { display: flex; align-items: center; gap: 12px; }
 
 .table-header {
   display: grid;
-  grid-template-columns: 140px 120px 1fr 100px 80px;
+  grid-template-columns: 110px 130px 1fr 1fr 90px 50px;
   padding: 10px 16px;
   font-size: 11px;
   font-weight: 700;
@@ -551,7 +551,7 @@ header .header-right { display: flex; align-items: center; gap: 12px; }
 
 .table-row {
   display: grid;
-  grid-template-columns: 140px 120px 1fr 100px 80px;
+  grid-template-columns: 110px 130px 1fr 1fr 90px 50px;
   padding: 10px 16px;
   font-size: 13px;
   border-bottom: 1px solid var(--border);
@@ -561,6 +561,13 @@ header .header-right { display: flex; align-items: center; gap: 12px; }
 .table-row:hover { background: var(--primary-surface); }
 
 .col-date { color: var(--text-secondary); font-size: 12px; }
+.col-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
 .col-agent { font-weight: 500; display: flex; align-items: center; }
 .col-type { display: flex; align-items: center; }
 .col-field { color: var(--text-secondary); display: flex; align-items: center; }

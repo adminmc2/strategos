@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeftIcon, CaretDownIcon, CaretRightIcon, ClockIcon, CpuIcon } from '@phosphor-icons/react'
+import { ArrowLeftIcon, CaretDownIcon, CaretRightIcon, ClockIcon } from '@phosphor-icons/react'
 import { fetchTrazas, fetchTrazaDetalle } from './api'
 
 export default function TrazasView() {
@@ -64,6 +64,20 @@ export default function TrazasView() {
     return s < 1 ? `${Math.round(s * 1000)}ms` : `${s.toFixed(1)}s`
   }
 
+  const shortModel = (m) => {
+    if (!m) return '-'
+    const map = {
+      'deepseek-chat': 'DeepSeek V3',
+      'deepseek-reasoner': 'DeepSeek R1',
+      'meta-llama/llama-4-scout-17b-16e-instruct': 'Llama 4 Scout',
+      'llama-3.3-70b-versatile': 'Llama 3.3 70B',
+      'llama-3.1-8b-instant': 'Llama 3.1 8B',
+      'mimo-v2-flash': 'MiMo Flash',
+      'mimo-v2-pro': 'MiMo Pro',
+    }
+    return map[m] || m.split('/').pop()
+  }
+
   const formatTokens = (n) => {
     if (!n && n !== 0) return '-'
     return n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n)
@@ -97,11 +111,12 @@ export default function TrazasView() {
           <>
             <div className="data-table">
               <div className="table-header">
-                <span className="col-date">Fecha</span>
-                <span className="col-agent">Modelo</span>
-                <span className="col-type">Tokens in/out</span>
-                <span className="col-field">Duracion</span>
-                <span className="col-expand">Estado</span>
+                <span>Fecha</span>
+                <span>Modelo</span>
+                <span>Input</span>
+                <span>Output</span>
+                <span>Duracion</span>
+                <span></span>
               </div>
               {trazas.map((t, i) => {
                 const id = t.id || t.trace_id || i
@@ -109,22 +124,25 @@ export default function TrazasView() {
                 return (
                   <div key={id} className="table-row-group">
                     <div className="table-row" onClick={() => toggleExpand(t)}>
-                      <span className="col-date">{formatDate(t.fecha || t.created_at || t.timestamp)}</span>
-                      <span className="col-agent">
-                        <CpuIcon size={12} style={{ marginRight: 4 }} />
-                        {t.modelo || t.model || '-'}
+                      <span>
+                        <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{formatDate(t.fecha || t.created_at || t.timestamp)}</div>
+                        <div style={{ fontSize: 11, color: 'var(--text-secondary)', opacity: 0.6, marginTop: 2 }}>
+                          {formatTokens(t.tokens_input || t.input_tokens)} / {formatTokens(t.tokens_output || t.output_tokens)} tok
+                        </div>
                       </span>
-                      <span className="col-type">
-                        {formatTokens(t.tokens_input || t.input_tokens)} / {formatTokens(t.tokens_output || t.output_tokens)}
+                      <span>
+                        <div style={{ fontWeight: 600, fontSize: 12 }}>{shortModel(t.modelo || t.model)}</div>
+                        <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>
+                          {(t.observations_count || 1)} obs
+                        </div>
                       </span>
-                      <span className="col-field">
-                        <ClockIcon size={12} style={{ marginRight: 4 }} />
+                      <span className="col-truncate">{t.input || '-'}</span>
+                      <span className="col-truncate">{t.output || '-'}</span>
+                      <span style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <ClockIcon size={12} style={{ opacity: 0.5 }} />
                         {formatDuration(t.duracion_s || t.duration)}
                       </span>
-                      <span className="col-expand">
-                        <span className={`status-badge ${t.status === 'error' ? 'error' : 'active'}`}>
-                          {t.status || 'ok'}
-                        </span>
+                      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                         {isExpanded ? <CaretDownIcon size={14} /> : <CaretRightIcon size={14} />}
                       </span>
                     </div>

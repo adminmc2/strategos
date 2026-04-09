@@ -3393,6 +3393,97 @@
             }
         }
 
+        /* HAFIMA card overrides */
+        .hafima-card .tarjeta-body {
+            padding: 12px 20px;
+            font-size: 0.95em;
+            line-height: 1.6;
+            background: #E8F5E9;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+        }
+
+        .hafima-card .hafima-intro {
+            margin: 0 0 8px 0;
+            color: #444;
+        }
+
+        .hafima-card .hafima-bloque {
+            padding: 8px 10px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .hafima-card .hafima-line {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .hafima-badge {
+            display: inline-block;
+            color: #fff;
+            font-size: 0.8em;
+            font-weight: 600;
+            padding: 1px 6px;
+            border-radius: 4px;
+        }
+
+        .hb-tri { background: #2E7D32; }
+        .hb-q { background: #388E3C; }
+        .hb-sq { background: #1B5E20; }
+        .hb-ci { background: #00796B; }
+        .hb-di { background: #689F38; }
+
+        .hafima-arrow {
+            color: #4CAF50;
+            font-weight: 700;
+        }
+
+        .hafima-options {
+            margin-top: 3px;
+            font-size: 0.85em;
+            font-weight: 600;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px 6px;
+        }
+
+        .hafima-options span {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 1px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .hopt-tri { background: rgba(46,125,50,0.12); color: #2E7D32; }
+        .hopt-q { background: rgba(56,142,60,0.12); color: #388E3C; }
+        .hopt-sq { background: rgba(27,94,32,0.12); color: #1B5E20; }
+        .hopt-ci { background: rgba(0,121,107,0.12); color: #00796B; }
+        .hopt-di { background: rgba(104,159,56,0.12); color: #689F38; }
+
+        .hafima-card .tarjeta-section-title {
+            margin-bottom: 6px;
+            padding-bottom: 4px;
+        }
+
+        .hafima-card .hafima-section {
+            margin-bottom: 8px;
+        }
+
+        .hafima-card .hafima-section strong {
+            font-family: 'Lexend', sans-serif;
+            font-size: 1.05em;
+            color: #222;
+            display: block;
+            margin-bottom: 3px;
+        }
+
         /* Section title (cara B) */
         .tarjeta-section-title {
             font-family: 'Lexend', sans-serif;
@@ -3644,13 +3735,20 @@
                 <div class="destreza-header">
                     <div class="destreza-info">
                         <h3 class="destreza-name">Expresión e interacción oral</h3>
-                        <span class="destreza-count">Próximamente</span>
+                        <span class="destreza-count">1 agente</span>
                     </div>
                     <div class="destreza-siglas">EIO</div>
                     <svg class="destreza-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                 </div>
                 <div class="destreza-agents">
-                    <div class="destreza-empty">Agentes en desarrollo</div>
+                    <div class="agent-mini" onclick="event.stopPropagation(); openTarjetaModal('hafima')">
+                        <span class="agent-mini-siglas" style="color: #6B9B37">HFM</span>
+                        <div class="agent-mini-info">
+                            <span class="agent-mini-name">HAFIMA</span>
+                            <span class="agent-mini-desc">Hablar de la familia — Estrategia de expresión oral</span>
+                        </div>
+                        <span class="agent-mini-arrow">&rarr;</span>
+                    </div>
                 </div>
             </div>
 
@@ -3770,6 +3868,7 @@
             'reca': { name: 'RECA', siglas: 'RC', color: '#2E7D32', desc: 'Estrategia para escribir un email en 4 pasos' },
             'sotama': { name: 'SOTAMA', siglas: 'STM', color: '#7B2D8E', desc: 'Estrategia de comprensión auditiva en 3 modos' },
             'canota': { name: 'CANOTA', siglas: 'CNT', color: '#AD1457', desc: 'Estrategia de mediación: cuenta lo que oyes' },
+            'hafima': { name: 'HAFIMA', siglas: 'HFM', color: '#6B9B37', desc: 'Estrategia de expresión oral: hablar de la familia' },
         };
         let currentAgent = null;
 
@@ -3778,6 +3877,7 @@
             'reca': 'tarjetaModalOverlayReca',
             'sotama': 'tarjetaModalOverlaySotama',
             'canota': 'tarjetaModalOverlayCanota',
+            'hafima': 'tarjetaModalOverlayHafima',
         };
 
         function openTarjetaModal(agentId) {
@@ -3820,7 +3920,8 @@
             'traduccion': 'traduccion',
             'reca': 'reca',
             'sotama': 'sotama',
-            'canota': 'canota'
+            'canota': 'canota',
+            'hafima': 'hafima'
         };
 
         function openAgent(agentType) {
@@ -8608,6 +8709,112 @@ Instrucciones:
                         </a>
                         <button class="btn-activate" onclick="closeTarjetaModal(); openAgent('sotama')">
                             Activar agente SOTAMA
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12H19M19 12L12 5M19 12L12 19"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Tarjeta HAFIMA -->
+    <div class="tarjeta-modal-overlay" id="tarjetaModalOverlayHafima" onclick="closeTarjetaModal(event)">
+        <div class="tarjeta-modal" onclick="event.stopPropagation()">
+            <button class="tarjeta-modal-close" onclick="closeTarjetaModal()">&times;</button>
+            <div class="tarjeta-modal-content">
+                <!-- Tarjeta flip -->
+                <div class="tarjeta-flip-container" onclick="this.classList.toggle('flipped')">
+                    <div class="tarjeta-flipper">
+                        <!-- CARA A -->
+                        <div class="tarjeta-face tarjeta-front hafima-card" style="background: #E8F5E9;">
+                            <div class="tarjeta-header" style="background: #664394;">
+                                <span class="tarjeta-header-title">HABLAR DE LA FAMILIA</span>
+                                <img src="/public/esquemacom.svg" class="tarjeta-header-icon" alt="icono">
+                            </div>
+                            <div class="tarjeta-body">
+                                <div class="canota-row" style="margin-bottom:6px;">
+                                    <p class="hafima-intro">Usa este esquema para hablar de la familia. Completa los <span class="hafima-badge hb-q">espacios</span> con tus datos.</p>
+                                    <img src="/public/esq_fam1.png" alt="" style="width:90px;">
+                                </div>
+                                <div class="hafima-bloque">
+                                    <div class="hafima-line">Mi <span class="hafima-badge hb-tri">▶</span> se llama <span class="hafima-badge hb-q">?</span> y tiene <span class="hafima-badge hb-q">?</span> años.</div>
+                                    <div class="hafima-options"><span class="hopt-tri">▶ padre</span><span class="hopt-tri">▶ madre</span><span class="hopt-tri">▶ hermano</span><span class="hopt-tri">▶ tío</span><span class="hopt-tri">▶ primo</span><span class="hopt-tri">▶ abuelo</span><span class="hopt-tri">▶ abuela</span><span class="hopt-tri">▶ hermana</span><span class="hopt-tri">▶ prima</span></div>
+                                </div>
+                                <div class="hafima-bloque">
+                                    <div class="canota-row">
+                                        <div>
+                                            <div class="hafima-line">Mi <span class="hafima-badge hb-tri">▶</span> es <span class="hafima-badge hb-sq">■</span> y trabaja en <span class="hafima-badge hb-ci">●</span>.</div>
+                                            <div class="hafima-options"><span class="hopt-sq">■ profesor/a</span><span class="hopt-sq">■ arquitecto/a</span><span class="hopt-sq">■ actor/actriz</span><span class="hopt-sq">■ otro/a</span></div>
+                                            <div class="hafima-options"><span class="hopt-ci">● un colegio</span><span class="hopt-ci">● una oficina</span><span class="hopt-ci">● un canal de TV</span><span class="hopt-ci">● otro/a</span></div>
+                                        </div>
+                                        <img src="/public/esq_fam3.png" alt="" style="width:120px;">
+                                    </div>
+                                </div>
+                                <div class="hafima-bloque">
+                                    <div class="hafima-line">Tengo <span class="hafima-badge hb-di">◆</span> . ≠ No tengo hermanos/primos/abuelos.</div>
+                                    <div class="hafima-options"><span class="hopt-di">◆ un hermano</span><span class="hopt-di">◆ dos hermanos</span><span class="hopt-di">◆ dos abuelos</span><span class="hopt-di">◆ una hermana</span><span class="hopt-di">◆ tres primos</span><span class="hopt-di">◆ tres tíos</span></div>
+                                </div>
+                                <div class="hafima-bloque">
+                                    <div class="canota-row">
+                                        <div>
+                                            <div class="hafima-line">Mi <span class="hafima-badge hb-tri">▶</span> vive en <span class="hafima-badge hb-ci">●</span>.</div>
+                                            <div class="hafima-options"><span class="hopt-ci">● Madrid</span><span class="hopt-ci">● Barcelona</span><span class="hopt-ci">● Londres</span><span class="hopt-ci">● Berlín</span><span class="hopt-ci">● Roma</span><span class="hopt-ci">● otro</span></div>
+                                        </div>
+                                        <img src="/public/esq_fam2.png" alt="" style="width:80px;">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tarjeta-flip-hint">Toca para ver el esquema comunicativo →</div>
+                        </div>
+                        <!-- CARA B -->
+                        <div class="tarjeta-face tarjeta-back hafima-card" style="background: #E8F5E9;">
+                            <div class="tarjeta-header" style="background: #664394;">
+                                <span class="tarjeta-header-title">ESQUEMA COMUNICATIVO</span>
+                                <img src="/public/esquemacom.svg" class="tarjeta-header-icon" alt="icono">
+                            </div>
+                            <div class="tarjeta-body">
+                                <div class="hafima-bloque" style="padding:10px 12px;">
+                                    <div class="canota-titulo" style="margin-bottom:8px;"><strong>PREGUNTAR</strong></div>
+                                    <div class="canota-row" style="align-items:flex-start;">
+                                        <div style="line-height:1.8;">
+                                            ¿Tienes hermanos?<br>
+                                            ¿Cómo se llama tu <span class="hafima-badge hb-tri">▶</span> ?<br>
+                                            ¿Cuántos años tiene tu <span class="hafima-badge hb-tri">▶</span> ?<br>
+                                            ¿Dónde trabaja tu <span class="hafima-badge hb-tri">▶</span> ?<br>
+                                            ¿Dónde vive tu <span class="hafima-badge hb-tri">▶</span> ?
+                                        </div>
+                                        <img src="/public/esq_fam4.png" alt="" style="width:130px;">
+                                    </div>
+                                    <div class="hafima-options" style="margin-top:10px; font-size:0.95em;"><span class="hopt-tri">▶ padre</span><span class="hopt-tri">▶ madre</span><span class="hopt-tri">▶ hermano</span><span class="hopt-tri">▶ tío</span><span class="hopt-tri">▶ primo</span><span class="hopt-tri">▶ abuelo</span><span class="hopt-tri">▶ abuela</span><span class="hopt-tri">▶ hermana</span><span class="hopt-tri">▶ tía</span><span class="hopt-tri">▶ prima</span></div>
+                                </div>
+                                <div class="hafima-bloque" style="padding:14px 12px;">
+                                    <div class="canota-titulo" style="margin-bottom:10px;"><strong>PRESENTAR</strong></div>
+                                    <div class="canota-row" style="align-items:flex-start;">
+                                        <div style="line-height:2.2; font-size:1.05em; white-space:nowrap;">
+                                            Este es mi <span class="hafima-badge hb-tri">▶</span> / Esta es mi <span class="hafima-badge hb-tri">▶</span>.<br>
+                                            Se llama <span class="hafima-badge hb-q">?</span>. Tiene <span class="hafima-badge hb-q">?</span> años.<br>
+                                            Es <span class="hafima-badge hb-sq">■</span>. Trabaja en <span class="hafima-badge hb-ci">●</span>.
+                                        </div>
+                                        <img src="/public/esq_fam5.png" alt="" style="width:120px;">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tarjeta-flip-hint">← Toca para ver el esquema</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Panel detalle -->
+                <div class="agent-detail">
+                    <div class="agent-detail-siglas">HFM</div>
+                    <div class="agent-detail-name">HAFIMA</div>
+                    <p class="agent-detail-desc">Estrategia de expresión oral: esquema para hablar de tu familia usando estructuras clave (nombre, edad, profesión, lugar).</p>
+                    <div class="agent-detail-actions">
+                        <a href="/public/hafima.pdf" download class="btn-download">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Descargar PDF
+                        </a>
+                        <button class="btn-activate" onclick="closeTarjetaModal(); openAgent('hafima')">
+                            Activar agente HAFIMA
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12H19M19 12L12 5M19 12L12 19"/></svg>
                         </button>
                     </div>

@@ -63,9 +63,10 @@ AGENTS = [
             "and design questions that lead to discovery rather than direct answers."
         ),
         "task_description": (
-            "Analyze the provided Spanish text and produce a lesson plan for the "
+            "Analyze the following Spanish text and produce a lesson plan for the "
             "Protocol L (4-step guided reading process). Generate all content in "
             "Spanish (es-ES).\n\n"
+            "TEXT TO ANALYZE:\n{texto}\n\n"
             "STEP 1 — Call consultar_reglas to load any learned pedagogical rules. "
             "Apply ALL returned rules to your analysis.\n\n"
             "STEP 2 — Call consultar_correcciones to review past errors. Do NOT "

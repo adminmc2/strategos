@@ -9,6 +9,7 @@ export default function TrazasView() {
   const [trazas, setTrazas] = useState([])
   const [loading, setLoading] = useState(true)
   const [limit, setLimit] = useState(20)
+  const [configError, setConfigError] = useState(null)
   const [expandedId, setExpandedId] = useState(null)
   const [detail, setDetail] = useState(null)
   const [loadingDetail, setLoadingDetail] = useState(false)
@@ -17,7 +18,13 @@ export default function TrazasView() {
     setLoading(true)
     try {
       const data = await fetchTrazas(lim)
-      setTrazas(data)
+      if (data.error) {
+        setTrazas([])
+        setConfigError(data.error)
+      } else {
+        setTrazas(data.trazas || [])
+        setConfigError(null)
+      }
     } catch (e) { console.error(e) }
     setLoading(false)
   }
@@ -79,6 +86,11 @@ export default function TrazasView() {
       <div className="view-content">
         {loading && trazas.length === 0 ? (
           <div className="loading">Cargando trazas...</div>
+        ) : configError ? (
+          <div className="empty-state">
+            <div style={{ marginBottom: 8, fontWeight: 600 }}>{configError}</div>
+            <div style={{ fontSize: 12 }}>Configura LANGFUSE_PUBLIC_KEY y LANGFUSE_SECRET_KEY en .env</div>
+          </div>
         ) : trazas.length === 0 ? (
           <div className="empty-state">No hay trazas registradas</div>
         ) : (

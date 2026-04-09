@@ -27,10 +27,11 @@ class ConsultarReglas(BaseTool):
         "Retrieves learned rules distilled from accumulated corrections. "
         "These are general patterns that MUST be applied to ALL interactions. "
         "Rules take priority over any default behavior. "
-        "Parámetro: crew name (default: 'strategos')."
+        "Call with no parameters."
     )
 
-    def _run(self, crew: str = "strategos") -> str:
+    def _run(self, **kwargs) -> str:
+        crew = "lucapi"
         conn = _get_conn()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         cur.execute(
@@ -54,11 +55,13 @@ class ConsultarReglas(BaseTool):
 class ConsultarCorrecciones(BaseTool):
     name: str = "consultar_correcciones"
     description: str = (
-        "Recupera correcciones del editor para un agente de Strategos. "
-        "Estas correcciones son errores de ejecuciones anteriores que NO debes repetir."
+        "Retrieves past corrections for this agent. "
+        "These are errors from previous executions that MUST NOT be repeated. "
+        "Call with no parameters."
     )
 
-    def _run(self, agente: str = "lucapi") -> str:
+    def _run(self, **kwargs) -> str:
+        agente = "lucapi"
         conn = _get_conn()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         cur.execute(
@@ -130,12 +133,13 @@ class RegistrarSesion(BaseTool):
 class ConsultarSesionesPrevias(BaseTool):
     name: str = "consultar_sesiones_previas"
     description: str = (
-        "Consulta sesiones previas de un agente para contextualizar la interacción actual. "
-        "Permite saber qué textos se han trabajado y qué resultados se obtuvieron. "
-        "Parámetro: modelo o agente utilizado."
+        "Retrieves previous sessions to contextualize the current interaction. "
+        "Shows what texts have been worked on and what results were obtained. "
+        "Call with no parameters."
     )
 
-    def _run(self, modelo: str = "") -> str:
+    def _run(self, **kwargs) -> str:
+        modelo = ""
         conn = _get_conn()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         if modelo:

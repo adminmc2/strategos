@@ -410,6 +410,13 @@ AVAILABLE_MODELS = [
     {"id": "anthropic/claude-haiku-4-5-20251001", "name": "Claude Haiku 4.5", "provider": "anthropic",
      "cost": "$0.80/$4", "ctx": "200K", "vision": True, "function_calling": True,
      "reasoning": False, "multilingual": True},
+    # --- Xiaomi MiMo ---
+    {"id": "xiaomi_mimo/mimo-v2-flash", "name": "MiMo V2 Flash", "provider": "xiaomi_mimo",
+     "cost": "$0.07/$0.28", "ctx": "128K", "vision": False, "function_calling": True,
+     "reasoning": True, "multilingual": True},
+    {"id": "xiaomi_mimo/mimo-v2-pro", "name": "MiMo V2 Pro", "provider": "xiaomi_mimo",
+     "cost": "$0.35/$1.40", "ctx": "128K", "vision": False, "function_calling": True,
+     "reasoning": True, "multilingual": True},
 ]
 
 
@@ -419,6 +426,7 @@ def get_modelos():
         "groq": bool(os.environ.get("GROQ_API_KEY")),
         "deepseek": bool(os.environ.get("DEEPSEEK_API_KEY")),
         "anthropic": bool(os.environ.get("ANTHROPIC_API_KEY")),
+        "xiaomi_mimo": bool(os.environ.get("XIAOMI_MIMO_API_KEY")),
     }
     result = []
     for m in AVAILABLE_MODELS:
@@ -428,32 +436,44 @@ def get_modelos():
     return result
 
 
-def start_agent(agente, agent_key, agents_cfg):
+def start_agent(agente, agent_key=None, texto="", imagen_b64=None):
     """Lanza un crew en un subproceso. Devuelve run_id.
     agente: crew name (e.g. 'lucapi'). Script autodiscovered as scripts/crewai/{agente}.py
-    agent_key: optional, to run a single agent within the crew.
-    agents_cfg: ignored (LLM config now comes from BD).
+    texto: input text for the pipeline (passed via LUCAPI_TEXTO env var).
     """
     script_path = (PROJECT / "scripts" / "crewai" / f"{agente}.py").resolve()
     if not script_path.exists():
         return {"error": f"Script '{agente}.py' not found in scripts/crewai/"}
 
     run_id = str(uuid.uuid4())[:8]
+
+    # Save run to BD
+    try:
+        conn = _db()
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO runs (id, crew, texto_input, imagen_input, status) "
+            "VALUES (%s, %s, %s, %s, 'running')",
+            (run_id, agente, texto[:5000] if texto else None, bool(imagen_b64)),
+        )
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"Warning: could not save run to BD: {e}")
+
     cmd = [sys.executable, str(script_path)]
-    if agent_key:
-        cmd.append(agent_key)
     env = os.environ.copy()
     env["PYTHONUNBUFFERED"] = "1"
+    if texto:
+        env["LUCAPI_TEXTO"] = texto
 
-    modelo_display = "from BD"
     cwd = str(script_path.parent)
 
     _agent_runs[run_id] = {
         "status": "running",
         "agente": agente,
         "agent_key": agent_key,
-        "modelo": modelo_display,
-        "agents_cfg": agents_cfg if isinstance(agents_cfg, dict) else {},
+        "texto_len": len(texto) if texto else 0,
         "output": "",
         "start_time": time.time(),
         "end_time": None,
@@ -474,11 +494,26 @@ def start_agent(agente, agent_key, agents_cfg):
                     _agent_runs[run_id]["output"] += "\nTimeout: el agente tardó más de 10 minutos\n"
                     break
             proc.wait(timeout=10)
-            _agent_runs[run_id]["status"] = "completed" if proc.returncode == 0 else "error"
+            final_status = "completed" if proc.returncode == 0 else "error"
+            _agent_runs[run_id]["status"] = final_status
         except Exception as e:
             _agent_runs[run_id]["output"] += f"\nError: {e}\n"
             _agent_runs[run_id]["status"] = "error"
+            final_status = "error"
         _agent_runs[run_id]["end_time"] = time.time()
+
+        # Update run in BD
+        try:
+            conn = _db()
+            cur = conn.cursor()
+            cur.execute(
+                "UPDATE runs SET status = %s, output = %s, finished_at = NOW() WHERE id = %s",
+                (final_status, _agent_runs[run_id]["output"][-10000:], run_id),
+            )
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            print(f"Warning: could not update run in BD: {e}")
 
     threading.Thread(target=_run, daemon=True).start()
     return {"run_id": run_id, "status": "running"}
@@ -499,7 +534,7 @@ def get_agent_status(run_id=None):
             "status": r["status"],
             "agente": r["agente"],
             "agent_key": r.get("agent_key"),
-            "modelo": r["modelo"],
+            "modelo": r.get("modelo", "from BD"),
             "elapsed_s": round(elapsed, 1),
             "start_time": r["start_time"],
         })
@@ -614,8 +649,18 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.send_response(code)
         self.send_header("Content-Type", ctype)
         self.send_header("Cache-Control", "no-cache")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
         self.wfile.write(body.encode("utf-8"))
+
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.end_headers()
 
     def do_GET(self):
         parsed = urlparse(self.path)
@@ -796,8 +841,15 @@ class Handler(http.server.BaseHTTPRequestHandler):
         elif parsed.path == "/api/agente/run":
             agente = body.get("agente", "lucapi")
             agent_key = body.get("agent_key")
-            agents_cfg = body.get("agents", body.get("modelo", {}))
-            result = start_agent(agente, agent_key, agents_cfg)
+            texto = body.get("texto", "")
+            imagen_b64 = body.get("imagen")
+
+            if not texto and not imagen_b64:
+                self._respond(400, "application/json; charset=utf-8",
+                              json.dumps({"error": "No text or image provided"}))
+                return
+
+            result = start_agent(agente, agent_key, texto=texto, imagen_b64=imagen_b64)
             self._respond(200, "application/json; charset=utf-8",
                           json.dumps(result, ensure_ascii=False, default=str))
 

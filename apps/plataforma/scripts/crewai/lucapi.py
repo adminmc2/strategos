@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Crew LUCAPI — Reading comprehension agent pipeline.
-Run with: python scripts/crewai/lucapi.py [agent_key]
+Run with: python scripts/crewai/lucapi.py [texto_file]
 
 Architecture: 2 sequential agents, each with its own LLM (from BD).
   Agent 1 (Analizador): analyzes text → produces lesson plan
@@ -18,8 +18,9 @@ import sys
 import time
 
 import psycopg2
+from pathlib import Path
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv(Path(__file__).resolve().parents[4] / ".env")
 
 from crewai import Agent, Task, Crew, Process, LLM
 from tools import (
@@ -140,28 +141,45 @@ def crear_crew(agent_key: str = None) -> Crew:
 
 
 def main():
-    agent_key = sys.argv[1] if len(sys.argv) > 1 else None
-    t0 = time.time()
+    # Usage: python lucapi.py [texto_file]
+    # Or: echo "texto..." | python lucapi.py
+    # Or: LUCAPI_TEXTO="texto..." python lucapi.py
+    texto = ""
 
+    # 1. From file argument
+    if len(sys.argv) > 1 and os.path.isfile(sys.argv[1]):
+        texto = open(sys.argv[1], encoding="utf-8").read().strip()
+    # 2. From env var (set by diagrama.py start_agent)
+    elif os.environ.get("LUCAPI_TEXTO"):
+        texto = os.environ["LUCAPI_TEXTO"]
+    # 3. From stdin (non-interactive)
+    elif not sys.stdin.isatty():
+        texto = sys.stdin.read().strip()
+
+    if not texto:
+        print("ERROR: No text provided. Usage:")
+        print("  python lucapi.py <texto_file>")
+        print("  echo 'texto...' | python lucapi.py")
+        print("  LUCAPI_TEXTO='texto...' python lucapi.py")
+        sys.exit(1)
+
+    t0 = time.time()
     configs = cargar_config_bd("lucapi")
-    if agent_key:
-        configs = [c for c in configs if c["agent_key"] == agent_key]
 
     print(f"\n{'='*70}")
     print(f"  CREW LUCAPI")
-    if agent_key:
-        print(f"  Agent: {agent_key}")
     print(f"  Pipeline: {' → '.join(c['agent_key'] for c in configs)}")
     for cfg in configs:
         model = cfg.get("llm_model") or DEFAULT_LLM["model"]
         temp = cfg.get("llm_temperature") if cfg.get("llm_temperature") is not None else DEFAULT_LLM["temperature"]
         maxt = cfg.get("llm_max_tokens") or DEFAULT_LLM["max_tokens"]
         print(f"  {cfg['agent_key']}: {model}  temp={temp}  max={maxt}")
+    print(f"  Texto: {len(texto)} chars")
     print(f"  Config: crew_agents table (Neon PostgreSQL)")
     print(f"{'='*70}\n")
 
-    crew = crear_crew(agent_key)
-    resultado = crew.kickoff()
+    crew = crear_crew()
+    resultado = crew.kickoff(inputs={"texto": texto})
     duracion = time.time() - t0
 
     print(f"\n{'='*60}")
@@ -175,7 +193,7 @@ def main():
         "datos", "sesiones",
     )
     os.makedirs(output_dir, exist_ok=True)
-    key_label = agent_key or "all"
+    key_label = f"lucapi-{int(t0)}"
     output_path = os.path.join(output_dir, f"{key_label}-output.json")
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(str(resultado))

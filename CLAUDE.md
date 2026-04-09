@@ -59,7 +59,9 @@ stratega/
 │       │   │   ├── AgentNode.jsx     # Nodo custom
 │       │   │   ├── AgentPanel.jsx    # Panel config derecho
 │       │   │   ├── Sidebar.jsx       # Sidebar izquierdo
-│       │   │   ├── Placeholder.jsx   # Páginas "Próximamente"
+│       │   │   ├── CorreccionesView.jsx  # Vista correcciones
+│       │   │   ├── ReglasView.jsx        # Vista reglas (CRUD)
+│       │   │   ├── TrazasView.jsx        # Vista trazas LLM
 │       │   │   ├── api.js            # API helpers
 │       │   │   └── styles.css        # Estilos globales
 │       │   └── dist/       # Build output (servido por diagrama.py)

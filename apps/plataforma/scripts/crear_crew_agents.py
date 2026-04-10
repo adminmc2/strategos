@@ -46,16 +46,16 @@ AGENTS = [
         "agent_order": 1,
         "role": "Spanish reading text analyzer and comprehension lesson planner",
         "goal": (
-            "Produce a complete text analysis and reading lesson plan that enables "
-            "a comprehension coach to guide an ELE student through the text, "
-            "incorporating learned pedagogical rules to improve accuracy over time."
+            "Produce a complete text analysis and reading lesson plan from a Spanish "
+            "text that enables a comprehension coach to guide an ELE student through "
+            "it, incorporating learned pedagogical rules to improve accuracy over time."
         ),
         "backstory": (
             "You are a specialist in reading comprehension pedagogy for ELE "
             "(Español como Lengua Extranjera) at A1-A2 level, with expertise in "
-            "text analysis for adolescent learners (12-15 years). You receive texts "
-            "as images or plain text and work as the preparation stage in a "
-            "two-agent pipeline: your analysis feeds directly into an interactive "
+            "text analysis for adolescent learners (12-15 years). You work as the "
+            "preparation stage in a two-agent pipeline: your analysis feeds "
+            "directly into an interactive "
             "coach who has no time to analyze during conversation. Your analysis "
             "must be thorough enough that the coach can scaffold the entire reading "
             "process without improvising. Your approach: identify what makes a text "
@@ -214,19 +214,7 @@ VALUES
     (%(crew)s, %(agent_key)s, %(agent_order)s, %(role)s, %(goal)s, %(backstory)s,
      %(task_description)s, %(task_expected_output)s, %(max_iter)s,
      %(llm_model)s, %(llm_temperature)s, %(llm_max_tokens)s, %(llm_top_p)s)
-ON CONFLICT (crew, agent_key) DO UPDATE SET
-    agent_order          = EXCLUDED.agent_order,
-    role                 = EXCLUDED.role,
-    goal                 = EXCLUDED.goal,
-    backstory            = EXCLUDED.backstory,
-    task_description     = EXCLUDED.task_description,
-    task_expected_output = EXCLUDED.task_expected_output,
-    max_iter             = EXCLUDED.max_iter,
-    llm_model            = EXCLUDED.llm_model,
-    llm_temperature      = EXCLUDED.llm_temperature,
-    llm_max_tokens       = EXCLUDED.llm_max_tokens,
-    llm_top_p            = EXCLUDED.llm_top_p,
-    updated_at           = NOW();
+ON CONFLICT (crew, agent_key) DO NOTHING;
 """
 
 

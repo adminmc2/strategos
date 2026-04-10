@@ -9,6 +9,17 @@ Formato: [Semantic Versioning](https://semver.org/lang/es/) `vX.Y.Z`
 
 ---
 
+## [3.2.23] - 2026-04-10
+
+### Cambiado
+- **Seed script**: `ON CONFLICT DO UPDATE` → `ON CONFLICT DO NOTHING`
+  - El seed solo crea agentes nuevos, no sobreescribe los existentes
+  - La BD es la fuente de verdad: ediciones desde la UI no se pierden al re-ejecutar el seed
+- **Analizador backstory**: quitado "receive texts as images or plain text" (OCR se hace antes del pipeline)
+- **Analizador goal**: añadido "from a Spanish text" (input genérico, principio 5 de goal design)
+
+---
+
 ## [3.2.22] - 2026-04-10
 
 ### Cambiado (plataforma — agentes)

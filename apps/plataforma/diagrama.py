@@ -469,14 +469,44 @@ def get_modelos():
     return result
 
 
+def _ocr_from_image(imagen_b64):
+    """Extract text from image using Llama 4 Scout (Groq) vision."""
+    import litellm
+    try:
+        response = litellm.completion(
+            model="groq/meta-llama/llama-4-scout-17b-16e-instruct",
+            messages=[{
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": "Extract all text from this image exactly as written. Preserve paragraph breaks. Return ONLY the extracted text, nothing else."},
+                    {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{imagen_b64}"}},
+                ],
+            }],
+            max_tokens=4096,
+            temperature=0.1,
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        return f"[OCR ERROR: {e}]"
+
+
 def start_agent(agente, agent_key=None, texto="", imagen_b64=None):
     """Lanza un crew en un subproceso. Devuelve run_id.
     agente: crew name (e.g. 'lucapi'). Script autodiscovered as scripts/crewai/{agente}.py
     texto: input text for the pipeline (passed via LUCAPI_TEXTO env var).
+    If imagen_b64 is provided, OCR is performed first and the extracted text is prepended.
     """
     script_path = (PROJECT / "scripts" / "crewai" / f"{agente}.py").resolve()
     if not script_path.exists():
         return {"error": f"Script '{agente}.py' not found in scripts/crewai/"}
+
+    # OCR: extract text from image before launching pipeline
+    if imagen_b64:
+        ocr_text = _ocr_from_image(imagen_b64)
+        if texto:
+            texto = texto + "\n\n---\n[Texto extraido de imagen]:\n" + ocr_text
+        else:
+            texto = ocr_text
 
     run_id = str(uuid.uuid4())[:8]
 

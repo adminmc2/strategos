@@ -9,6 +9,30 @@ Formato: [Semantic Versioning](https://semver.org/lang/es/) `vX.Y.Z`
 
 ---
 
+## [3.2.22] - 2026-04-10
+
+### Cambiado (plataforma — agentes)
+- **Analizador LLM**: Llama 4 Scout → GPT OSS 120B (Groq). 4x más rápido, genera lesson plan completo
+- **Analizador task**: tools re-añadidas (consultar_reglas, consultar_correcciones) con manejo de caso vacío
+  ("If no rules exist yet, proceed with your default pedagogical expertise")
+- **Task simplificado**: 5 steps (reglas → correcciones → análisis → lesson plan → tricks)
+- **Smart Reader Tricks**: "Generate EXACTLY 3, no more" (fix de tricks inventados)
+- **Arquitectura OCR**: imagen → Llama 4 Scout (OCR) → texto → GPT OSS 120B (análisis). Scout solo para visión.
+
+### Añadido (plataforma — UI)
+- **Upload de imagen** en modal de Run (.jpg, .png, .webp) con preview
+- **OCR en diagrama.py**: `_ocr_from_image()` con Scout antes del subprocess
+- **Trazas detalle**: observations por llamada LLM (modelo, tokens, latencia, costo, input/output)
+- **Trazas tabla**: estilo Langfuse con columnas Input/Output truncados, nombres de modelo cortos
+- **`_safe_usage()`**: serialización segura de Langfuse Usage (fix model_dump crash)
+
+### Corregido
+- `get_trazas()`: extrae modelo/tokens de observations via trace.get()
+- `get_traza_detalle()`: usa _safe_usage() en vez de model_dump()
+- Trazas con 0 tokens en Llama 4 Scout (Groq no reporta usage en errores de tool validation)
+
+---
+
 ## [3.1.0] - 2026-04-09
 
 ### Añadido (plataforma — Fase 2B)

@@ -46,11 +46,11 @@ export async function fetchVersion() {
   return request(`${BASE}/api/version`)
 }
 
-export async function runCrew(crew, agentKey, texto) {
+export async function runCrew(crew, agentKey, texto, imagen) {
   return request(`${BASE}/api/agente/run`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ agente: crew, agent_key: agentKey, texto }),
+    body: JSON.stringify({ agente: crew, agent_key: agentKey, texto, imagen }),
   })
 }
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { PlayIcon, XIcon, TerminalIcon } from '@phosphor-icons/react'
+import { PlayIcon, XIcon, TerminalIcon, ImageIcon, TrashIcon } from '@phosphor-icons/react'
 import Sidebar from './Sidebar'
 import PipelineCanvas from './PipelineCanvas'
 import AgentPanel from './AgentPanel'
@@ -15,7 +15,9 @@ export default function Editor({ modelos, version }) {
   const [loading, setLoading] = useState(true)
   const [showRunModal, setShowRunModal] = useState(false)
   const [runTexto, setRunTexto] = useState('')
+  const [runImagen, setRunImagen] = useState(null) // { base64, name, preview }
   const [running, setRunning] = useState(false)
+  const fileInputRef = useRef(null)
   // Right panel mode: 'agent' | 'terminal' | null
   const [panelMode, setPanelMode] = useState(null)
   const [activeRun, setActiveRun] = useState(null)
@@ -86,11 +88,27 @@ export default function Editor({ modelos, version }) {
     }, 2000)
   }
 
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      const base64 = reader.result.split(',')[1] // remove data:image/...;base64, prefix
+      setRunImagen({ base64, name: file.name, preview: reader.result })
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const removeImage = () => {
+    setRunImagen(null)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
   const handleRun = async () => {
-    if (!runTexto.trim()) return alert('Escribe un texto para analizar')
+    if (!runTexto.trim() && !runImagen) return alert('Escribe un texto o sube una imagen')
     setRunning(true)
     try {
-      const res = await runCrew(crewName, null, runTexto)
+      const res = await runCrew(crewName, null, runTexto, runImagen?.base64)
       if (res.run_id) {
         setActiveRun({ run_id: res.run_id, status: 'running', output: '' })
         startPolling(res.run_id)
@@ -205,13 +223,45 @@ export default function Editor({ modelos, version }) {
                 <XIcon size={18} />
               </button>
             </div>
-            <textarea
-              className="modal-textarea"
-              placeholder="Pega aqui el texto en espanol para analizar..."
-              value={runTexto}
-              onChange={e => setRunTexto(e.target.value)}
-              rows={10}
-            />
+
+            <div className="modal-input-section">
+              <label className="modal-label">Texto</label>
+              <textarea
+                className="modal-textarea"
+                placeholder="Pega aqui el texto en espanol para analizar..."
+                value={runTexto}
+                onChange={e => setRunTexto(e.target.value)}
+                rows={8}
+              />
+            </div>
+
+            <div className="modal-input-section">
+              <label className="modal-label">Imagen (opcional)</label>
+              {runImagen ? (
+                <div className="image-preview">
+                  <img src={runImagen.preview} alt="Preview" />
+                  <div className="image-preview-info">
+                    <span>{runImagen.name}</span>
+                    <button className="icon-btn danger" onClick={removeImage} title="Quitar imagen">
+                      <TrashIcon size={16} />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button className="upload-btn" onClick={() => fileInputRef.current?.click()}>
+                  <ImageIcon size={20} weight="bold" />
+                  <span>Subir imagen (.jpg, .png, .webp)</span>
+                </button>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".jpg,.jpeg,.png,.webp"
+                style={{ display: 'none' }}
+                onChange={handleFileSelect}
+              />
+            </div>
+
             <div className="modal-actions">
               <button className="btn btn-secondary" onClick={() => setShowRunModal(false)}>
                 Cancelar

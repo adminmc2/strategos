@@ -63,26 +63,27 @@ AGENTS = [
             "and design questions that lead to discovery rather than direct answers."
         ),
         "task_description": (
-            "Analyze the following Spanish text and produce a lesson plan for the "
-            "Protocol L (4-step guided reading process). Generate all content in "
-            "Spanish (es-ES).\n\n"
+            "Analyze the following Spanish text and produce a complete lesson plan "
+            "for the Protocol L (4-step guided reading process). Generate all content "
+            "in Spanish (es-ES).\n\n"
             "TEXT TO ANALYZE:\n{texto}\n\n"
-            "STEP 1 — Call consultar_reglas to load any learned pedagogical rules. "
-            "Apply ALL returned rules to your analysis.\n\n"
-            "STEP 2 — Call consultar_correcciones to review past errors. Do NOT "
-            "repeat any previously flagged mistakes.\n\n"
+            "STEP 1 — Call consultar_reglas to load learned pedagogical rules.\n"
+            "If rules are returned, apply ALL of them to your analysis.\n"
+            "If no rules exist yet, proceed with your default pedagogical expertise.\n\n"
+            "STEP 2 — Call consultar_correcciones to review past errors.\n"
+            "If corrections are returned, do NOT repeat any previously flagged mistakes.\n"
+            "If no corrections exist yet, proceed normally.\n\n"
             "STEP 3 — Analyze the text:\n"
             "  a) Text type, topic, and structure (dialogue, narrative, ad, etc.)\n"
             "  b) Difficulty level (A1 / A2) with justification\n"
             "  c) Blocking vocabulary — words the student cannot guess from context "
             "or cognates, that prevent comprehension of the main idea. For each word: "
             "the word, why it blocks, and a suggested pre-teaching strategy.\n"
-            "  d) Cognates and context clues available in the text (for Smart Reader "
-            "Tricks).\n\n"
+            "  d) Cognates and context clues available in the text.\n\n"
             "STEP 4 — Generate the lesson plan with one section per Protocol L step:\n\n"
             "  PREPÁRATE (Pre-reading, 2-3 min):\n"
-            "  - Visual clues to notice before reading (format, images, titles, "
-            "who writes, to whom)\n"
+            "  - Visual clues to notice before reading (format, titles, who writes, "
+            "to whom)\n"
             "  - Prior knowledge activation questions (2-3)\n"
             "  - Prediction prompt\n"
             "  - Blocking vocabulary to pre-teach (from Step 3c)\n\n"
@@ -96,10 +97,10 @@ AGENTS = [
             "  CONECTA (Post-reading, 2-3 min):\n"
             "  - Personal connection prompt adapted to this text's topic\n"
             "  - Optional transition to written production if applicable\n\n"
-            "STEP 5 — Generate a 'Smart Reader Tricks' section specific to THIS text:\n"
-            "  - Cognates found (espía lingüístico)\n"
-            "  - Context clues available (truco del contexto)\n"
-            "  - Evidence locations for key facts (truco de la evidencia)"
+            "STEP 5 — Generate EXACTLY 3 'Smart Reader Tricks' for THIS text, no more:\n"
+            "  1. Espía lingüístico: cognates found in the text\n"
+            "  2. Truco del contexto: context clues available\n"
+            "  3. Truco de la evidencia: evidence locations for key facts"
         ),
         "task_expected_output": (
             "Plan de lección estructurado con las siguientes secciones:\n\n"
@@ -116,7 +117,7 @@ AGENTS = [
             "ubicaciones de evidencia específicas de este texto"
         ),
         "max_iter": 8,
-        "llm_model": "groq/meta-llama/llama-4-scout-17b-16e-instruct",
+        "llm_model": "groq/openai/gpt-oss-120b",
         "llm_temperature": 0.3,
         "llm_max_tokens": 4096,
         "llm_top_p": 1.0,

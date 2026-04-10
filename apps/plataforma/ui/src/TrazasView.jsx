@@ -154,22 +154,73 @@ export default function TrazasView() {
                           <div className="empty-state">Error: {detail.error}</div>
                         ) : detail ? (
                           <>
-                            {detail.input && (
-                              <div className="detail-section">
-                                <div className="detail-section-title">Request (prompt)</div>
-                                <pre className="detail-pre">{typeof detail.input === 'string' ? detail.input : JSON.stringify(detail.input, null, 2)}</pre>
+                            {/* Trace-level summary */}
+                            <div className="detail-section">
+                              <div className="detail-section-title">Trace</div>
+                              <div className="obs-meta-grid">
+                                <div className="obs-meta-item">
+                                  <span className="obs-meta-label">Latencia total</span>
+                                  <span className="obs-meta-value">{formatDuration(detail.latency)}</span>
+                                </div>
+                                {detail.total_cost != null && (
+                                  <div className="obs-meta-item">
+                                    <span className="obs-meta-label">Costo</span>
+                                    <span className="obs-meta-value">${detail.total_cost?.toFixed(6) || '0'}</span>
+                                  </div>
+                                )}
                               </div>
-                            )}
-                            {detail.output && (
+                            </div>
+
+                            {/* Observations — per-LLM-call data */}
+                            {detail.observations?.length > 0 && (
                               <div className="detail-section">
-                                <div className="detail-section-title">Response</div>
-                                <pre className="detail-pre">{typeof detail.output === 'string' ? detail.output : JSON.stringify(detail.output, null, 2)}</pre>
-                              </div>
-                            )}
-                            {(detail.metadata || detail.metricas) && (
-                              <div className="detail-section">
-                                <div className="detail-section-title">Metadata</div>
-                                <pre className="detail-pre">{JSON.stringify(detail.metadata || detail.metricas, null, 2)}</pre>
+                                <div className="detail-section-title">Observations ({detail.observations.length})</div>
+                                {detail.observations.map((obs, oi) => (
+                                  <div key={obs.id || oi} className="obs-card">
+                                    <div className="obs-header">
+                                      <span className="obs-name">{obs.name || 'LLM Call'}</span>
+                                      <span className="obs-model">{shortModel(obs.model)}</span>
+                                    </div>
+                                    <div className="obs-meta-grid">
+                                      {obs.usage?.input != null && (
+                                        <div className="obs-meta-item">
+                                          <span className="obs-meta-label">Tokens in</span>
+                                          <span className="obs-meta-value">{formatTokens(obs.usage.input)}</span>
+                                        </div>
+                                      )}
+                                      {obs.usage?.output != null && (
+                                        <div className="obs-meta-item">
+                                          <span className="obs-meta-label">Tokens out</span>
+                                          <span className="obs-meta-value">{formatTokens(obs.usage.output)}</span>
+                                        </div>
+                                      )}
+                                      {obs.latency != null && (
+                                        <div className="obs-meta-item">
+                                          <span className="obs-meta-label">Latencia</span>
+                                          <span className="obs-meta-value">{formatDuration(obs.latency)}</span>
+                                        </div>
+                                      )}
+                                      {obs.total_cost != null && (
+                                        <div className="obs-meta-item">
+                                          <span className="obs-meta-label">Costo</span>
+                                          <span className="obs-meta-value">${obs.total_cost?.toFixed(6) || '0'}</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                    {obs.input && (
+                                      <div className="obs-io">
+                                        <div className="obs-io-label">Input</div>
+                                        <pre className="detail-pre">{typeof obs.input === 'string' ? obs.input : JSON.stringify(obs.input, null, 2)}</pre>
+                                      </div>
+                                    )}
+                                    {obs.output && (
+                                      <div className="obs-io">
+                                        <div className="obs-io-label">Output</div>
+                                        <pre className="detail-pre">{typeof obs.output === 'string' ? obs.output : JSON.stringify(obs.output, null, 2)}</pre>
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
                               </div>
                             )}
                           </>

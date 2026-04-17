@@ -9,6 +9,56 @@ Formato: [Semantic Versioning](https://semver.org/lang/es/) `vX.Y.Z`
 
 ---
 
+## [3.2.28] - 2026-04-10
+
+### Corregido (web)
+- **DEHA tarjeta Cara A**: rediseño visual
+  - Reloj grande centrado con Es/Son a los lados (como el PDF)
+  - Y/MENOS en badges de color (verde/rojo)
+  - Momentos claves: :15 :30 :45 en recuadros de color (teal, naranja, violeta)
+  - Layout equilibrado sin scroll
+
+---
+
+## [3.2.27] - 2026-04-10
+
+### Corregido (web)
+- **DEHA tarjeta**: ortografia corregida
+  - espanol → español, Expresion → Expresión, pelicula → película
+  - Todos los textos con tildes y eñes usando entidades HTML
+
+---
+
+## [3.2.26] - 2026-04-10
+
+### Corregido (web)
+- **DEHA tarjeta**: compactada para caber en 440x630px sin scroll
+  - Cara A: imágenes reducidas (75px), 3 momentos claves en una fila, padding reducido
+  - Cara B: tabla sin imagen lateral, secciones compactas, font-size 0.9em
+
+---
+
+## [3.2.25] - 2026-04-10
+
+### Corregido (web)
+- **DEHA tarjeta**: header cambiado de verde `#4A7C59` a azul teal `#3D6B7E` (coincide con el PDF)
+- Colores de acento (momentos claves, badges, tabla) actualizados al mismo azul
+
+---
+
+## [3.2.24] - 2026-04-10
+
+### Añadido (web)
+- **Agente DEHA** (Decir la Hora) — tarjeta flip en Expresión e Interacción Oral
+  - Cara A: zonas del reloj (Y/MENOS), Es la una/Son las, momentos claves (cuarto/media)
+  - Cara B: esquema comunicativo (decir hora, preguntar evento, quedar con amigos)
+  - Replicado del PDF `deha.pdf` con misma estructura visual que HAFIMA
+  - Header verde `#4A7C59`, fondo `#E8F5E9`, clase `hafima-card`
+  - PDF descargable, 8 imágenes (`esq_hora1-8.png`)
+- Sección EIO actualizada: 1 agente → 2 agentes (HAFIMA + DEHA)
+
+---
+
 ## [3.2.23] - 2026-04-10
 
 ### Cambiado
